@@ -30,8 +30,18 @@ final class Wrapped {
       new Intermediate(IntermediateGroup::SYNTAX, $id, $this->parentId, $kind);
   }
 
-  public function createToken(int $pid, string $kind)[]: Intermediate {
-    return
-      new Intermediate(IntermediateGroup::TOKEN, $pid, $this->parentId, $kind);
+  public function createToken(
+    int $pid,
+    string $kind,
+    int $number_of_leading,
+  )[]: Intermediate {
+    return new Intermediate(
+      IntermediateGroup::TOKEN,
+      $pid,
+      $this->parentId,
+      $kind,
+      null,
+      $number_of_leading + 1,
+    );
   }
 }

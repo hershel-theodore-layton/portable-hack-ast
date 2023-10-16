@@ -3,7 +3,6 @@ namespace HTL\Pha;
 
 type Context = _Private\Context;
 type Node = _Private\Node;
-type NodeId = _Private\NodeId;
 type Syntax = _Private\Syntax;
 type Token = _Private\Token;
 type Trivium = _Private\Trivium;

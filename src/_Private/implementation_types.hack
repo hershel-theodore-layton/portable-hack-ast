@@ -2,7 +2,7 @@
 namespace HTL\Pha\_Private;
 
 newtype Context = ParseContext;
-newtype NodeId = int;
+newtype NodeId as arraykey = int;
 newtype Script = TranslationUnit;
 
 function context_hide(ParseContext $ctx)[]: Context {

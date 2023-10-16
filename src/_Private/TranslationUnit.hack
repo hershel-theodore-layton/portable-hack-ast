@@ -7,9 +7,13 @@ use type OutOfBoundsException;
 use function dechex;
 
 final class TranslationUnit {
+  /**
+   * @param $listSizes only contains the sizes of lists 255 and above.
+   */
   public function __construct(
     private vec<Node> $sourceOrder,
     private vec<Node> $siblings,
+    private dict<NodeId, int> $listSizes,
     private string $sourceText,
     private ParseContext $ctx,
   )[] {}

@@ -11,7 +11,8 @@ function create_intermediate_token(
   $leading_raw = $token['leading'] as dict<_, _>;
   $trailing_raw = $token['trailing'] as dict<_, _>;
 
-  $intermediate = $next->createToken($id, $token['kind'] as string);
+  $intermediate =
+    $next->createToken($id, $token['kind'] as string, C\count($leading_raw));
 
   $count = 1;
   $leading = create_intermediate_trivia($id, $count, $leading_raw);

@@ -21,6 +21,7 @@ final class Intermediate implements JsonSerializable {
     private int $parentId,
     private string $kind,
     private ?string $text = null,
+    private ?int $tokenTextTriviumOffset = null,
   )[] {}
 
   public function getGroup()[]: IntermediateGroup {
@@ -55,6 +56,20 @@ final class Intermediate implements JsonSerializable {
       $this->getGroupName(),
     );
     return $this->text;
+  }
+
+  public function getTokenTextTriviumOffset()[]: ?int {
+    return $this->tokenTextTriviumOffset;
+  }
+
+  public function getTokenTextTriviumOffsetx()[]: int {
+    invariant(
+      $this->tokenTextTriviumOffset is nonnull,
+      '%s (%s) has no token text trivium offset',
+      $this->kind,
+      $this->getGroupName(),
+    );
+    return $this->tokenTextTriviumOffset;
   }
 
   public function jsonSerialize()[]: dict<string, mixed> {
