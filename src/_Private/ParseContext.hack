@@ -15,36 +15,6 @@ final class ParseContext {
     return $this->structs;
   }
 
-  public function internSyntax(string $kind)[]: InternedString<SyntaxKind> {
-    return $this->syntaxKinds->intern($kind);
-  }
-
-  public function internToken(string $kind)[]: InternedString<TokenKind> {
-    return $this->tokenKinds->intern($kind);
-  }
-
-  public function internTrivium(string $kind)[]: InternedString<TriviumKind> {
-    return $this->triviumKinds->intern($kind);
-  }
-
-  public function uninternSyntax(
-    InternedString<SyntaxKind> $interned,
-  )[]: SyntaxKind {
-    return $this->syntaxKinds->fromInterned($interned);
-  }
-
-  public function uninternToken(
-    InternedString<TokenKind> $interned,
-  )[]: TokenKind {
-    return $this->tokenKinds->fromInterned($interned);
-  }
-
-  public function uninternTrivium(
-    InternedString<TriviumKind> $interned,
-  )[]: TriviumKind {
-    return $this->triviumKinds->fromInterned($interned);
-  }
-
   public function upgradeIfNeeded(
     dict<string, vec<string>> $new_member_names,
     keyset<string> $new_token_kinds,
