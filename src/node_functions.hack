@@ -17,6 +17,21 @@ namespace HTL\Pha;
  *    Think of them as `as Syntax` and `?as Syntax` respectively.
  */
 
+function node_get_elaborated_group(Node $node)[]: NodeElaboratedGroup {
+  switch (_Private\node_get_field_0($node)) {
+    case 0:
+      return NodeElaboratedGroup::TRIVIUM;
+    case 1:
+      return NodeElaboratedGroup::TOKEN;
+    case -2:
+      return NodeElaboratedGroup::SYNTAX;
+    default:
+      return _Private\node_get_field_1($node) === 0
+        ? NodeElaboratedGroup::MISSING
+        : NodeElaboratedGroup::LIST;
+  }
+}
+
 function node_get_group(Node $node)[]: NodeGroup {
   switch (_Private\node_get_field_0($node)) {
     case 0:

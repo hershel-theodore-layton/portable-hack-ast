@@ -16,6 +16,13 @@ final class NodeFunctionsTest extends HackTest {
     expect(Pha\node_get_group(Pha\SCRIPT_NODE))->toEqual(Pha\NodeGroup::SYNTAX);
   }
 
+  // Again a bit of a silly test, but there are no other nodes available yet.
+  public function test_node_get_elaborated_group()[]: void {
+    expect(Pha\node_get_elaborated_group(Pha\SCRIPT_NODE))->toEqual(
+      Pha\NodeElaboratedGroup::SYNTAX,
+    );
+  }
+
   private static async function parse_fixture_async(
     string $fixture,
   ): Awaitable<Pha\Script> {
