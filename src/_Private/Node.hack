@@ -30,7 +30,7 @@ type NillableToken = Tagged<Maybe<TokenTag>>;
 type NillableTrivium = Tagged<Maybe<TriviumTag>>;
 
 const Nil NIL = 0;
-const Syntax SCRIPT_NODE = Math\INT64_MIN | (1 << 18);
+const Syntax SCRIPT_NODE = Math\INT64_MIN;
 
 function cast_away_nil<T as Any>(Tagged<Maybe<T>> $t)[]: Tagged<T> {
   return $t;

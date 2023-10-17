@@ -12,4 +12,5 @@ type NillableToken = _Private\NillableToken;
 type NillableTrivium = _Private\NillableTrivium;
 type Script = _Private\Script;
 
+const _Private\Syntax SCRIPT_NODE = _Private\SCRIPT_NODE;
 const _Private\Nil NIL = _Private\NIL;
