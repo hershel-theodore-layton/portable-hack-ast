@@ -23,13 +23,11 @@ final class ExpectObj<T> {
       return;
     }
 
-    if ($this->value is ?arraykey && $other is ?arraykey) {
-      static::fail(
-        "Expected `a === b`, but got:\n - %s\n - %s",
-        static::serializeValue($this->value),
-        static::serializeValue($other),
-      );
-    }
+    static::fail(
+      "Expected `a === b`, but got:\n - %s\n - %s",
+      static::serializeValue($this->value),
+      static::serializeValue($other),
+    );
   }
 
   private static function serializeValue(mixed $value)[]: string {
