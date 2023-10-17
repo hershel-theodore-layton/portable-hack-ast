@@ -39,6 +39,13 @@ final class NodeFunctionsTest extends HackTest {
     );
   }
 
+  public function test_node_as_nonnil()[]: void {
+    expect(Pha\node_as_nonnil(Pha\SCRIPT_NODE))->toEqual(Pha\SCRIPT_NODE);
+    expect(() ==> Pha\node_as_nonnil(Pha\NIL))->toThrowPhaException(
+      'node_as_nonnil got NIL',
+    );
+  }
+
   <<__Memoize>>
   private static async function parse_fixture_async(
     string $fixture,

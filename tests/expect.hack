@@ -3,6 +3,7 @@ namespace HTL\Pha\Tests;
 
 use type Facebook\HackTest\ExpectationFailedException;
 use namespace HH\Lib\Str;
+use namespace HTL\Pha;
 use function json_encode_pure;
 
 /**
@@ -28,6 +29,24 @@ final class ExpectObj<T> {
       static::serializeValue($this->value),
       static::serializeValue($other),
     );
+  }
+
+  public function toThrowPhaException<Tret>(string $pattern)[]: void
+  where
+    T as (function()[]: mixed) {
+    try {
+      ($this->value)();
+      static::fail('Expected a PhaException, got none');
+    } catch (Pha\PhaException $e) {
+      // Implement some nice patterns later.
+      if (!Str\contains($e->getMessage(), $pattern)) {
+        static::fail(
+          "Did not see the excepted pattern:\n - '%s'\n - '%s'",
+          $pattern,
+          $e->getMessage(),
+        );
+      }
+    }
   }
 
   private static function serializeValue(mixed $value)[]: string {

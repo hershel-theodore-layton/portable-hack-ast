@@ -15,7 +15,19 @@ namespace HTL\Pha;
  *    or `Trivium`, use `node_as_{syntax,token,trivium}()` or use
  *    `node_as_nillable_{syntax,token,trivium}()` if you want nil on errors.
  *    Think of them as `as Syntax` and `?as Syntax` respectively.
+ *  - If you have a Nillable<T> and you wish to remove the NIL,
+ *    use `node_as_nonnil()`. It returns a nonnill T or throws an exception.
  */
+
+function node_as_nonnil<T as _Private\Any>(
+  _Private\Tagged<_Private\Maybe<T>> $node,
+)[]: _Private\Tagged<T> {
+  if ($node === NIL) {
+    throw new _Private\PhaException(Str\format('%s got NIL', __FUNCTION__));
+  }
+
+  return _Private\cast_away_nil($node);
+}
 
 function node_get_elaborated_group(Node $node)[]: NodeElaboratedGroup {
   switch (_Private\node_get_field_0($node)) {
