@@ -1,6 +1,8 @@
 /** portable-hack-ast is MIT licensed, see /LICENSE. */
 namespace HTL\Pha;
 
+use namespace HH\Lib\Str;
+
 /**
  * @package This file contains all the functions that operate on `Node`.
  * Think of them as methods on the `Node` "class".
@@ -89,4 +91,47 @@ function syntax_get_members(Script $script, Syntax $node)[]: vec<string> {
   $structs = $tu->getParseContext()->getStructs();
   $kind = node_get_kind($script, $node) |> kind_to_string($$);
   return $structs->getRaw()[$kind];
+}
+
+function node_get_first_child(
+  Script $script,
+  NillableNode $node,
+)[]: NillableNode {
+  if ($node === NIL) {
+    return NIL;
+  }
+
+  $node = _Private\cast_away_nil($node);
+  $tu = _Private\translation_unit_reveal($script);
+
+  switch (node_get_elaborated_group($node)) {
+    case NodeElaboratedGroup::SYNTAX:
+    case NodeElaboratedGroup::LIST:
+      return _Private\syntax_from_node($node)
+        |> _Private\syntax_get_first_child_sibling_id($$)
+        |> $tu->getNodeBySiblingId($$);
+
+    case NodeElaboratedGroup::TOKEN:
+      return _Private\node_get_field_4($node) + 1
+        |> _Private\node_id_from_int($$)
+        |> $tu->getNodeById($$);
+
+    case NodeElaboratedGroup::TRIVIUM:
+    case NodeElaboratedGroup::MISSING:
+      return NIL;
+  }
+}
+
+function node_get_first_childx(Script $script, Node $node)[]: Node {
+  $first_child = node_get_first_child($script, $node);
+
+  if ($first_child === NIL) {
+    throw new _Private\PhaException(Str\format(
+      '%s expected at least one child, got %s with 0 children.',
+      __FUNCTION__,
+      node_get_kind($script, $node) |> kind_to_string($$),
+    ));
+  }
+
+  return _Private\cast_away_nil($first_child);
 }

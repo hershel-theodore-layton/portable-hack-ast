@@ -20,9 +20,13 @@ function node_get_field_2(NillableNode $node)[]: int {
 }
 
 function node_get_field_3(NillableNode $node)[]: int {
-  return node_to_int($node) >> 18 |> $$ & 0x3fffff;
+  return node_to_int($node) >> 18 |> $$ & 0x3ffff;
 }
 
 function node_get_field_4(NillableNode $node)[]: int {
   return node_to_int($node) & 0x3ffff;
+}
+
+function syntax_get_first_child_sibling_id(Syntax $node)[]: SiblingId {
+  return node_get_field_3($node) |> sibling_id_from_int($$);
 }

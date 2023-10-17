@@ -19,6 +19,10 @@ function expect<T>(T $value)[]: ExpectObj<T> {
 final class ExpectObj<T> {
   public function __construct(private T $value)[] {}
 
+  public function toBeNil()[]: void where T as Pha\NillableNode {
+    $this->toEqual(Pha\NIL);
+  }
+
   public function toEqual(mixed $other)[]: void {
     if ($this->value === $other) {
       return;

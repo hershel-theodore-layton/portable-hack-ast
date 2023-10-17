@@ -46,6 +46,33 @@ final class NodeFunctionsTest extends HackTest {
     );
   }
 
+  <<DataProvider('provide_001_math_async')>>
+  public function test_node_get_first_child(Pha\Script $script)[]: void {
+    expect(Pha\node_get_first_child($script, Pha\NIL))->toBeNil();
+
+    $child = Pha\node_get_first_childx($script, Pha\SCRIPT_NODE);
+    expect(Pha\node_get_kind($script, $child))->toEqual(Pha\KIND_LIST);
+    $child = Pha\node_get_first_childx($script, $child);
+    expect(Pha\node_get_kind($script, $child))->toEqual(
+      Pha\KIND_NAMESPACE_DECLARATION,
+    );
+    $child = Pha\node_get_first_childx($script, $child);
+    expect(Pha\node_get_kind($script, $child))->toEqual(
+      Pha\KIND_NAMESPACE_DECLARATION_HEADER,
+    );
+    $child = Pha\node_get_first_childx($script, $child);
+    expect(Pha\node_get_kind($script, $child))->toEqual(Pha\KIND_NAMESPACE);
+    $child = Pha\node_get_first_childx($script, $child);
+    expect(Pha\node_get_kind($script, $child))->toEqual(
+      Pha\KIND_DELIMITED_COMMENT,
+    );
+
+    expect(() ==> Pha\node_get_first_childx($script, $child))
+      ->toThrowPhaException(
+        'node_get_first_childx expected at least one child, got delimited_comment with 0 children.',
+      );
+  }
+
   <<__Memoize>>
   private static async function parse_fixture_async(
     string $fixture,

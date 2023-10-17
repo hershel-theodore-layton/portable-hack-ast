@@ -38,6 +38,26 @@ final class TranslationUnit {
     return $out;
   }
 
+  public function getNodeById(NodeId $node_id)[]: Node {
+    $node_id = node_id_to_int($node_id);
+    try {
+      return $this->sourceOrder[$node_id];
+    } catch (OutOfBoundsException $_) {
+      throw
+        new PhaException(Str\format('No node has sibling id: %d', $node_id));
+    }
+  }
+
+  public function getNodeBySiblingId(SiblingId $sibling_id)[]: Node {
+    $sibling_id = sibling_id_to_int($sibling_id);
+    try {
+      return $this->siblings[$sibling_id];
+    } catch (OutOfBoundsException $_) {
+      throw
+        new PhaException(Str\format('No node has sibling id: %d', $sibling_id));
+    }
+  }
+
   public function getParseContext()[]: ParseContext {
     return $this->ctx;
   }
