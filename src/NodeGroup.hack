@@ -2,7 +2,7 @@
 namespace HTL\Pha;
 
 enum NodeGroup: int {
-  TRIVIUM = 0;
+  SYNTAX = 0;
   TOKEN = 1;
-  SYNTAX = 2;
+  TRIVIUM = 2;
 }
