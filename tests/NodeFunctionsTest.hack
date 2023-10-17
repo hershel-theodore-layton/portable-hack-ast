@@ -1,7 +1,7 @@
 /** portable-hack-ast is MIT licensed, see /LICENSE. */
 namespace HTL\Pha\Tests;
 
-use type Facebook\HackTest\HackTest;
+use type Facebook\HackTest\{DataProvider, HackTest};
 use namespace HH\Lib\File;
 use namespace HTL\Pha;
 
@@ -23,6 +23,14 @@ final class NodeFunctionsTest extends HackTest {
     );
   }
 
+  // The silly tests just keep coming, but I need node_get_children().
+  // WIthout it, I can't write good tests.
+  <<DataProvider('provide_001_math_async')>>
+  public function test_node_get_kind(Pha\Script $script)[]: void {
+    expect(Pha\node_get_kind($script, Pha\SCRIPT_NODE))->toEqual('script');
+  }
+
+  <<__Memoize>>
   private static async function parse_fixture_async(
     string $fixture,
   ): Awaitable<Pha\Script> {

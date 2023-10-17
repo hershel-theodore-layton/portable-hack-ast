@@ -42,3 +42,32 @@ function node_get_group(Node $node)[]: NodeGroup {
       return NodeGroup::SYNTAX;
   }
 }
+
+function node_get_kind(Script $script, Node $node)[]: Kind {
+  $tu = _Private\translation_unit_reveal($script);
+
+  switch (node_get_elaborated_group($node)) {
+    case NodeElaboratedGroup::SYNTAX:
+      $kinds = $tu->getParseContext()->getSyntaxKinds();
+      return _Private\node_get_field_1($node)
+        |> _Private\interned_string_from_int<SyntaxKind>($$)
+        |> $kinds->fromInterned($$);
+
+    case NodeElaboratedGroup::TOKEN:
+      $kinds = $tu->getParseContext()->getTokenKinds();
+      return _Private\node_get_field_1($node)
+        |> _Private\interned_string_from_int<TokenKind>($$)
+        |> $kinds->fromInterned($$);
+
+    case NodeElaboratedGroup::TRIVIUM:
+      $kinds = $tu->getParseContext()->getTriviumKinds();
+      return _Private\node_get_field_1($node)
+        |> _Private\interned_string_from_int<TriviumKind>($$)
+        |> $kinds->fromInterned($$);
+
+    case NodeElaboratedGroup::LIST:
+      return KIND_LIST;
+    case NodeElaboratedGroup::MISSING:
+      return KIND_MISSING;
+  }
+}

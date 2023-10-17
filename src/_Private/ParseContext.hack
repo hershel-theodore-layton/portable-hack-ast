@@ -15,6 +15,18 @@ final class ParseContext {
     return $this->structs;
   }
 
+  public function getSyntaxKinds()[]: InternedStringStorage<SyntaxKind> {
+    return $this->syntaxKinds;
+  }
+
+  public function getTokenKinds()[]: InternedStringStorage<TokenKind> {
+    return $this->tokenKinds;
+  }
+
+  public function getTriviumKinds()[]: InternedStringStorage<TriviumKind> {
+    return $this->triviumKinds;
+  }
+
   public function upgradeIfNeeded(
     dict<string, vec<string>> $new_member_names,
     keyset<string> $new_token_kinds,

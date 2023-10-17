@@ -17,17 +17,20 @@ function create_node(
   switch ($node->getGroup()) {
     case IntermediateGroup::SYNTAX:
       $field_0 = Math\INT64_MIN; // 10
-      $field_1 = $ctx->internSyntax($kind) |> interned_string_to_int($$);
+      $field_1 =
+        $ctx->getSyntaxKinds()->intern($kind) |> interned_string_to_int($$);
       $field_3 = $child_range[0];
       break;
     case IntermediateGroup::TOKEN:
       $field_0 = 1 << 62; // 01
-      $field_1 = $ctx->internToken($kind) |> interned_string_to_int($$);
+      $field_1 =
+        $ctx->getTokenKinds()->intern($kind) |> interned_string_to_int($$);
       $field_3 = $source_order_idx + $node->getTokenTextTriviumOffsetx();
       break;
     case IntermediateGroup::TRIVIUM:
       $field_0 = 0;
-      $field_1 = $ctx->internTrivium($kind) |> interned_string_to_int($$);
+      $field_1 =
+        $ctx->getTriviumKinds()->intern($kind) |> interned_string_to_int($$);
       $field_3 = $byte_offset;
       $byte_offset += Str\length($node->getTextx());
       break;

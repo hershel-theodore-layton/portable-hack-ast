@@ -37,4 +37,8 @@ final class TranslationUnit {
 
     return $out;
   }
+
+  public function getParseContext()[]: ParseContext {
+    return $this->ctx;
+  }
 }
