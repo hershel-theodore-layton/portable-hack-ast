@@ -24,10 +24,19 @@ final class NodeFunctionsTest extends HackTest {
   }
 
   // The silly tests just keep coming, but I need node_get_children().
-  // WIthout it, I can't write good tests.
+  // Without it, I can't write good tests.
   <<DataProvider('provide_001_math_async')>>
   public function test_node_get_kind(Pha\Script $script)[]: void {
     expect(Pha\node_get_kind($script, Pha\SCRIPT_NODE))->toEqual('script');
+  }
+
+  // The silly tests just keep coming, but I need node_get_children().
+  // Without it, I can't write good tests.
+  <<DataProvider('provide_001_math_async')>>
+  public function test_syntax_get_members(Pha\Script $script)[]: void {
+    expect(Pha\syntax_get_members($script, Pha\SCRIPT_NODE))->toEqual(
+      vec['script_declarations'],
+    );
   }
 
   <<__Memoize>>

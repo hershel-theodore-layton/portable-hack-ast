@@ -71,3 +71,10 @@ function node_get_kind(Script $script, Node $node)[]: Kind {
       return KIND_MISSING;
   }
 }
+
+function syntax_get_members(Script $script, Syntax $node)[]: vec<string> {
+  $tu = _Private\translation_unit_reveal($script);
+  $structs = $tu->getParseContext()->getStructs();
+  $kind = node_get_kind($script, $node) |> kind_to_string($$);
+  return $structs->getRaw()[$kind];
+}
