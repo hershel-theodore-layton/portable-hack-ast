@@ -31,6 +31,69 @@ function node_as_nonnil<T as _Private\Any>(
   return _Private\cast_away_nil($node);
 }
 
+function node_as_syntax(NillableNode $node)[]: Syntax {
+  $ret = node_as_syntax_or_nil($node);
+
+  if ($ret !== NIL) {
+    return _Private\cast_away_nil($ret);
+  }
+
+  throw new _Private\PhaException(Str\format(
+    '%s expected a Syntax, got %s.',
+    __FUNCTION__,
+    node_get_group_name($node),
+  ));
+}
+
+function node_as_syntax_or_nil(NillableNode $node)[]: NillableSyntax {
+  return $node !== NIL &&
+    node_get_group(_Private\cast_away_nil($node)) === NodeGroup::SYNTAX
+    ? _Private\syntax_from_node($node)
+    : NIL;
+}
+
+function node_as_token(NillableNode $node)[]: Token {
+  $ret = node_as_token_or_nil($node);
+
+  if ($ret !== NIL) {
+    return _Private\cast_away_nil($ret);
+  }
+
+  throw new _Private\PhaException(Str\format(
+    '%s expected a Token, got %s.',
+    __FUNCTION__,
+    node_get_group_name($node),
+  ));
+}
+
+function node_as_token_or_nil(NillableNode $node)[]: NillableToken {
+  return $node !== NIL &&
+    node_get_group(_Private\cast_away_nil($node)) === NodeGroup::TOKEN
+    ? _Private\token_from_node($node)
+    : NIL;
+}
+
+function node_as_trivium(NillableNode $node)[]: Trivium {
+  $ret = node_as_trivium_or_nil($node);
+
+  if ($ret !== NIL) {
+    return _Private\cast_away_nil($ret);
+  }
+
+  throw new _Private\PhaException(Str\format(
+    '%s expected a Trivium, got %s.',
+    __FUNCTION__,
+    node_get_group_name($node),
+  ));
+}
+
+function node_as_trivium_or_nil(NillableNode $node)[]: NillableTrivium {
+  return $node !== NIL &&
+    node_get_group(_Private\cast_away_nil($node)) === NodeGroup::TRIVIUM
+    ? _Private\trivium_from_node($node)
+    : NIL;
+}
+
 function node_get_elaborated_group(Node $node)[]: NodeElaboratedGroup {
   switch (_Private\node_get_field_0($node)) {
     case 0:
@@ -134,4 +197,19 @@ function node_get_first_childx(Script $script, Node $node)[]: Node {
   }
 
   return _Private\cast_away_nil($first_child);
+}
+
+function node_get_group_name(NillableNode $node)[]: string {
+  if ($node === NIL) {
+    return 'NIL';
+  }
+
+  switch (node_get_group(_Private\cast_away_nil($node))) {
+    case NodeGroup::SYNTAX:
+      return 'Syntax';
+    case NodeGroup::TOKEN:
+      return 'Token';
+    case NodeGroup::TRIVIUM:
+      return 'Trivium';
+  }
 }
