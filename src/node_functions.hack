@@ -149,7 +149,7 @@ function node_get_kind(Script $script, Node $node)[]: Kind {
   }
 }
 
-function syntax_get_members(Script $script, Syntax $node)[]: vec<string> {
+function syntax_get_members(Script $script, Syntax $node)[]: vec<Member> {
   $tu = _Private\translation_unit_reveal($script);
   $structs = $tu->getParseContext()->getStructs();
   $kind = node_get_kind($script, $node) |> kind_to_string($$);

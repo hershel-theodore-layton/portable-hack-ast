@@ -28,7 +28,7 @@ final class ParseContext {
   }
 
   public function upgradeIfNeeded(
-    dict<string, vec<string>> $new_member_names,
+    dict<string, vec<Member>> $new_member_names,
     keyset<string> $new_token_kinds,
     keyset<string> $new_trivium_kinds,
   )[]: ParseContext {

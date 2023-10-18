@@ -7,7 +7,9 @@ use namespace HTL\Pha;
 // Note to self: This is incomplete
 final class Structs {
   private int $size;
-  public function __construct(private dict<string, vec<string>> $rawMembers)[] {
+  public function __construct(
+    private dict<string, vec<Pha\Member>> $rawMembers,
+  )[] {
     $this->size = C\count($rawMembers);
   }
 
@@ -18,11 +20,11 @@ final class Structs {
     );
   }
 
-  public function getRaw()[]: dict<string, vec<string>> {
+  public function getRaw()[]: dict<string, vec<Member>> {
     return $this->rawMembers;
   }
 
-  public function isOfSameSize(dict<string, vec<string>> $new_members)[]: bool {
+  public function isOfSameSize(dict<string, vec<Member>> $new_members)[]: bool {
     return $this->size === C\count($new_members);
   }
 }

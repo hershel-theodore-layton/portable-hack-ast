@@ -2,10 +2,11 @@
 namespace HTL\Pha\_Private;
 
 use namespace HH\Lib\{C, Vec};
+use namespace HTL\Pha;
 
 function create_intermediates(
   dict<arraykey, mixed> $parse_tree,
-  inout dict<string, vec<string>> $known_member_names,
+  inout dict<string, vec<Member>> $known_member_names,
   inout keyset<string> $known_token_kinds,
   inout keyset<string> $known_trivium_kinds,
 )[]: vec<Intermediate> {
@@ -43,7 +44,7 @@ function create_intermediates(
 
           foreach (Vec\keys($to_parse->getItem()) as $member_name) {
             if ($member_name !== 'kind') {
-              $new_names[] = $member_name as string;
+              $new_names[] = Pha\member_from_string($member_name as string);
             }
           }
 
