@@ -1,7 +1,7 @@
 /** portable-hack-ast is MIT licensed, see /LICENSE. */
 namespace HTL\Pha\Tests;
 
-use type Facebook\HackTest\HackTest;
+use type Facebook\HackTest\{DataProvider, HackTest};
 use namespace HH\Lib\File;
 use namespace HTL\Pha;
 
@@ -25,32 +25,86 @@ final class NodeFunctionsTest extends HackTest {
     );
   }
 
-  // A bit of a silly test, but there are no other nodes available yet.
-  public function test_node_get_group()[]: void {
+  public function provide_node_get_group()[]: vec<(Pha\Node, Pha\NodeGroup)> {
+    $math = $this->fixtures()->math;
+    return vec[
+      tuple(Pha\SCRIPT_NODE, Pha\NodeGroup::SYNTAX),
+      tuple($math->declarationList, Pha\NodeGroup::SYNTAX),
+      tuple($math->namespaceDeclarationHeader, Pha\NodeGroup::SYNTAX),
+      tuple($math->namespaceToken, Pha\NodeGroup::TOKEN),
+      tuple($math->licenseComment, Pha\NodeGroup::TRIVIUM),
+    ];
+  }
+
+  <<DataProvider('provide_node_get_group')>>
+  public function test_node_get_group(
+    Pha\Node $node,
+    Pha\NodeGroup $expected,
+  )[]: void {
     expect(Pha\node_get_group(Pha\SCRIPT_NODE))->toEqual(Pha\NodeGroup::SYNTAX);
   }
 
-  // Again a bit of a silly test, but there are no other nodes available yet.
-  public function test_node_get_elaborated_group()[]: void {
-    expect(Pha\node_get_elaborated_group(Pha\SCRIPT_NODE))->toEqual(
-      Pha\NodeElaboratedGroup::SYNTAX,
-    );
+  public function provide_node_get_elaborated_group(
+  )[]: vec<(Pha\Node, Pha\NodeElaboratedGroup)> {
+    $math = $this->fixtures()->math;
+    // Future Test: Access a Missing to get `::MISSING`.
+    return vec[
+      tuple(Pha\SCRIPT_NODE, Pha\NodeElaboratedGroup::SYNTAX),
+      tuple($math->declarationList, Pha\NodeElaboratedGroup::LIST),
+      tuple($math->namespaceDeclarationHeader, Pha\NodeElaboratedGroup::SYNTAX),
+      tuple($math->namespaceToken, Pha\NodeElaboratedGroup::TOKEN),
+      tuple($math->licenseComment, Pha\NodeElaboratedGroup::TRIVIUM),
+    ];
   }
 
-  // The silly tests just keep coming, but I need node_get_children().
-  // Without it, I can't write good tests.
-  public function test_node_get_kind()[]: void {
-    $script = $this->fixtures()->math->script;
-    expect(Pha\node_get_kind($script, Pha\SCRIPT_NODE))->toEqual('script');
+  <<DataProvider('provide_node_get_elaborated_group')>>
+  public function test_node_get_elaborated_group(
+    Pha\Node $node,
+    Pha\NodeElaboratedGroup $group,
+  )[]: void {
+    expect(Pha\node_get_elaborated_group($node))->toEqual($group);
   }
 
-  // The silly tests just keep coming, but I need node_get_children().
-  // Without it, I can't write good tests.
-  public function test_syntax_get_members()[]: void {
+  public function provide_node_get_kind()[]: vec<(Pha\Node, Pha\Kind)> {
+    $math = $this->fixtures()->math;
+    return vec[
+      tuple(Pha\SCRIPT_NODE, Pha\KIND_SCRIPT),
+      tuple($math->declarationList, Pha\KIND_LIST),
+      tuple(
+        $math->namespaceDeclarationHeader,
+        Pha\KIND_NAMESPACE_DECLARATION_HEADER,
+      ),
+      tuple($math->namespaceToken, Pha\KIND_NAMESPACE),
+      tuple($math->licenseComment, Pha\KIND_DELIMITED_COMMENT),
+    ];
+  }
+
+  <<DataProvider('provide_node_get_kind')>>
+  public function test_node_get_kind(Pha\Node $node, Pha\Kind $kind)[]: void {
     $script = $this->fixtures()->math->script;
-    expect(Pha\syntax_get_members($script, Pha\SCRIPT_NODE))->toEqual(
-      vec['script_declarations'],
-    );
+    expect(Pha\node_get_kind($script, $node))->toEqual($kind);
+  }
+
+  public function provide_syntax_get_members(
+  )[]: vec<(Pha\Syntax, vec<Pha\Member>)> {
+    $math = $this->fixtures()->math;
+    return vec[
+      tuple(Pha\SCRIPT_NODE, vec[Pha\MEMBER_SCRIPT_DECLARATIONS]),
+      tuple($math->declarationList, vec[]),
+      tuple(
+        $math->namespaceDeclarationHeader,
+        vec[Pha\MEMBER_NAMESPACE_KEYWORD, Pha\MEMBER_NAMESPACE_NAME],
+      ),
+    ];
+  }
+
+  <<DataProvider('provide_syntax_get_members')>>
+  public function test_syntax_get_members(
+    Pha\Syntax $node,
+    vec<Pha\Member> $member_names,
+  )[]: void {
+    $script = $this->fixtures()->math->script;
+    expect(Pha\syntax_get_members($script, $node))->toEqual($member_names);
   }
 
   public function test_node_as_nonnil()[]: void {
@@ -60,31 +114,36 @@ final class NodeFunctionsTest extends HackTest {
     );
   }
 
-  public function test_node_get_first_child()[]: void {
+  public function provide_node_get_first_child(
+  )[]: vec<(Pha\NillableNode, Pha\NillableNode)> {
+    $math = $this->fixtures()->math;
+    return vec[
+      tuple(Pha\SCRIPT_NODE, $math->declarationList),
+      tuple($math->declarationList, $math->namespaceDeclaration),
+      tuple($math->namespaceDeclaration, $math->namespaceDeclarationHeader),
+      tuple($math->namespaceDeclarationHeader, $math->namespaceToken),
+      tuple($math->namespaceToken, $math->licenseComment),
+      tuple($math->licenseComment, Pha\NIL),
+      tuple(Pha\NIL, Pha\NIL),
+    ];
+  }
+
+  <<DataProvider('provide_node_get_first_child')>>
+  public function test_node_get_first_child(
+    Pha\NillableNode $parent,
+    Pha\NillableNode $first_child,
+  )[]: void {
     $script = $this->fixtures()->math->script;
-    expect(Pha\node_get_first_child($script, Pha\NIL))->toBeNil();
+    expect(Pha\node_get_first_child($script, $parent))->toEqual($first_child);
+  }
 
-    $child = Pha\node_get_first_childx($script, Pha\SCRIPT_NODE);
-    expect(Pha\node_get_kind($script, $child))->toEqual(Pha\KIND_LIST);
-    $child = Pha\node_get_first_childx($script, $child);
-    expect(Pha\node_get_kind($script, $child))->toEqual(
-      Pha\KIND_NAMESPACE_DECLARATION,
+  public function test_node_get_first_childx()[]: void {
+    $math = $this->fixtures()->math;
+    expect(
+      () ==> Pha\node_get_first_childx($math->script, $math->licenseComment),
+    )->toThrowPhaException(
+      'expected at least one child, got delimited_comment with 0 children.',
     );
-    $child = Pha\node_get_first_childx($script, $child);
-    expect(Pha\node_get_kind($script, $child))->toEqual(
-      Pha\KIND_NAMESPACE_DECLARATION_HEADER,
-    );
-    $child = Pha\node_get_first_childx($script, $child);
-    expect(Pha\node_get_kind($script, $child))->toEqual(Pha\KIND_NAMESPACE);
-    $child = Pha\node_get_first_childx($script, $child);
-    expect(Pha\node_get_kind($script, $child))->toEqual(
-      Pha\KIND_DELIMITED_COMMENT,
-    );
-
-    expect(() ==> Pha\node_get_first_childx($script, $child))
-      ->toThrowPhaException(
-        'node_get_first_childx expected at least one child, got delimited_comment with 0 children.',
-      );
   }
 
   private function fixtures()[]: Fixtures\Fixtures {
