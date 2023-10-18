@@ -1,14 +1,28 @@
 /** portable-hack-ast is MIT licensed, see /LICENSE. */
 namespace HTL\Pha\Tests;
 
-use type Facebook\HackTest\{DataProvider, HackTest};
+use type Facebook\HackTest\HackTest;
 use namespace HH\Lib\File;
 use namespace HTL\Pha;
 
 final class NodeFunctionsTest extends HackTest {
   const string FIXTURE_DIR = __DIR__.'/fixtures/';
-  public async function provide_001_math_async(): Awaitable<vec<(Pha\Script)>> {
-    return vec[tuple(await static::parse_fixture_async('001_math.hack'))];
+  private ?Fixtures\Fixtures $fixtures;
+
+  /**
+   * Emulates beforeFirstTestAsync(), but that method is static.
+   * Reading $fixtures as a static property requires read_globals.
+   * This is not possible from a test context, hence some hoop jumping.
+   */
+  <<__Override>>
+  public async function beforeEachTestAsync(): Awaitable<void> {
+    if ($this->fixtures is nonnull) {
+      return;
+    }
+
+    $this->fixtures = new Fixtures\Fixtures(
+      new Fixtures\Math(await static::parse_fixture_async('001_math.hack')),
+    );
   }
 
   // A bit of a silly test, but there are no other nodes available yet.
@@ -25,15 +39,15 @@ final class NodeFunctionsTest extends HackTest {
 
   // The silly tests just keep coming, but I need node_get_children().
   // Without it, I can't write good tests.
-  <<DataProvider('provide_001_math_async')>>
-  public function test_node_get_kind(Pha\Script $script)[]: void {
+  public function test_node_get_kind()[]: void {
+    $script = $this->fixtures()->math->script;
     expect(Pha\node_get_kind($script, Pha\SCRIPT_NODE))->toEqual('script');
   }
 
   // The silly tests just keep coming, but I need node_get_children().
   // Without it, I can't write good tests.
-  <<DataProvider('provide_001_math_async')>>
-  public function test_syntax_get_members(Pha\Script $script)[]: void {
+  public function test_syntax_get_members()[]: void {
+    $script = $this->fixtures()->math->script;
     expect(Pha\syntax_get_members($script, Pha\SCRIPT_NODE))->toEqual(
       vec['script_declarations'],
     );
@@ -46,8 +60,8 @@ final class NodeFunctionsTest extends HackTest {
     );
   }
 
-  <<DataProvider('provide_001_math_async')>>
-  public function test_node_get_first_child(Pha\Script $script)[]: void {
+  public function test_node_get_first_child()[]: void {
+    $script = $this->fixtures()->math->script;
     expect(Pha\node_get_first_child($script, Pha\NIL))->toBeNil();
 
     $child = Pha\node_get_first_childx($script, Pha\SCRIPT_NODE);
@@ -71,6 +85,10 @@ final class NodeFunctionsTest extends HackTest {
       ->toThrowPhaException(
         'node_get_first_childx expected at least one child, got delimited_comment with 0 children.',
       );
+  }
+
+  private function fixtures()[]: Fixtures\Fixtures {
+    return $this->fixtures as nonnull;
   }
 
   <<__Memoize>>
