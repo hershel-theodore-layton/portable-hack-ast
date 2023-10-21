@@ -14,12 +14,20 @@ function context_reveal(Context $ctx)[]: ParseContext {
   return $ctx;
 }
 
+function node_id_add(NodeId $node_id, int $n)[]: NodeId {
+  return $node_id + $n;
+}
+
 function node_id_to_int(NodeId $node_id)[]: int {
   return $node_id;
 }
 
 function node_id_from_int(int $node_id)[]: NodeId {
   return $node_id;
+}
+
+function sibling_id_add(SiblingId $sibling_id, int $n)[]: SiblingId {
+  return $sibling_id + $n;
 }
 
 function sibling_id_to_int(SiblingId $sibling_id)[]: int {

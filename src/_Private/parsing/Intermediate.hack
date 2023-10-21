@@ -13,7 +13,7 @@ final class Intermediate implements JsonSerializable {
    *     |        |         |
    *(leading*)   ttt   (trailing)*
    */
-  const string TOKEN_TEXT_TRIVIUM = 'token_text_trivium';
+  const string TOKEN_TEXT_TRIVIUM = 'token_text';
 
   public function __construct(
     private IntermediateGroup $group,

@@ -167,6 +167,70 @@ final class NodeFunctionsTest extends HackTest {
     expect(Pha\node_get_parent($script, $node))->toEqual($parent);
   }
 
+  public function provide_node_get_nth_child(
+  )[]: vec<(Pha\NillableNode, int, ?Pha\Kind)> {
+    $math = $this->fixtures()->math;
+    return vec[
+      tuple(Pha\SCRIPT_NODE, 0, Pha\KIND_LIST),
+      tuple(Pha\SCRIPT_NODE, 1, null),
+      tuple($math->declarationList, 0, Pha\KIND_NAMESPACE_DECLARATION),
+      tuple($math->declarationList, 1, Pha\KIND_FUNCTION_DECLARATION),
+      tuple($math->declarationList, 2, Pha\KIND_END_OF_FILE),
+      tuple($math->declarationList, 3, null),
+      tuple(
+        $math->namespaceDeclaration,
+        0,
+        Pha\KIND_NAMESPACE_DECLARATION_HEADER,
+      ),
+      tuple($math->namespaceDeclaration, 1, Pha\KIND_NAMESPACE_EMPTY_BODY),
+      tuple($math->namespaceDeclarationHeader, 0, Pha\KIND_NAMESPACE),
+      tuple($math->namespaceDeclarationHeader, 1, Pha\KIND_QUALIFIED_NAME),
+      tuple($math->namespaceToken, 0, Pha\KIND_DELIMITED_COMMENT),
+      tuple($math->namespaceToken, 1, Pha\KIND_END_OF_LINE),
+      tuple($math->namespaceToken, 2, Pha\KIND_TOKEN_TEXT),
+      tuple($math->namespaceToken, 3, Pha\KIND_WHITESPACE),
+      tuple($math->namespaceToken, 4, null),
+      tuple($math->licenseComment, 0, null),
+      tuple(Pha\NIL, 0, null),
+    ];
+  }
+
+  // We need to test against the Kind,
+  // because we have no other way to get a reference to the nth child just yet.
+  <<DataProvider('provide_node_get_nth_child')>>
+  public function test_node_get_nth_child(
+    Pha\NillableNode $node,
+    int $n,
+    ?Pha\Kind $kind_of_nth_child,
+  )[]: void {
+    $script = $this->fixtures()->math->script;
+    $nth_child = Pha\node_get_nth_child($script, $node, $n);
+    expect(
+      $nth_child === Pha\NIL
+        ? null
+        : Pha\node_get_kind($script, Pha\node_as_nonnil($nth_child)),
+    )->toEqual($kind_of_nth_child);
+  }
+
+  public function test_node_get_nth_child_preconditions()[]: void {
+    $script = $this->fixtures()->math->script;
+    expect(() ==> Pha\node_get_nth_child($script, Pha\SCRIPT_NODE, -1))
+      ->toThrowPhaException('expected a valid offset (0 or greater), got -1.');
+  }
+
+  public function test_node_get_nth_childx()[]: void {
+    $math = $this->fixtures()->math;
+    expect(
+      Pha\node_get_nth_childx($math->script, $math->namespaceDeclaration, 0),
+    )
+      ->toEqual($math->namespaceDeclarationHeader);
+
+    expect(
+      () ==>
+        Pha\node_get_nth_childx($math->script, $math->namespaceDeclaration, 3),
+    )->toThrowPhaException('This namespace_declaration has no 3rd child.');
+  }
+
   private function fixtures()[]: Fixtures\Fixtures {
     return $this->fixtures as nonnull;
   }

@@ -201,6 +201,82 @@ function node_get_kind(Script $script, Node $node)[]: Kind {
   }
 }
 
+function node_get_nth_child(
+  Script $script,
+  NillableNode $node,
+  int $n,
+)[]: NillableNode {
+  if ($n === 0) {
+    return node_get_first_child($script, $node);
+  }
+
+  _Private\enforce(
+    $n > 0,
+    '%s expected a valid offset (0 or greater), got %d.',
+    __FUNCTION__,
+    $n,
+  );
+
+  if ($node === NIL) {
+    return NIL;
+  }
+
+  $node = _Private\cast_away_nil($node);
+
+  $tu = _Private\translation_unit_reveal($script);
+
+  switch (node_get_elaborated_group($node)) {
+    case NodeElaboratedGroup::SYNTAX:
+    case NodeElaboratedGroup::LIST:
+      $child_node = _Private\syntax_from_node($node)
+        |> _Private\syntax_get_first_child_sibling_id($$)
+        |> _Private\sibling_id_add($$, $n)
+        |> $tu->getNodeBySiblingId($$);
+
+      if ($child_node === NIL) {
+        return NIL;
+      }
+
+      $child_node = _Private\cast_away_nil($child_node);
+      return
+        _Private\node_get_parent_id($child_node) === _Private\node_get_id($node)
+          ? $child_node
+          : NIL;
+
+    case NodeElaboratedGroup::TOKEN:
+      $child_node = _Private\node_get_id($node)
+        |> _Private\node_id_add($$, 1 + $n)
+        |> $tu->getNodeById($$);
+
+      if ($child_node === NIL) {
+        return NIL;
+      }
+
+      $child_node = _Private\cast_away_nil($child_node);
+      return
+        _Private\node_get_parent_id($child_node) === _Private\node_get_id($node)
+          ? $child_node
+          : NIL;
+
+    case NodeElaboratedGroup::TRIVIUM:
+    case NodeElaboratedGroup::MISSING:
+      return NIL;
+  }
+}
+
+function node_get_nth_childx(Script $script, Node $node, int $n)[]: Node {
+  $nth_child = node_get_nth_child($script, $node, $n);
+
+  _Private\enforce(
+    $nth_child !== NIL,
+    'This %s has no %s child.',
+    node_get_kind($script, $node) |> kind_to_string($$),
+    _Private\grammatical_nth($n),
+  );
+
+  return _Private\cast_away_nil($nth_child);
+}
+
 /**
  * Huh, shouldn't this return a NillableNode?
  * No, every Node is defined to have a parent.
