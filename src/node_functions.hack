@@ -126,7 +126,7 @@ function node_get_first_child(
     case NodeElaboratedGroup::LIST:
       return _Private\node_get_field_4($node) + 1
         |> _Private\node_id_from_int($$)
-        |> $tu->getNodeById($$);
+        |> $tu->getNodeByIdx($$);
 
     case NodeElaboratedGroup::TRIVIUM:
     case NodeElaboratedGroup::MISSING:
