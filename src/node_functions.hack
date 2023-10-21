@@ -124,7 +124,8 @@ function node_get_first_child(
     case NodeElaboratedGroup::SYNTAX:
     case NodeElaboratedGroup::TOKEN:
     case NodeElaboratedGroup::LIST:
-      return _Private\node_get_field_4($node) + 1
+      return _Private\node_get_id($node)
+        |> _Private\node_id_to_int($$) + 1
         |> _Private\node_id_from_int($$)
         |> $tu->getNodeByIdx($$);
 
@@ -180,20 +181,17 @@ function node_get_kind(Script $script, Node $node)[]: Kind {
   switch (node_get_elaborated_group($node)) {
     case NodeElaboratedGroup::SYNTAX:
       $kinds = $tu->getParseContext()->getSyntaxKinds();
-      return _Private\node_get_field_1($node)
-        |> _Private\interned_string_from_int<SyntaxKind>($$)
+      return _Private\node_get_interned_kind<SyntaxKind>($node)
         |> $kinds->fromInterned($$);
 
     case NodeElaboratedGroup::TOKEN:
       $kinds = $tu->getParseContext()->getTokenKinds();
-      return _Private\node_get_field_1($node)
-        |> _Private\interned_string_from_int<TokenKind>($$)
+      return _Private\node_get_interned_kind<TokenKind>($node)
         |> $kinds->fromInterned($$);
 
     case NodeElaboratedGroup::TRIVIUM:
       $kinds = $tu->getParseContext()->getTriviumKinds();
-      return _Private\node_get_field_1($node)
-        |> _Private\interned_string_from_int<TriviumKind>($$)
+      return _Private\node_get_interned_kind<TriviumKind>($node)
         |> $kinds->fromInterned($$);
 
     case NodeElaboratedGroup::LIST:
@@ -210,8 +208,7 @@ function node_get_kind(Script $script, Node $node)[]: Kind {
  */
 function node_get_parent(Script $script, Node $node)[]: Node {
   $tu = _Private\translation_unit_reveal($script);
-  return _Private\node_get_field_2($node)
-    |> _Private\node_id_from_int($$)
+  return _Private\node_get_parent_id($node)
     |> $tu->getNodeByIdx($$);
 }
 

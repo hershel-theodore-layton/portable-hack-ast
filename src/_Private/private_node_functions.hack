@@ -27,6 +27,21 @@ function node_get_field_4(NillableNode $node)[]: int {
   return node_to_int($node) & 0x3ffff;
 }
 
+function node_get_id(Node $node)[]: NodeId {
+  return node_get_field_4($node) |> node_id_from_int($$);
+}
+
+/**
+ * Careful, if `$node` is `LIST` or `MISSING`, you'll get junk.
+ */
+function node_get_interned_kind<T as Kind>(Node $node)[]: InternedString<T> {
+  return node_get_field_1($node) |> interned_string_from_int<T>($$);
+}
+
+function node_get_parent_id(Node $node)[]: NodeId {
+  return node_get_field_2($node) |> node_id_from_int($$);
+}
+
 function syntax_get_first_child_sibling_id(Syntax $node)[]: SiblingId {
   return node_get_field_3($node) |> sibling_id_from_int($$);
 }
