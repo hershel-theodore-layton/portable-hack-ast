@@ -231,6 +231,59 @@ final class NodeFunctionsTest extends HackTest {
     )->toThrowPhaException('This namespace_declaration has no 3rd child.');
   }
 
+  public function provide_syntax_member(
+  )[]: vec<(Pha\Syntax, Pha\Member, Pha\Kind)> {
+    $math = $this->fixtures()->math;
+    return vec[
+      tuple(
+        $math->namespaceDeclaration,
+        Pha\MEMBER_NAMESPACE_HEADER,
+        Pha\KIND_NAMESPACE_DECLARATION_HEADER,
+      ),
+      tuple(
+        $math->namespaceDeclaration,
+        Pha\MEMBER_NAMESPACE_BODY,
+        Pha\KIND_NAMESPACE_EMPTY_BODY,
+      ),
+      tuple(
+        $math->namespaceDeclarationHeader,
+        Pha\MEMBER_NAMESPACE_KEYWORD,
+        Pha\KIND_NAMESPACE,
+      ),
+      tuple(
+        $math->namespaceDeclarationHeader,
+        Pha\MEMBER_NAMESPACE_NAME,
+        Pha\KIND_QUALIFIED_NAME,
+      ),
+    ];
+  }
+
+  <<DataProvider('provide_syntax_member')>>
+  public function test_syntax_member(
+    Pha\Syntax $syntax,
+    Pha\Member $member,
+    Pha\Kind $expected_kind,
+  )[]: void {
+    $script = $this->fixtures()->math->script;
+    expect(
+      Pha\syntax_member($script, $syntax, $member)
+        |> Pha\node_get_kind($script, $$),
+    )->toEqual($expected_kind);
+  }
+
+  public function test_syntax_member_preconditions()[]: void {
+    $math = $this->fixtures()->math;
+    expect(
+      () ==> Pha\syntax_member(
+        $math->script,
+        $math->namespaceDeclaration,
+        Pha\MEMBER_FUNCTION_BODY,
+      ),
+    )->toThrowPhaException(
+      'This namespace_declaration does not have a member named function_body.',
+    );
+  }
+
   private function fixtures()[]: Fixtures\Fixtures {
     return $this->fixtures as nonnull;
   }

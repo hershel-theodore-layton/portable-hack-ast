@@ -296,3 +296,21 @@ function syntax_get_members(Script $script, Syntax $node)[]: vec<Member> {
   // They don't get "learned" in the same way any other syntax would.
   return $structs->getRaw()[$kind] ?? vec[];
 }
+
+function syntax_member(Script $script, Syntax $node, Member $member)[]: Node {
+  $ii = 0;
+
+  foreach (syntax_get_members($script, $node) as $m) {
+    if ($m === $member) {
+      return node_get_nth_childx($script, $node, $ii);
+    }
+
+    ++$ii;
+  }
+
+  throw new _Private\PhaException(Str\format(
+    'This %s does not have a member named %s.',
+    node_get_kind($script, $node) |> kind_to_string($$),
+    $member |> member_to_string($$),
+  ));
+}
