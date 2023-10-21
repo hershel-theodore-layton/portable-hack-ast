@@ -109,55 +109,6 @@ function node_get_elaborated_group(Node $node)[]: NodeElaboratedGroup {
   }
 }
 
-function node_get_group(Node $node)[]: NodeGroup {
-  switch (_Private\node_get_field_0($node)) {
-    case 0:
-      return NodeGroup::TRIVIUM;
-    case 1:
-      return NodeGroup::TOKEN;
-    default:
-      return NodeGroup::SYNTAX;
-  }
-}
-
-function node_get_kind(Script $script, Node $node)[]: Kind {
-  $tu = _Private\translation_unit_reveal($script);
-
-  switch (node_get_elaborated_group($node)) {
-    case NodeElaboratedGroup::SYNTAX:
-      $kinds = $tu->getParseContext()->getSyntaxKinds();
-      return _Private\node_get_field_1($node)
-        |> _Private\interned_string_from_int<SyntaxKind>($$)
-        |> $kinds->fromInterned($$);
-
-    case NodeElaboratedGroup::TOKEN:
-      $kinds = $tu->getParseContext()->getTokenKinds();
-      return _Private\node_get_field_1($node)
-        |> _Private\interned_string_from_int<TokenKind>($$)
-        |> $kinds->fromInterned($$);
-
-    case NodeElaboratedGroup::TRIVIUM:
-      $kinds = $tu->getParseContext()->getTriviumKinds();
-      return _Private\node_get_field_1($node)
-        |> _Private\interned_string_from_int<TriviumKind>($$)
-        |> $kinds->fromInterned($$);
-
-    case NodeElaboratedGroup::LIST:
-      return KIND_LIST;
-    case NodeElaboratedGroup::MISSING:
-      return KIND_MISSING;
-  }
-}
-
-function syntax_get_members(Script $script, Syntax $node)[]: vec<Member> {
-  $tu = _Private\translation_unit_reveal($script);
-  $structs = $tu->getParseContext()->getStructs();
-  $kind = node_get_kind($script, $node) |> kind_to_string($$);
-  // This default is needed for List and Missing.
-  // They don't get "learned" in the same way any other syntax would.
-  return $structs->getRaw()[$kind] ?? vec[];
-}
-
 function node_get_first_child(
   Script $script,
   NillableNode $node,
@@ -197,6 +148,17 @@ function node_get_first_childx(Script $script, Node $node)[]: Node {
   return _Private\cast_away_nil($first_child);
 }
 
+function node_get_group(Node $node)[]: NodeGroup {
+  switch (_Private\node_get_field_0($node)) {
+    case 0:
+      return NodeGroup::TRIVIUM;
+    case 1:
+      return NodeGroup::TOKEN;
+    default:
+      return NodeGroup::SYNTAX;
+  }
+}
+
 function node_get_group_name(NillableNode $node)[]: string {
   if ($node === NIL) {
     return 'NIL';
@@ -210,4 +172,42 @@ function node_get_group_name(NillableNode $node)[]: string {
     case NodeGroup::TRIVIUM:
       return 'Trivium';
   }
+}
+
+function node_get_kind(Script $script, Node $node)[]: Kind {
+  $tu = _Private\translation_unit_reveal($script);
+
+  switch (node_get_elaborated_group($node)) {
+    case NodeElaboratedGroup::SYNTAX:
+      $kinds = $tu->getParseContext()->getSyntaxKinds();
+      return _Private\node_get_field_1($node)
+        |> _Private\interned_string_from_int<SyntaxKind>($$)
+        |> $kinds->fromInterned($$);
+
+    case NodeElaboratedGroup::TOKEN:
+      $kinds = $tu->getParseContext()->getTokenKinds();
+      return _Private\node_get_field_1($node)
+        |> _Private\interned_string_from_int<TokenKind>($$)
+        |> $kinds->fromInterned($$);
+
+    case NodeElaboratedGroup::TRIVIUM:
+      $kinds = $tu->getParseContext()->getTriviumKinds();
+      return _Private\node_get_field_1($node)
+        |> _Private\interned_string_from_int<TriviumKind>($$)
+        |> $kinds->fromInterned($$);
+
+    case NodeElaboratedGroup::LIST:
+      return KIND_LIST;
+    case NodeElaboratedGroup::MISSING:
+      return KIND_MISSING;
+  }
+}
+
+function syntax_get_members(Script $script, Syntax $node)[]: vec<Member> {
+  $tu = _Private\translation_unit_reveal($script);
+  $structs = $tu->getParseContext()->getStructs();
+  $kind = node_get_kind($script, $node) |> kind_to_string($$);
+  // This default is needed for List and Missing.
+  // They don't get "learned" in the same way any other syntax would.
+  return $structs->getRaw()[$kind] ?? vec[];
 }
