@@ -171,12 +171,8 @@ function node_get_first_child(
 
   switch (node_get_elaborated_group($node)) {
     case NodeElaboratedGroup::SYNTAX:
-    case NodeElaboratedGroup::LIST:
-      return _Private\syntax_from_node($node)
-        |> _Private\syntax_get_first_child_sibling_id($$)
-        |> $tu->getNodeBySiblingId($$);
-
     case NodeElaboratedGroup::TOKEN:
+    case NodeElaboratedGroup::LIST:
       return _Private\node_get_field_4($node) + 1
         |> _Private\node_id_from_int($$)
         |> $tu->getNodeById($$);
