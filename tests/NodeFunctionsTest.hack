@@ -146,6 +146,27 @@ final class NodeFunctionsTest extends HackTest {
     );
   }
 
+  public function provide_node_get_parent()[]: vec<(Pha\Node, Pha\Node)> {
+    $math = $this->fixtures()->math;
+    return vec[
+      tuple(Pha\SCRIPT_NODE, Pha\SCRIPT_NODE),
+      tuple($math->declarationList, Pha\SCRIPT_NODE),
+      tuple($math->namespaceDeclaration, $math->declarationList),
+      tuple($math->namespaceDeclarationHeader, $math->namespaceDeclaration),
+      tuple($math->namespaceToken, $math->namespaceDeclarationHeader),
+      tuple($math->licenseComment, $math->namespaceToken),
+    ];
+  }
+
+  <<DataProvider('provide_node_get_parent')>>
+  public function test_node_get_parent(
+    Pha\Node $node,
+    Pha\Node $parent,
+  )[]: void {
+    $script = $this->fixtures()->math->script;
+    expect(Pha\node_get_parent($script, $node))->toEqual($parent);
+  }
+
   private function fixtures()[]: Fixtures\Fixtures {
     return $this->fixtures as nonnull;
   }

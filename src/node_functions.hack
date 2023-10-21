@@ -203,6 +203,18 @@ function node_get_kind(Script $script, Node $node)[]: Kind {
   }
 }
 
+/**
+ * Huh, shouldn't this return a NillableNode?
+ * No, every Node is defined to have a parent.
+ * The `SCRIPT_NODE` is defined to have a parent of `SCRIPT_NODE`.
+ */
+function node_get_parent(Script $script, Node $node)[]: Node {
+  $tu = _Private\translation_unit_reveal($script);
+  return _Private\node_get_field_2($node)
+    |> _Private\node_id_from_int($$)
+    |> $tu->getNodeByIdx($$);
+}
+
 function syntax_get_members(Script $script, Syntax $node)[]: vec<Member> {
   $tu = _Private\translation_unit_reveal($script);
   $structs = $tu->getParseContext()->getStructs();
