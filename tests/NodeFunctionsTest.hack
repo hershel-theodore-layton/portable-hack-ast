@@ -5,6 +5,15 @@ use type Facebook\HackTest\{DataProvider, HackTest};
 use namespace HH\Lib\File;
 use namespace HTL\Pha;
 
+/**
+ * The tests in this class are in no particular order.
+ * New tests are just appended to the end (right before fixtures).
+ * Test and provider names are snake_case, because:
+ *  - It is a style I am used to.
+ *  - Most of them refer to a snake_case function name.
+ *  - Reading whole sentences in snake_case is easier
+ *    to me than reading the same sentence in camelCase.
+ */
 final class NodeFunctionsTest extends HackTest {
   const string FIXTURE_DIR = __DIR__.'/fixtures/';
   private ?Fixtures\Fixtures $fixtures;
@@ -21,7 +30,7 @@ final class NodeFunctionsTest extends HackTest {
     }
 
     $this->fixtures = new Fixtures\Fixtures(
-      new Fixtures\Math(await static::parse_fixture_async('001_math.hack')),
+      new Fixtures\Math(await static::parseFixtureAsync('001_math.hack')),
     );
   }
 
@@ -289,7 +298,7 @@ final class NodeFunctionsTest extends HackTest {
   }
 
   <<__Memoize>>
-  private static async function parse_fixture_async(
+  private static async function parseFixtureAsync(
     string $fixture,
   ): Awaitable<Pha\Script> {
     $file = File\open_read_only(static::FIXTURE_DIR.$fixture);
