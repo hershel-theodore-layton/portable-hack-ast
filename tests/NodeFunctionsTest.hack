@@ -237,7 +237,9 @@ final class NodeFunctionsTest extends HackTest {
     expect(
       () ==>
         Pha\node_get_nth_childx($math->script, $math->namespaceDeclaration, 3),
-    )->toThrowPhaException('This namespace_declaration has no 3rd child.');
+    )->toThrowPhaException(
+      'expected at least 3 children, the given namespace_declaration has no 3rd child.',
+    );
   }
 
   public function provide_syntax_member(
@@ -357,7 +359,7 @@ final class NodeFunctionsTest extends HackTest {
     expect(
       () ==> Pha\node_get_last_childx($math->script, $math->licenseComment),
     )->toThrowPhaException(
-      'expected at least one child, got a delimited_comment without children.',
+      'expected at least one child, got delimited_comment without children.',
     );
   }
 

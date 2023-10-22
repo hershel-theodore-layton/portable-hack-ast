@@ -311,7 +311,7 @@ function node_get_last_childx(Script $script, Node $node)[]: Node {
   if ($last_child === NIL) {
     throw new _Private\PhaException(
       Str\format(
-        '%s expected at least one child, got a %s without children.',
+        '%s expected at least one child, got %s without children.',
         __FUNCTION__,
         node_get_kind($script, $node) |> kind_to_string($$),
       ),
@@ -387,12 +387,15 @@ function node_get_nth_child(
 function node_get_nth_childx(Script $script, Node $node, int $n)[]: Node {
   $nth_child = node_get_nth_child($script, $node, $n);
 
-  _Private\enforce(
-    $nth_child !== NIL,
-    'This %s has no %s child.',
-    node_get_kind($script, $node) |> kind_to_string($$),
-    _Private\grammatical_nth($n),
-  );
+  if ($nth_child === NIL) {
+    throw new _Private\PhaException(Str\format(
+      '%s expected at least %d children, the given %s has no %s child.',
+      __FUNCTION__,
+      $n,
+      node_get_kind($script, $node) |> kind_to_string($$),
+      _Private\grammatical_nth($n),
+    ));
+  }
 
   return _Private\cast_away_nil($nth_child);
 }
