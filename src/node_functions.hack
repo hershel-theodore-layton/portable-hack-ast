@@ -308,7 +308,7 @@ function node_get_last_childx(Script $script, Node $node)[]: Node {
   $last_child = node_get_last_child($script, $node);
 
   if ($last_child !== NIL) {
-    return _Private\cast_away_nil($node);
+    return _Private\cast_away_nil($last_child);
   }
 
   throw new _Private\PhaException(

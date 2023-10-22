@@ -360,6 +360,8 @@ final class NodeFunctionsTest extends HackTest {
 
   public function test_node_get_last_childx()[]: void {
     $math = $this->fixtures()->math;
+    expect(Pha\node_get_last_childx($math->script, $math->namespaceToken))
+      ->toEqual(Pha\node_get_last_child($math->script, $math->namespaceToken));
     expect(
       () ==> Pha\node_get_last_childx($math->script, $math->licenseComment),
     )->toThrowPhaException(
