@@ -254,6 +254,73 @@ function node_get_kind(Script $script, Node $node)[]: Kind {
   }
 }
 
+function node_get_last_child(
+  Script $script,
+  NillableNode $node,
+)[]: NillableNode {
+  if ($node === NIL) {
+    return NIL;
+  }
+
+  $node = _Private\cast_away_nil($node);
+  $tu = _Private\translation_unit_reveal($script);
+
+  switch (node_get_elaborated_group($node)) {
+    case NodeElaboratedGroup::SYNTAX:
+      $node = _Private\syntax_from_node($node);
+      return node_get_nth_child(
+        $script,
+        $node,
+        C\count(syntax_get_members($script, $node)) - 1,
+      );
+
+    case NodeElaboratedGroup::TOKEN:
+      $parent_id = _Private\node_get_id($node);
+      $child_id = $parent_id;
+      $last_child = NIL;
+
+      for (; ; ) {
+        $child_id = _Private\node_id_add($child_id, 1);
+        $child = $tu->getNodeByIdx($child_id);
+        if ($child === NIL) {
+          return $last_child;
+        }
+
+        $child = _Private\cast_away_nil($child);
+
+        if (_Private\node_get_parent_id($child) !== $parent_id) {
+          return $last_child;
+        }
+
+        $last_child = $child;
+      }
+
+    case NodeElaboratedGroup::LIST:
+      $node = _Private\syntax_from_node($node);
+      return node_get_nth_child($script, $node, $tu->listGetSize($node) - 1);
+
+    case NodeElaboratedGroup::TRIVIUM:
+    case NodeElaboratedGroup::MISSING:
+      return NIL;
+  }
+}
+
+function node_get_last_childx(Script $script, Node $node)[]: Node {
+  $last_child = node_get_last_child($script, $node);
+
+  if ($last_child === NIL) {
+    throw new _Private\PhaException(
+      Str\format(
+        '%s expected at least one child, got a %s without children.',
+        __FUNCTION__,
+        node_get_kind($script, $node) |> kind_to_string($$),
+      ),
+    );
+  }
+
+  return _Private\cast_away_nil($node);
+}
+
 function node_get_nth_child(
   Script $script,
   NillableNode $node,

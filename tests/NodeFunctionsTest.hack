@@ -2,7 +2,7 @@
 namespace HTL\Pha\Tests;
 
 use type Facebook\HackTest\{DataProvider, HackTest};
-use namespace HH\Lib\{File, Vec};
+use namespace HH\Lib\{C, File, Vec};
 use namespace HTL\Pha;
 
 /**
@@ -333,6 +333,32 @@ final class NodeFunctionsTest extends HackTest {
       Pha\node_get_children($script, $node),
       $n ==> Pha\node_get_kind($script, $n),
     ))->toEqual($kinds);
+  }
+
+  <<DataProvider('provide_node_get_children')>>
+  public function test_node_get_last_child(
+    Pha\NillableNode $node,
+    vec<Pha\Kind> $kinds_only_look_at_last,
+  )[]: void {
+    $script = $this->fixtures()->math->script;
+    $last_kind = C\last($kinds_only_look_at_last);
+    $last_child = Pha\node_get_last_child($script, $node);
+
+    if ($last_kind is null) {
+      expect($last_child)->toBeNil();
+    } else {
+      expect(Pha\node_get_kind($script, Pha\node_as_nonnil($last_child)))
+        ->toEqual($last_kind);
+    }
+  }
+
+  public function test_node_get_last_childx()[]: void {
+    $math = $this->fixtures()->math;
+    expect(
+      () ==> Pha\node_get_last_childx($math->script, $math->licenseComment),
+    )->toThrowPhaException(
+      'expected at least one child, got a delimited_comment without children.',
+    );
   }
 
   private function fixtures()[]: Fixtures\Fixtures {
