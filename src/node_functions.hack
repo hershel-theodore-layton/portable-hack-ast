@@ -120,7 +120,7 @@ function node_get_children(Script $script, NillableNode $node)[]: vec<Node> {
 
       for (; ; ) {
         $child_id = _Private\node_id_add($child_id, 1);
-        $child = $tu->getNodeByIdx($child_id);
+        $child = $tu->getNodeById($child_id);
         if ($child === NIL) {
           return $children;
         }
@@ -280,7 +280,7 @@ function node_get_last_child(
 
       for (; ; ) {
         $child_id = _Private\node_id_add($child_id, 1);
-        $child = $tu->getNodeByIdx($child_id);
+        $child = $tu->getNodeById($child_id);
         if ($child === NIL) {
           return $last_child;
         }

@@ -30,6 +30,8 @@ final class Math extends Fixture {
   public Pha\Syntax $ternaryCondition;
   public Pha\Syntax $ternaryTrue;
   public Pha\Syntax $ternaryFalse;
+  public Pha\Syntax $endOfFileSyntax;
+  public Pha\Token $endOfFileToken;
 
   public function __construct(Pha\Script $script)[] {
     parent::__construct($script);
@@ -109,6 +111,14 @@ final class Math extends Fixture {
       $this->ternaryExpression,
       Pha\MEMBER_CONDITIONAL_ALTERNATIVE,
     );
+
+    $this->endOfFileSyntax =
+      Pha\node_get_last_child($script, $this->declarationList)
+      |> Pha\node_as_syntax($$);
+
+    $this->endOfFileToken =
+      Pha\node_get_last_child($script, $this->endOfFileSyntax)
+      |> Pha\node_as_token($$);
   }
 
   private function member(Pha\Syntax $node, Pha\Member $member)[]: Pha\Node {

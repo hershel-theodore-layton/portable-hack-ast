@@ -325,6 +325,7 @@ final class NodeFunctionsTest extends HackTest {
         ],
       ),
       tuple($math->licenseComment, vec[]),
+      tuple($math->endOfFileToken, vec[Pha\KIND_TOKEN_TEXT]),
       tuple(Pha\NIL, vec[]),
     ];
   }
