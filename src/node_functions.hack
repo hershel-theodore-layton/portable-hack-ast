@@ -190,15 +190,15 @@ function node_get_first_child(
 function node_get_first_childx(Script $script, Node $node)[]: Node {
   $first_child = node_get_first_child($script, $node);
 
-  if ($first_child === NIL) {
-    throw new _Private\PhaException(Str\format(
-      '%s expected at least one child, got %s with 0 children.',
-      __FUNCTION__,
-      node_get_kind($script, $node) |> kind_to_string($$),
-    ));
+  if ($first_child !== NIL) {
+    return _Private\cast_away_nil($node);
   }
 
-  return _Private\cast_away_nil($first_child);
+  throw new _Private\PhaException(Str\format(
+    '%s expected at least one child, got %s with 0 children.',
+    __FUNCTION__,
+    node_get_kind($script, $node) |> kind_to_string($$),
+  ));
 }
 
 function node_get_group(Node $node)[]: NodeGroup {
@@ -307,17 +307,17 @@ function node_get_last_child(
 function node_get_last_childx(Script $script, Node $node)[]: Node {
   $last_child = node_get_last_child($script, $node);
 
-  if ($last_child === NIL) {
-    throw new _Private\PhaException(
-      Str\format(
-        '%s expected at least one child, got %s without children.',
-        __FUNCTION__,
-        node_get_kind($script, $node) |> kind_to_string($$),
-      ),
-    );
+  if ($last_child !== NIL) {
+    return _Private\cast_away_nil($node);
   }
 
-  return _Private\cast_away_nil($node);
+  throw new _Private\PhaException(
+    Str\format(
+      '%s expected at least one child, got %s without children.',
+      __FUNCTION__,
+      node_get_kind($script, $node) |> kind_to_string($$),
+    ),
+  );
 }
 
 function node_get_nth_child(
@@ -386,17 +386,17 @@ function node_get_nth_child(
 function node_get_nth_childx(Script $script, Node $node, int $n)[]: Node {
   $nth_child = node_get_nth_child($script, $node, $n);
 
-  if ($nth_child === NIL) {
-    throw new _Private\PhaException(Str\format(
-      '%s expected at least %d children, the given %s has no %s child.',
-      __FUNCTION__,
-      $n,
-      node_get_kind($script, $node) |> kind_to_string($$),
-      _Private\grammatical_nth($n),
-    ));
+  if ($nth_child !== NIL) {
+    return _Private\cast_away_nil($nth_child);
   }
 
-  return _Private\cast_away_nil($nth_child);
+  throw new _Private\PhaException(Str\format(
+    '%s expected at least %d children, the given %s has no %s child.',
+    __FUNCTION__,
+    $n,
+    node_get_kind($script, $node) |> kind_to_string($$),
+    _Private\grammatical_nth($n),
+  ));
 }
 
 /**
