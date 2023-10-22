@@ -35,7 +35,7 @@ final class ExpectObj<T> {
     );
   }
 
-  public function toThrowPhaException<Tret>(string $pattern)[]: void
+  public function toThrowPhaException(string $pattern)[]: void
   where
     T as (function()[]: mixed) {
     try {

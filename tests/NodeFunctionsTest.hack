@@ -41,7 +41,7 @@ final class NodeFunctionsTest extends HackTest {
     Pha\Node $node,
     Pha\NodeGroup $expected,
   )[]: void {
-    expect(Pha\node_get_group(Pha\SCRIPT_NODE))->toEqual(Pha\NodeGroup::SYNTAX);
+    expect(Pha\node_get_group($node))->toEqual($expected);
   }
 
   public function provide_node_get_elaborated_group(

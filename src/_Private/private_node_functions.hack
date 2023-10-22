@@ -1,8 +1,6 @@
 /** portable-hack-ast is MIT licensed, see /LICENSE. */
 namespace HTL\Pha\_Private;
 
-use namespace HTL\Pha;
-
 /**
  * Mind the sign extension,
  * so `10`, and `11` will be `...11111110` and `...11111111` respectively.
@@ -34,7 +32,9 @@ function node_get_id(Node $node)[]: NodeId {
 /**
  * Careful, if `$node` is `LIST` or `MISSING`, you'll get junk.
  */
-function node_get_interned_kind<T as Kind>(Node $node)[]: InternedString<T> {
+function node_get_interned_kind<<<__Explicit>> T as Kind>(
+  Node $node,
+)[]: InternedString<T> {
   return node_get_field_1($node) |> interned_string_from_int<T>($$);
 }
 

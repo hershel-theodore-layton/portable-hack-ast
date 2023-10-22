@@ -2,8 +2,6 @@
 namespace HTL\Pha\_Private;
 
 use namespace HH\Lib\Str;
-use namespace HTL\Pha;
-use type OutOfBoundsException;
 use function dechex;
 
 final class TranslationUnit {
