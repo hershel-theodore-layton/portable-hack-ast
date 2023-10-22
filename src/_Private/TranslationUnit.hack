@@ -71,4 +71,8 @@ final class TranslationUnit {
   public function sliceSiblings(SiblingId $start, int $length)[]: vec<Node> {
     return Vec\slice($this->siblings, sibling_id_to_int($start), $length);
   }
+
+  public function sliceSourceOrder(NodeId $start, int $length)[]: vec<Node> {
+    return Vec\slice($this->sourceOrder, node_id_to_int($start), $length);
+  }
 }

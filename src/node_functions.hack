@@ -147,6 +147,32 @@ function node_get_children(Script $script, NillableNode $node)[]: vec<Node> {
   }
 }
 
+/**
+ * Descendants are returned in source order.
+ */
+function node_get_descendants(Script $script, NillableNode $node)[]: vec<Node> {
+  if ($node === NIL) {
+    return vec[];
+  }
+
+  $node = _Private\cast_away_nil($node);
+  $last_descendant = node_get_last_descendant($script, $node);
+
+  if ($last_descendant === NIL) {
+    return vec[];
+  }
+
+  $last_descendant = _Private\cast_away_nil($last_descendant);
+  $start = _Private\node_get_id(node_get_first_childx($script, $node));
+
+  $length =
+    _Private\node_id_diff(_Private\node_get_id($last_descendant), $start)
+    |> _Private\node_id_to_int($$);
+
+  $tu = _Private\translation_unit_reveal($script);
+  return $tu->sliceSourceOrder($start, $length);
+}
+
 function node_get_elaborated_group(Node $node)[]: NodeElaboratedGroup {
   switch (_Private\node_get_field_0($node)) {
     case 0:

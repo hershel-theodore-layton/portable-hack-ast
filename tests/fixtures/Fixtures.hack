@@ -20,6 +20,7 @@ final class Math extends Fixture {
   public Pha\Syntax $namespaceName;
   public Pha\Syntax $namespaceEmptyBody;
   public Pha\Token $namespaceSemicolon;
+  public Pha\Trivium $namespaceSemicolonTextTrivium;
   public Pha\Trivium $newlineAfterNamespaceSemicolon;
   public Pha\Trivium $licenseComment;
   public Pha\Syntax $functionDeclaration;
@@ -71,6 +72,10 @@ final class Math extends Fixture {
     $this->namespaceSemicolon =
       $this->member($this->namespaceEmptyBody, Pha\MEMBER_NAMESPACE_SEMICOLON)
       |> Pha\node_as_token($$);
+
+    $this->namespaceSemicolonTextTrivium =
+      Pha\node_get_first_child($script, $this->namespaceSemicolon)
+      |> Pha\node_as_trivium($$);
 
     $this->newlineAfterNamespaceSemicolon =
       Pha\node_get_last_childx($script, $this->namespaceSemicolon)
