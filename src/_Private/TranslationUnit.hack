@@ -6,6 +6,8 @@ use function dechex;
 
 final class TranslationUnit {
   /**
+   * @param $sourceOrder is keyed by NodeId (0..n-1).
+   * @param $siblings is keyed by SiblingId (0..n-1).
    * @param $listSizes only contains the sizes of lists 255 and above.
    */
   public function __construct(

@@ -94,6 +94,9 @@ function node_as_trivium_or_nil(NillableNode $node)[]: NillableTrivium {
     : NIL;
 }
 
+/**
+ * Children are returned in source code order.
+ */
 function node_get_children(Script $script, NillableNode $node)[]: vec<Node> {
   if ($node === NIL) {
     return vec[];
@@ -338,6 +341,9 @@ function node_get_parent(Script $script, Node $node)[]: Node {
     |> $tu->getNodeByIdx($$);
 }
 
+/**
+ * Member names are returned in source code order.
+ */
 function syntax_get_members(Script $script, Syntax $node)[]: vec<Member> {
   $tu = _Private\translation_unit_reveal($script);
   $structs = $tu->getParseContext()->getStructs();

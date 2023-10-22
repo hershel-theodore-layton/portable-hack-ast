@@ -7,6 +7,9 @@ final class InternedStringStorage<T> {
   private dict<string, int> $flipped;
   private int $size;
 
+  /**
+   * @param $items is keyed by interned string (0..n-1).
+   */
   public function __construct(
     private vec<string> $items,
     private (function(string)[]: T) $castFunc,
