@@ -1,6 +1,17 @@
 /** portable-hack-ast is MIT licensed, see /LICENSE. */
 namespace HTL\Pha\_Private;
 
+const int FIELD_0_SIZE = 0b11;
+const int FIELD_1_SIZE = 0xff;
+const int FIELD_2_SIZE = 0x3ffff;
+const int FIELD_3_SIZE = 0x3ffff;
+const int FIELD_4_SIZE = 0x3ffff;
+const int FIELD_0_OFFSET = 62;
+const int FIELD_1_OFFSET = 54;
+const int FIELD_2_OFFSET = 36;
+const int FIELD_3_OFFSET = 18;
+const int FIELD_4_OFFSET = 0;
+
 /**
  * Mind the sign extension,
  * so `10`, and `11` will be `...11111110` and `...11111111` respectively.

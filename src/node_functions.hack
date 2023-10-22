@@ -1,7 +1,7 @@
 /** portable-hack-ast is MIT licensed, see /LICENSE. */
 namespace HTL\Pha;
 
-use namespace HH\Lib\Str;
+use namespace HH\Lib\{C, Str};
 
 /**
  * @package This file contains all the functions that operate on `Node`.
@@ -92,6 +92,56 @@ function node_as_trivium_or_nil(NillableNode $node)[]: NillableTrivium {
     node_get_group(_Private\cast_away_nil($node)) === NodeGroup::TRIVIUM
     ? _Private\trivium_from_node($node)
     : NIL;
+}
+
+function node_get_children(Script $script, NillableNode $node)[]: vec<Node> {
+  if ($node === NIL) {
+    return vec[];
+  }
+
+  $node = _Private\cast_away_nil($node);
+  $tu = _Private\translation_unit_reveal($script);
+
+  switch (node_get_elaborated_group($node)) {
+    case NodeElaboratedGroup::SYNTAX:
+      $node = _Private\syntax_from_node($node);
+      return $tu->sliceSiblings(
+        _Private\syntax_get_first_child_sibling_id($node),
+        C\count(syntax_get_members($script, $node)),
+      );
+
+    case NodeElaboratedGroup::TOKEN:
+      $parent_id = _Private\node_get_id($node);
+      $child_id = $parent_id;
+      $children = vec[];
+
+      for (; ; ) {
+        $child_id = _Private\node_id_add($child_id, 1);
+        $child = $tu->getNodeByIdx($child_id);
+        if ($child === NIL) {
+          return $children;
+        }
+
+        $child = _Private\cast_away_nil($child);
+
+        if (_Private\node_get_parent_id($child) !== $parent_id) {
+          return $children;
+        }
+
+        $children[] = $child;
+      }
+
+    case NodeElaboratedGroup::LIST:
+      $node = _Private\syntax_from_node($node);
+      return $tu->sliceSiblings(
+        _Private\syntax_get_first_child_sibling_id($node),
+        $tu->listGetSize($node),
+      );
+
+    case NodeElaboratedGroup::TRIVIUM:
+    case NodeElaboratedGroup::MISSING:
+      return vec[];
+  }
 }
 
 function node_get_elaborated_group(Node $node)[]: NodeElaboratedGroup {

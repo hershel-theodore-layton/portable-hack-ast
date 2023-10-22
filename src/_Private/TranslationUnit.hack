@@ -1,7 +1,7 @@
 /** portable-hack-ast is MIT licensed, see /LICENSE. */
 namespace HTL\Pha\_Private;
 
-use namespace HH\Lib\Str;
+use namespace HH\Lib\{Str, Vec};
 use function dechex;
 
 final class TranslationUnit {
@@ -54,5 +54,19 @@ final class TranslationUnit {
 
   public function getParseContext()[]: ParseContext {
     return $this->ctx;
+  }
+
+  /**
+   * Careful, if `$node` is not a `LIST` or `MISSING`, you'll get junk.
+   */
+  public function listGetSize(Syntax $syntax)[]: int {
+    $stored_length = node_get_field_1($syntax);
+    return $stored_length < FIELD_1_SIZE
+      ? $stored_length
+      : $this->listSizes[node_get_id($syntax)];
+  }
+
+  public function sliceSiblings(SiblingId $start, int $length)[]: vec<Node> {
+    return Vec\slice($this->siblings, sibling_id_to_int($start), $length);
   }
 }

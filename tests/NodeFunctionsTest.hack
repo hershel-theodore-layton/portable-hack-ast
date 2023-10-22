@@ -2,7 +2,7 @@
 namespace HTL\Pha\Tests;
 
 use type Facebook\HackTest\{DataProvider, HackTest};
-use namespace HH\Lib\File;
+use namespace HH\Lib\{File, Vec};
 use namespace HTL\Pha;
 
 /**
@@ -291,6 +291,48 @@ final class NodeFunctionsTest extends HackTest {
     )->toThrowPhaException(
       'This namespace_declaration does not have a member named function_body.',
     );
+  }
+
+  public function provide_node_get_children(
+  )[]: vec<(Pha\NillableNode, vec<Pha\Kind>)> {
+    $math = $this->fixtures()->math;
+    return vec[
+      tuple(Pha\SCRIPT_NODE, vec[Pha\KIND_LIST]),
+      tuple(
+        $math->declarationList,
+        vec[Pha\KIND_NAMESPACE_DECLARATION, Pha\KIND_FUNCTION_DECLARATION],
+      ),
+      tuple(
+        $math->namespaceDeclaration,
+        vec[
+          Pha\KIND_NAMESPACE_DECLARATION_HEADER,
+          Pha\KIND_NAMESPACE_EMPTY_BODY,
+        ],
+      ),
+      tuple(
+        $math->namespaceToken,
+        vec[
+          Pha\KIND_DELIMITED_COMMENT,
+          Pha\KIND_END_OF_LINE,
+          Pha\KIND_TOKEN_TEXT,
+          Pha\KIND_WHITESPACE,
+        ],
+      ),
+      tuple($math->licenseComment, vec[]),
+      tuple(Pha\NIL, vec[]),
+    ];
+  }
+
+  <<DataProvider('provide_node_get_children')>>
+  public function test_node_get_children(
+    Pha\NillableNode $node,
+    vec<Pha\Node> $children,
+  )[]: void {
+    $script = $this->fixtures()->math->script;
+    expect(Vec\map(
+      Pha\node_get_children($script, $node),
+      $n ==> Pha\node_get_kind($script, $n),
+    ))->toEqual($children);
   }
 
   private function fixtures()[]: Fixtures\Fixtures {
