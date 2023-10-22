@@ -302,7 +302,11 @@ final class NodeFunctionsTest extends HackTest {
       tuple(Pha\SCRIPT_NODE, vec[Pha\KIND_LIST]),
       tuple(
         $math->declarationList,
-        vec[Pha\KIND_NAMESPACE_DECLARATION, Pha\KIND_FUNCTION_DECLARATION],
+        vec[
+          Pha\KIND_NAMESPACE_DECLARATION,
+          Pha\KIND_FUNCTION_DECLARATION,
+          Pha\KIND_END_OF_FILE,
+        ],
       ),
       tuple(
         $math->namespaceDeclaration,
