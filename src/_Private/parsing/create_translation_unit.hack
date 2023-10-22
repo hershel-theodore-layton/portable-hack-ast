@@ -33,7 +33,7 @@ function create_translation_unit(
 
     if ($intermediate->getGroup() === IntermediateGroup::LIST) {
       $size = $range[1] - $range[0];
-      if ($size >= 0xff) {
+      if ($size >= FIELD_1_SIZE) {
         $list_sizes[node_id_from_int($source_order_idx)] = $size;
       }
     }

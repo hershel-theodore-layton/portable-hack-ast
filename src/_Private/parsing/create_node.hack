@@ -36,7 +36,7 @@ function create_node(
       break;
     case IntermediateGroup::LIST:
       $field_0 = Math\INT64_MIN | (1 << 62); // 11
-      $field_1 = Math\minva(0xff, $child_range[1] - $child_range[0]);
+      $field_1 = Math\minva(FIELD_1_SIZE, $child_range[1] - $child_range[0]);
       $field_3 = $child_range[0];
       break;
     case IntermediateGroup::MISSING:
