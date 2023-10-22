@@ -326,13 +326,13 @@ final class NodeFunctionsTest extends HackTest {
   <<DataProvider('provide_node_get_children')>>
   public function test_node_get_children(
     Pha\NillableNode $node,
-    vec<Pha\Node> $children,
+    vec<Pha\Kind> $kinds,
   )[]: void {
     $script = $this->fixtures()->math->script;
     expect(Vec\map(
       Pha\node_get_children($script, $node),
       $n ==> Pha\node_get_kind($script, $n),
-    ))->toEqual($children);
+    ))->toEqual($kinds);
   }
 
   private function fixtures()[]: Fixtures\Fixtures {
