@@ -370,6 +370,50 @@ final class NodeFunctionsTest extends HackTest {
     );
   }
 
+  public function provide_get_last_descendant(
+  )[]: vec<(Pha\NillableNode, Pha\NillableNode)> {
+    $math = $this->fixtures()->math;
+    return vec[
+      tuple(Pha\NIL, Pha\NIL),
+      tuple(Pha\SCRIPT_NODE, $math->endOfFileTokenText),
+      tuple($math->missingTypeParameterList, Pha\NIL),
+      tuple($math->namespaceDeclaration, $math->newlineAfterNamespaceSemicolon),
+      tuple($math->endOfFileTokenText, Pha\NIL),
+    ];
+  }
+
+  <<DataProvider('provide_get_last_descendant')>>
+  public function test_get_last_descendant(
+    Pha\NillableNode $node,
+    Pha\NillableNode $last_descendant,
+  )[]: void {
+    $script = $this->fixtures()->math->script;
+    expect(Pha\node_get_last_descendant($script, $node))->toEqual(
+      $last_descendant,
+    );
+  }
+
+  public function provide_get_last_descendant_or_self(
+  )[]: vec<(Pha\Node, Pha\Node)> {
+    $math = $this->fixtures()->math;
+    return vec[
+      tuple(Pha\SCRIPT_NODE, $math->endOfFileTokenText),
+      tuple($math->missingTypeParameterList, $math->missingTypeParameterList),
+      tuple($math->namespaceDeclaration, $math->newlineAfterNamespaceSemicolon),
+      tuple($math->endOfFileTokenText, $math->endOfFileTokenText),
+    ];
+  }
+
+  <<DataProvider('provide_get_last_descendant_or_self')>>
+  public function test_get_last_descendant_or_self(
+    Pha\Node $node,
+    Pha\Node $last_descendant,
+  )[]: void {
+    $script = $this->fixtures()->math->script;
+    expect(Pha\node_get_last_descendant_or_self($script, $node))
+      ->toEqual($last_descendant);
+  }
+
   private function fixtures()[]: Fixtures\Fixtures {
     return $this->fixtures as nonnull;
   }

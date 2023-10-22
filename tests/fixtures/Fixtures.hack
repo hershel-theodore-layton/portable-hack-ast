@@ -18,6 +18,9 @@ final class Math extends Fixture {
   public Pha\Syntax $namespaceDeclarationHeader;
   public Pha\Token $namespaceToken;
   public Pha\Syntax $namespaceName;
+  public Pha\Syntax $namespaceEmptyBody;
+  public Pha\Token $namespaceSemicolon;
+  public Pha\Trivium $newlineAfterNamespaceSemicolon;
   public Pha\Trivium $licenseComment;
   public Pha\Syntax $functionDeclaration;
   public Pha\Syntax $functionDeclarationHeader;
@@ -32,6 +35,7 @@ final class Math extends Fixture {
   public Pha\Syntax $ternaryFalse;
   public Pha\Syntax $endOfFileSyntax;
   public Pha\Token $endOfFileToken;
+  public Pha\Trivium $endOfFileTokenText;
 
   public function __construct(Pha\Script $script)[] {
     parent::__construct($script);
@@ -58,6 +62,19 @@ final class Math extends Fixture {
       $this->namespaceDeclarationHeader,
       Pha\MEMBER_NAMESPACE_NAME,
     );
+
+    $this->namespaceEmptyBody = $this->memberAsSyntax(
+      $this->namespaceDeclaration,
+      Pha\MEMBER_NAMESPACE_BODY,
+    );
+
+    $this->namespaceSemicolon =
+      $this->member($this->namespaceEmptyBody, Pha\MEMBER_NAMESPACE_SEMICOLON)
+      |> Pha\node_as_token($$);
+
+    $this->newlineAfterNamespaceSemicolon =
+      Pha\node_get_last_childx($script, $this->namespaceSemicolon)
+      |> Pha\node_as_trivium($$);
 
     $this->licenseComment =
       Pha\node_get_first_child($script, $this->namespaceToken)
@@ -119,6 +136,10 @@ final class Math extends Fixture {
     $this->endOfFileToken =
       Pha\node_get_last_child($script, $this->endOfFileSyntax)
       |> Pha\node_as_token($$);
+
+    $this->endOfFileTokenText =
+      Pha\node_get_last_child($script, $this->endOfFileToken)
+      |> Pha\node_as_trivium($$);
   }
 
   private function member(Pha\Syntax $node, Pha\Member $member)[]: Pha\Node {

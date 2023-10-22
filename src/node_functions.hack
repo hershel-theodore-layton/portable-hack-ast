@@ -320,6 +320,47 @@ function node_get_last_childx(Script $script, Node $node)[]: Node {
   );
 }
 
+function node_get_last_descendant(
+  Script $script,
+  NillableNode $node,
+)[]: NillableNode {
+  if ($node === NIL) {
+    return NIL;
+  }
+
+  $node = _Private\cast_away_nil($node);
+
+  switch (node_get_elaborated_group($node)) {
+    case NodeElaboratedGroup::SYNTAX:
+    case NodeElaboratedGroup::LIST:
+      return node_get_last_childx($script, $node)
+        |> node_get_last_descendant_or_self($script, $$);
+
+    case NodeElaboratedGroup::TOKEN:
+      return node_get_last_child($script, $node);
+
+    case NodeElaboratedGroup::TRIVIUM:
+    case NodeElaboratedGroup::MISSING:
+      return NIL;
+  }
+}
+
+function node_get_last_descendant_or_self(Script $script, Node $node)[]: Node {
+  switch (node_get_elaborated_group($node)) {
+    case NodeElaboratedGroup::SYNTAX:
+    case NodeElaboratedGroup::LIST:
+      return node_get_last_childx($script, $node)
+        |> node_get_last_descendant_or_self($script, $$);
+
+    case NodeElaboratedGroup::TOKEN:
+      return node_get_last_childx($script, $node);
+
+    case NodeElaboratedGroup::TRIVIUM:
+    case NodeElaboratedGroup::MISSING:
+      return $node;
+  }
+}
+
 function node_get_nth_child(
   Script $script,
   NillableNode $node,
