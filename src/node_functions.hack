@@ -178,8 +178,7 @@ function node_get_first_child(
     case NodeElaboratedGroup::TOKEN:
     case NodeElaboratedGroup::LIST:
       return _Private\node_get_id($node)
-        |> _Private\node_id_to_int($$) + 1
-        |> _Private\node_id_from_int($$)
+        |> _Private\node_id_add($$, 1)
         |> $tu->getNodeByIdx($$);
 
     case NodeElaboratedGroup::TRIVIUM:
