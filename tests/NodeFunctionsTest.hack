@@ -149,6 +149,9 @@ final class NodeFunctionsTest extends HackTest {
   public function test_node_get_first_childx()[]: void {
     $math = $this->fixtures()->math;
     expect(
+      Pha\node_get_first_childx($math->script, $math->declarationList),
+    )->toEqual(Pha\node_get_first_child($math->script, $math->declarationList));
+    expect(
       () ==> Pha\node_get_first_childx($math->script, $math->licenseComment),
     )->toThrowPhaException(
       'expected at least one child, got delimited_comment with 0 children.',

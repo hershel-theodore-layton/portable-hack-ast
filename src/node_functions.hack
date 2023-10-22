@@ -191,7 +191,7 @@ function node_get_first_childx(Script $script, Node $node)[]: Node {
   $first_child = node_get_first_child($script, $node);
 
   if ($first_child !== NIL) {
-    return _Private\cast_away_nil($node);
+    return _Private\cast_away_nil($first_child);
   }
 
   throw new _Private\PhaException(Str\format(
