@@ -95,6 +95,27 @@ function node_as_trivium_or_nil(NillableNode $node)[]: NillableTrivium {
 }
 
 /**
+ * Ancestors are returned in opposite source order.
+ * So the first node is the parent, the second is the grand parent, etc.
+ *
+ * Special case: SCRIPT_NODE is its own parent, but this function has to have a
+ * termination condition. For this reason, the ancestor chain is terminated at
+ * the first instance of SCRIPT_NODE. Or in another way, the last Node in the
+ * return value is always SCRIPT_NODE, even when the argument $node is itself
+ * SCRIPT_NODE.
+ */
+function node_get_ancestors(Script $script, Node $node)[]: vec<Node> {
+  $out = vec[];
+
+  do {
+    $node = node_get_parent($script, $node);
+    $out[] = $node;
+  } while ($node !== SCRIPT_NODE);
+
+  return $out;
+}
+
+/**
  * Children are returned in source code order.
  */
 function node_get_children(Script $script, NillableNode $node)[]: vec<Node> {

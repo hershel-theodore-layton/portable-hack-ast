@@ -438,6 +438,34 @@ final class NodeFunctionsTest extends HackTest {
     expect(Pha\node_get_descendants($script, $node))->toEqual($descendants);
   }
 
+  public function provide_node_get_ancestors(
+  )[]: vec<(Pha\Node, vec<Pha\Node>)> {
+    $math = $this->fixtures()->math;
+    return vec[
+      tuple(Pha\SCRIPT_NODE, vec[Pha\SCRIPT_NODE]),
+      tuple($math->declarationList, vec[Pha\SCRIPT_NODE]),
+      tuple(
+        $math->licenseComment,
+        vec[
+          $math->namespaceToken,
+          $math->namespaceDeclarationHeader,
+          $math->namespaceDeclaration,
+          $math->declarationList,
+          Pha\SCRIPT_NODE,
+        ],
+      ),
+    ];
+  }
+
+  <<DataProvider('provide_node_get_ancestors')>>
+  public function test_node_get_ancestors(
+    Pha\Node $node,
+    vec<Pha\Node> $ancestors,
+  )[]: void {
+    $script = $this->fixtures()->math->script;
+    expect(Pha\node_get_ancestors($script, $node))->toEqual($ancestors);
+  }
+
   private function fixtures()[]: Fixtures\Fixtures {
     return $this->fixtures as nonnull;
   }
