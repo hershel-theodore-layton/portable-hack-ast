@@ -527,3 +527,11 @@ function syntax_member(Script $script, Syntax $node, Member $member)[]: Node {
     $member |> member_to_string($$),
   ));
 }
+
+function syntax_get_parent(Script $script, Syntax $node)[]: Syntax {
+  return node_get_parent($script, $node) |> _Private\syntax_from_node($$);
+}
+
+function token_get_parent(Script $script, Token $node)[]: Syntax {
+  return node_get_parent($script, $node) |> _Private\syntax_from_node($$);
+}

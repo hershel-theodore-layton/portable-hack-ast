@@ -466,6 +466,42 @@ final class NodeFunctionsTest extends HackTest {
     expect(Pha\node_get_ancestors($script, $node))->toEqual($ancestors);
   }
 
+  public function provide_syntax_get_parent()[]: vec<(Pha\Syntax, Pha\Syntax)> {
+    $math = $this->fixtures()->math;
+    return vec[
+      tuple(Pha\SCRIPT_NODE, Pha\SCRIPT_NODE),
+      tuple($math->declarationList, Pha\SCRIPT_NODE),
+      tuple($math->namespaceDeclaration, $math->declarationList),
+      tuple($math->namespaceDeclarationHeader, $math->namespaceDeclaration),
+    ];
+  }
+
+  <<DataProvider('provide_syntax_get_parent')>>
+  public function test_syntax_get_parent(
+    Pha\Syntax $node,
+    Pha\Syntax $parent,
+  )[]: void {
+    $script = $this->fixtures()->math->script;
+    expect(Pha\syntax_get_parent($script, $node))->toEqual($parent);
+  }
+
+  public function provide_token_get_parent()[]: vec<(Pha\Token, Pha\Syntax)> {
+    $math = $this->fixtures()->math;
+    return vec[
+      tuple($math->namespaceToken, $math->namespaceDeclarationHeader),
+      tuple($math->endOfFileToken, $math->endOfFileSyntax),
+    ];
+  }
+
+  <<DataProvider('provide_token_get_parent')>>
+  public function test_token_get_parent(
+    Pha\Token $node,
+    Pha\Syntax $parent,
+  )[]: void {
+    $script = $this->fixtures()->math->script;
+    expect(Pha\token_get_parent($script, $node))->toEqual($parent);
+  }
+
   private function fixtures()[]: Fixtures\Fixtures {
     return $this->fixtures as nonnull;
   }
