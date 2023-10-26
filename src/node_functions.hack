@@ -100,11 +100,14 @@ function node_as_trivium_or_nil(NillableNode $node)[]: NillableTrivium {
  *
  * Special case: SCRIPT_NODE is its own parent, but this function has to have a
  * termination condition. For this reason, the ancestor chain is terminated at
- * the first instance of SCRIPT_NODE. Or in another way, the last Node in the
- * return value is always SCRIPT_NODE, even when the argument $node is itself
- * SCRIPT_NODE.
+ * the first instance of SCRIPT_NODE.
  */
-function node_get_ancestors(Script $script, Node $node)[]: vec<Node> {
+function node_get_ancestors(Script $script, NillableNode $node)[]: vec<Node> {
+  if ($node === NIL) {
+    return vec[];
+  }
+
+  $node = _Private\cast_away_nil($node);
   $out = vec[];
 
   do {
@@ -507,7 +510,16 @@ function node_get_parent(Script $script, Node $node)[]: Node {
  *
  * @see `node_get_ancestors` for the special handling of SCRIPT_NODE.
  */
-function node_get_syntax_ancestors(Script $script, Node $node)[]: vec<Syntax> {
+function node_get_syntax_ancestors(
+  Script $script,
+  NillableNode $node,
+)[]: vec<Syntax> {
+  if ($node === NIL) {
+    return vec[];
+  }
+
+  $node = _Private\cast_away_nil($node);
+
   do {
     $node = node_get_parent($script, $node);
   } while (!node_is_syntax($node));

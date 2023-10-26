@@ -439,7 +439,7 @@ final class NodeFunctionsTest extends HackTest {
   }
 
   public function provide_node_get_ancestors(
-  )[]: vec<(Pha\Node, vec<Pha\Node>)> {
+  )[]: vec<(Pha\NillableNode, vec<Pha\Node>)> {
     $math = $this->fixtures()->math;
     return vec[
       tuple(Pha\SCRIPT_NODE, vec[Pha\SCRIPT_NODE]),
@@ -454,12 +454,13 @@ final class NodeFunctionsTest extends HackTest {
           Pha\SCRIPT_NODE,
         ],
       ),
+      tuple(Pha\NIL, vec[]),
     ];
   }
 
   <<DataProvider('provide_node_get_ancestors')>>
   public function test_node_get_ancestors(
-    Pha\Node $node,
+    Pha\NillableNode $node,
     vec<Pha\Node> $ancestors,
   )[]: void {
     $script = $this->fixtures()->math->script;
@@ -546,7 +547,7 @@ final class NodeFunctionsTest extends HackTest {
   }
 
   public function provide_node_get_syntax_ancestors(
-  )[]: vec<(Pha\Node, vec<Pha\Syntax>)> {
+  )[]: vec<(Pha\NillableNode, vec<Pha\Syntax>)> {
     $math = $this->fixtures()->math;
     return vec[
       tuple(Pha\SCRIPT_NODE, vec[Pha\SCRIPT_NODE]),
@@ -560,12 +561,13 @@ final class NodeFunctionsTest extends HackTest {
           Pha\SCRIPT_NODE,
         ],
       ),
+      tuple(Pha\NIL, vec[]),
     ];
   }
 
   <<DataProvider('provide_node_get_syntax_ancestors')>>
   public function test_node_get_syntax_ancestors(
-    Pha\Node $node,
+    Pha\NillableNode $node,
     vec<Pha\Syntax> $ancestors,
   )[]: void {
     $script = $this->fixtures()->math->script;
