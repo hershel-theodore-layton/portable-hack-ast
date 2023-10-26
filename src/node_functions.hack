@@ -21,6 +21,9 @@ use namespace HH\Lib\{C, Math, Str, Vec};
  *    use `as_nonnil()`. It returns a nonnill T or throws an exception.
  */
 
+/**
+ * @throws Iff $node is NIL.
+ */
 function as_nonnil<T as _Private\Any>(
   _Private\Tagged<_Private\Maybe<T>> $node,
 )[]: _Private\Tagged<T> {
@@ -31,6 +34,9 @@ function as_nonnil<T as _Private\Any>(
   return _Private\cast_away_nil($node);
 }
 
+/**
+ * @throws Iff $node is not Syntax.
+ */
 function as_syntax(NillableNode $node)[]: Syntax {
   $ret = as_syntax_or_nil($node);
 
@@ -52,6 +58,9 @@ function as_syntax_or_nil(NillableNode $node)[]: NillableSyntax {
     : NIL;
 }
 
+/**
+ * @throws Iff $node is not Token.
+ */
 function as_token(NillableNode $node)[]: Token {
   $ret = as_token_or_nil($node);
 
@@ -73,6 +82,9 @@ function as_token_or_nil(NillableNode $node)[]: NillableToken {
     : NIL;
 }
 
+/**
+ * @throws If $node is not Trivium.
+ */
 function as_trivium(NillableNode $node)[]: Trivium {
   $ret = as_trivium_or_nil($node);
 
@@ -101,7 +113,8 @@ function as_trivium_or_nil(NillableNode $node)[]: NillableTrivium {
  * length 0. In places where you'd expect to find a zero length list in the AST,
  * for example the parameter list of a function without parameters, you'll find
  * a missing instead. This function "does what you wanted" for "missing" lists.
- * All other non-list kinds will throw an exception.
+ *
+ * @throws For all other non-list kinds or if the list contains non-list-items.
  */
 function list_get_items_of_children(
   Script $script,
@@ -323,6 +336,9 @@ function node_get_first_child(
   }
 }
 
+/**
+ * @throws Iff $node has no children.
+ */
 function node_get_first_childx(Script $script, Node $node)[]: Node {
   $first_child = node_get_first_child($script, $node);
 
@@ -440,6 +456,9 @@ function node_get_last_child(
   }
 }
 
+/**
+ * @throws Iff $node has no children.
+ */
 function node_get_last_childx(Script $script, Node $node)[]: Node {
   $last_child = node_get_last_child($script, $node);
 
@@ -497,6 +516,9 @@ function node_get_last_descendant_or_self(Script $script, Node $node)[]: Node {
   }
 }
 
+/**
+ * @throws Iff $n < 0.
+ */
 function node_get_nth_child(
   Script $script,
   NillableNode $node,
@@ -560,6 +582,9 @@ function node_get_nth_child(
   }
 }
 
+/**
+ * @throws Iff $n > 0 or $node has no $nth child.
+ */
 function node_get_nth_childx(Script $script, Node $node, int $n)[]: Node {
   $nth_child = node_get_nth_child($script, $node, $n);
 
