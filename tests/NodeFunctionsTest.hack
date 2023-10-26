@@ -628,6 +628,27 @@ final class NodeFunctionsTest extends HackTest {
     expect(Pha\token_get_text_trivium($script, $node))->toEqual($text_trivium);
   }
 
+  public function provide_list_get_items_of_children(
+  )[]: vec<(Pha\NillableSyntax, vec<Pha\Node>)> {
+    $math = $this->fixtures()->math;
+    return vec[
+      tuple(Pha\NIL, vec[]),
+      tuple($math->missingTypeParameterList, vec[]),
+      tuple($math->parameterList, vec[$math->parameterA, $math->parameterB]),
+    ];
+  }
+
+  <<DataProvider('provide_list_get_items_of_children')>>
+  public function test_list_get_items_of_children(
+    Pha\NillableSyntax $node,
+    vec<Pha\Node> $children_of_items,
+  )[]: void {
+    $script = $this->fixtures()->math->script;
+    expect(Pha\list_get_items_of_children($script, $node))->toEqual(
+      $children_of_items,
+    );
+  }
+
   private function fixtures()[]: Fixtures\Fixtures {
     return $this->fixtures as nonnull;
   }

@@ -28,6 +28,8 @@ final class Math extends Fixture {
   public Pha\Syntax $functionDeclarationHeader;
   public Pha\Syntax $missingTypeParameterList;
   public Pha\Syntax $parameterList;
+  public Pha\Syntax $parameterA;
+  public Pha\Syntax $parameterB;
   public Pha\Syntax $functionBody;
   public Pha\Syntax $functionStatements;
   public Pha\Syntax $returnStatement;
@@ -106,6 +108,15 @@ final class Math extends Fixture {
       $this->functionDeclarationHeader,
       Pha\MEMBER_FUNCTION_PARAMETER_LIST,
     );
+
+    list($this->parameterA, $this->parameterB) =
+      Pha\node_get_descendants($script, $this->parameterList)
+      |> Vec\filter(
+        $$,
+        $n ==>
+          Pha\node_get_kind($script, $n) === Pha\KIND_PARAMETER_DECLARATION,
+      )
+      |> Vec\map($$, Pha\as_syntax<>);
 
     $this->functionBody = $this->memberAsSyntax(
       $this->functionDeclaration,

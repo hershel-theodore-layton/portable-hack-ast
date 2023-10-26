@@ -1,7 +1,7 @@
 /** portable-hack-ast is MIT licensed, see /LICENSE. */
 namespace HTL\Pha;
 
-use namespace HH\Lib\{C, Math, Str};
+use namespace HH\Lib\{C, Math, Str, Vec};
 
 /**
  * @package This file contains all the functions that operate on `Node`.
@@ -92,6 +92,54 @@ function as_trivium_or_nil(NillableNode $node)[]: NillableTrivium {
     node_get_group(_Private\cast_away_nil($node)) === NodeGroup::TRIVIUM
     ? _Private\trivium_from_node($node)
     : NIL;
+}
+
+/**
+ * The children are returned in source order.
+ *
+ * For the purposes of this function, NIL and MISSING are treated as a list of
+ * length 0. In places where you'd expect to find a zero length list in the AST,
+ * for example the parameter list of a function without parameters, you'll find
+ * a missing instead. This function "does what you wanted" for "missing" lists.
+ * All other non-list kinds will throw an exception.
+ */
+function list_get_items_of_children(
+  Script $script,
+  NillableSyntax $node,
+)[]: vec<Node> {
+  if ($node === NIL) {
+    return vec[];
+  }
+
+  $node = _Private\cast_away_nil($node);
+
+  switch (node_get_elaborated_group($node)) {
+    case NodeElaboratedGroup::LIST:
+      break;
+    case NodeElaboratedGroup::MISSING:
+      return vec[];
+    default:
+      throw new _Private\PhaException(Str\format(
+        '%s expected a list or a missing, got a %s',
+        __FUNCTION__,
+        node_get_kind($script, $node) |> kind_to_string($$),
+      ));
+  }
+
+  return Vec\map(
+    node_get_children($script, $node),
+    $list_item ==> {
+      $kind = node_get_kind($script, $list_item);
+      _Private\enforce(
+        $kind === KIND_LIST_ITEM,
+        '%s expected a list with list_items, but found a %s in the list.',
+        __FUNCTION__,
+        kind_to_string($kind),
+      );
+
+      return node_get_first_childx($script, $list_item);
+    },
+  );
 }
 
 /**
