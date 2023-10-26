@@ -43,11 +43,11 @@ final class Math extends Fixture {
     parent::__construct($script);
 
     $this->declarationList = Pha\node_get_first_child($script, Pha\SCRIPT_NODE)
-      |> Pha\node_as_syntax($$);
+      |> Pha\as_syntax($$);
 
     list($this->namespaceDeclaration, $this->functionDeclaration) =
       Pha\node_get_children($script, $this->declarationList)
-      |> Vec\map($$, Pha\node_as_syntax<>);
+      |> Vec\map($$, Pha\as_syntax<>);
 
     $this->namespaceDeclarationHeader = $this->memberAsSyntax(
       $this->namespaceDeclaration,
@@ -58,13 +58,13 @@ final class Math extends Fixture {
       $this->namespaceDeclarationHeader,
       Pha\MEMBER_NAMESPACE_KEYWORD,
     )
-      |> Pha\node_as_token($$);
+      |> Pha\as_token($$);
 
     $this->namespaceTokenTextTrivium = C\findx(
       Pha\node_get_children($script, $this->namespaceToken),
       $n ==> Pha\node_get_kind($script, $n) === Pha\KIND_TOKEN_TEXT,
     )
-      |> Pha\node_as_trivium($$);
+      |> Pha\as_trivium($$);
 
     $this->namespaceName = $this->memberAsSyntax(
       $this->namespaceDeclarationHeader,
@@ -78,19 +78,19 @@ final class Math extends Fixture {
 
     $this->namespaceSemicolon =
       $this->member($this->namespaceEmptyBody, Pha\MEMBER_NAMESPACE_SEMICOLON)
-      |> Pha\node_as_token($$);
+      |> Pha\as_token($$);
 
     $this->namespaceSemicolonTextTrivium =
       Pha\node_get_first_child($script, $this->namespaceSemicolon)
-      |> Pha\node_as_trivium($$);
+      |> Pha\as_trivium($$);
 
     $this->newlineAfterNamespaceSemicolon =
       Pha\node_get_last_childx($script, $this->namespaceSemicolon)
-      |> Pha\node_as_trivium($$);
+      |> Pha\as_trivium($$);
 
     $this->licenseComment =
       Pha\node_get_first_child($script, $this->namespaceToken)
-      |> Pha\node_as_trivium($$);
+      |> Pha\as_trivium($$);
 
     $this->functionDeclarationHeader = $this->memberAsSyntax(
       $this->functionDeclaration,
@@ -119,7 +119,7 @@ final class Math extends Fixture {
 
     $this->returnStatement =
       Pha\node_get_first_child($script, $this->functionStatements)
-      |> Pha\node_as_syntax($$);
+      |> Pha\as_syntax($$);
 
     $this->ternaryExpression = $this->memberAsSyntax(
       $this->returnStatement,
@@ -143,15 +143,15 @@ final class Math extends Fixture {
 
     $this->endOfFileSyntax =
       Pha\node_get_last_child($script, $this->declarationList)
-      |> Pha\node_as_syntax($$);
+      |> Pha\as_syntax($$);
 
     $this->endOfFileToken =
       Pha\node_get_last_child($script, $this->endOfFileSyntax)
-      |> Pha\node_as_token($$);
+      |> Pha\as_token($$);
 
     $this->endOfFileTokenText =
       Pha\node_get_last_child($script, $this->endOfFileToken)
-      |> Pha\node_as_trivium($$);
+      |> Pha\as_trivium($$);
   }
 
   private function member(Pha\Syntax $node, Pha\Member $member)[]: Pha\Node {
@@ -162,6 +162,6 @@ final class Math extends Fixture {
     Pha\Syntax $node,
     Pha\Member $member,
   )[]: Pha\Syntax {
-    return $this->member($node, $member) |> Pha\node_as_syntax($$);
+    return $this->member($node, $member) |> Pha\as_syntax($$);
   }
 }

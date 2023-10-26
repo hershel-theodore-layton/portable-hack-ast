@@ -116,10 +116,10 @@ final class NodeFunctionsTest extends HackTest {
     expect(Pha\syntax_get_members($script, $node))->toEqual($member_names);
   }
 
-  public function test_node_as_nonnil()[]: void {
-    expect(Pha\node_as_nonnil(Pha\SCRIPT_NODE))->toEqual(Pha\SCRIPT_NODE);
-    expect(() ==> Pha\node_as_nonnil(Pha\NIL))->toThrowPhaException(
-      'node_as_nonnil got NIL',
+  public function test_as_nonnil()[]: void {
+    expect(Pha\as_nonnil(Pha\SCRIPT_NODE))->toEqual(Pha\SCRIPT_NODE);
+    expect(() ==> Pha\as_nonnil(Pha\NIL))->toThrowPhaException(
+      'as_nonnil got NIL',
     );
   }
 
@@ -220,7 +220,7 @@ final class NodeFunctionsTest extends HackTest {
     expect(
       $nth_child === Pha\NIL
         ? null
-        : Pha\node_get_kind($script, Pha\node_as_nonnil($nth_child)),
+        : Pha\node_get_kind($script, Pha\as_nonnil($nth_child)),
     )->toEqual($kind_of_nth_child);
   }
 
@@ -357,7 +357,7 @@ final class NodeFunctionsTest extends HackTest {
     if ($last_kind is null) {
       expect($last_child)->toBeNil();
     } else {
-      expect(Pha\node_get_kind($script, Pha\node_as_nonnil($last_child)))
+      expect(Pha\node_get_kind($script, Pha\as_nonnil($last_child)))
         ->toEqual($last_kind);
     }
   }
@@ -615,7 +615,7 @@ final class NodeFunctionsTest extends HackTest {
     $math = $this->fixtures()->math;
     return vec[
       tuple($math->namespaceToken, $math->namespaceTokenTextTrivium),
-      tuple($math->endOfFileToken, $math->endOfFileTokenText)
+      tuple($math->endOfFileToken, $math->endOfFileTokenText),
     ];
   }
 
