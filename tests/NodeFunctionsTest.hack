@@ -502,6 +502,49 @@ final class NodeFunctionsTest extends HackTest {
     expect(Pha\token_get_parent($script, $node))->toEqual($parent);
   }
 
+  public function provide_node_is_x()[]: vec<(
+    Pha\NillableNode,
+    shape('syntax' => bool, 'token' => bool, 'trivium' => bool),
+  )> {
+    $math = $this->fixtures()->math;
+    return vec[
+      tuple(
+        Pha\SCRIPT_NODE,
+        shape('syntax' => true, 'token' => false, 'trivium' => false),
+      ),
+      tuple(
+        $math->declarationList,
+        shape('syntax' => true, 'token' => false, 'trivium' => false),
+      ),
+      tuple(
+        $math->missingTypeParameterList,
+        shape('syntax' => true, 'token' => false, 'trivium' => false),
+      ),
+      tuple(
+        $math->namespaceToken,
+        shape('syntax' => false, 'token' => true, 'trivium' => false),
+      ),
+      tuple(
+        $math->licenseComment,
+        shape('syntax' => false, 'token' => false, 'trivium' => true),
+      ),
+      tuple(
+        Pha\NIL,
+        shape('syntax' => false, 'token' => false, 'trivium' => false),
+      ),
+    ];
+  }
+
+  <<DataProvider('provide_node_is_x')>>
+  public function test_node_is_x(
+    Pha\NillableNode $node,
+    shape('syntax' => bool, 'token' => bool, 'trivium' => bool) $results,
+  )[]: void {
+    expect(Pha\node_is_syntax($node))->toEqual($results['syntax']);
+    expect(Pha\node_is_token($node))->toEqual($results['token']);
+    expect(Pha\node_is_trivium($node))->toEqual($results['trivium']);
+  }
+
   private function fixtures()[]: Fixtures\Fixtures {
     return $this->fixtures as nonnull;
   }

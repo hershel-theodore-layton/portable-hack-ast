@@ -498,6 +498,55 @@ function node_get_parent(Script $script, Node $node)[]: Node {
     |> $tu->getNodeByIdx($$);
 }
 
+function node_is_syntax(NillableNode $node)[]: bool {
+  if ($node === NIL) {
+    return false;
+  }
+
+  $node = _Private\cast_away_nil($node);
+
+  switch (node_get_group($node)) {
+    case NodeGroup::SYNTAX:
+      return true;
+    case NodeGroup::TOKEN:
+    case NodeGroup::TRIVIUM:
+      return false;
+  }
+}
+
+function node_is_token(NillableNode $node)[]: bool {
+  if ($node === NIL) {
+    return false;
+  }
+
+  $node = _Private\cast_away_nil($node);
+
+  switch (node_get_group($node)) {
+    case NodeGroup::SYNTAX:
+      return false;
+    case NodeGroup::TOKEN:
+      return true;
+    case NodeGroup::TRIVIUM:
+      return false;
+  }
+}
+
+function node_is_trivium(NillableNode $node)[]: bool {
+  if ($node === NIL) {
+    return false;
+  }
+
+  $node = _Private\cast_away_nil($node);
+
+  switch (node_get_group($node)) {
+    case NodeGroup::SYNTAX:
+    case NodeGroup::TOKEN:
+      return false;
+    case NodeGroup::TRIVIUM:
+      return true;
+  }
+}
+
 /**
  * Member names are returned in source code order.
  */
