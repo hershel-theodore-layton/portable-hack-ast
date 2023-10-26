@@ -1,7 +1,7 @@
 /** portable-hack-ast is MIT licensed, see /LICENSE. */
 namespace HTL\Pha\Tests\Fixtures;
 
-use namespace HH\Lib\Vec;
+use namespace HH\Lib\{C, Vec};
 use namespace HTL\Pha;
 
 final class Fixtures {
@@ -17,6 +17,7 @@ final class Math extends Fixture {
   public Pha\Syntax $namespaceDeclaration;
   public Pha\Syntax $namespaceDeclarationHeader;
   public Pha\Token $namespaceToken;
+  public Pha\Trivium $namespaceTokenTextTrivium;
   public Pha\Syntax $namespaceName;
   public Pha\Syntax $namespaceEmptyBody;
   public Pha\Token $namespaceSemicolon;
@@ -58,6 +59,12 @@ final class Math extends Fixture {
       Pha\MEMBER_NAMESPACE_KEYWORD,
     )
       |> Pha\node_as_token($$);
+
+    $this->namespaceTokenTextTrivium = C\findx(
+      Pha\node_get_children($script, $this->namespaceToken),
+      $n ==> Pha\node_get_kind($script, $n) === Pha\KIND_TOKEN_TEXT,
+    )
+      |> Pha\node_as_trivium($$);
 
     $this->namespaceName = $this->memberAsSyntax(
       $this->namespaceDeclarationHeader,

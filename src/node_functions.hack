@@ -661,3 +661,11 @@ function syntax_get_parent(Script $script, Syntax $node)[]: Syntax {
 function token_get_parent(Script $script, Token $node)[]: Syntax {
   return node_get_parent($script, $node) |> _Private\syntax_from_node($$);
 }
+
+function token_get_text_trivium(Script $script, Token $node)[]: Trivium {
+  $tu = _Private\translation_unit_reveal($script);
+  return _Private\node_get_field_3($node)
+    |> _Private\node_id_from_int($$)
+    |> $tu->getNodeByIdx($$)
+    |> _Private\trivium_from_node($$);
+}

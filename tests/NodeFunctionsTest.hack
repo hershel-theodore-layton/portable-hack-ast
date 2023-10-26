@@ -597,7 +597,7 @@ final class NodeFunctionsTest extends HackTest {
         "  return \$a > \$b ? \$a - \$b : \$b - \$a;\n",
       ),
       tuple($math->missingTypeParameterList, ""),
-      tuple($math->endOfFileSyntax, "")
+      tuple($math->endOfFileSyntax, ""),
     ];
   }
 
@@ -608,6 +608,24 @@ final class NodeFunctionsTest extends HackTest {
   )[]: void {
     $script = $this->fixtures()->math->script;
     expect(Pha\node_get_code($script, $node))->toEqual($code);
+  }
+
+  public function provide_token_get_text_trivium(
+  )[]: vec<(Pha\Token, Pha\Trivium)> {
+    $math = $this->fixtures()->math;
+    return vec[
+      tuple($math->namespaceToken, $math->namespaceTokenTextTrivium),
+      tuple($math->endOfFileToken, $math->endOfFileTokenText)
+    ];
+  }
+
+  <<DataProvider('provide_token_get_text_trivium')>>
+  public function test_token_get_text_trivium(
+    Pha\Token $node,
+    Pha\Trivium $text_trivium,
+  )[]: void {
+    $script = $this->fixtures()->math->script;
+    expect(Pha\token_get_text_trivium($script, $node))->toEqual($text_trivium);
   }
 
   private function fixtures()[]: Fixtures\Fixtures {
