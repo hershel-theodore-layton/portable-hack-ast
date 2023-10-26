@@ -596,8 +596,8 @@ final class NodeFunctionsTest extends HackTest {
         $math->returnStatement,
         "  return \$a > \$b ? \$a - \$b : \$b - \$a;\n",
       ),
-      tuple($math->missingTypeParameterList, ""),
-      tuple($math->endOfFileSyntax, ""),
+      tuple($math->missingTypeParameterList, ''),
+      tuple($math->endOfFileSyntax, ''),
     ];
   }
 
