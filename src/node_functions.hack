@@ -498,6 +498,33 @@ function node_get_parent(Script $script, Node $node)[]: Node {
     |> $tu->getNodeByIdx($$);
 }
 
+/**
+ * The ancestors are returned in opposite source order,
+ * so parents precede grand parents, grand parents precede great grand parents.
+ *
+ * The returned ancestors contain only Syntaxes, any ancestors that are not
+ * Syntaxes are skipped.
+ *
+ * @see `node_get_ancestors` for the special handling of SCRIPT_NODE.
+ */
+function node_get_syntax_ancestors(Script $script, Node $node)[]: vec<Syntax> {
+  do {
+    $node = node_get_parent($script, $node);
+  } while (!node_is_syntax($node));
+
+  $node = _Private\syntax_from_node($node);
+
+  $out = vec[];
+  $out[] = $node;
+
+  while ($node !== SCRIPT_NODE) {
+    $node = syntax_get_parent($script, $node);
+    $out[] = $node;
+  }
+
+  return $out;
+}
+
 function node_is_syntax(NillableNode $node)[]: bool {
   if ($node === NIL) {
     return false;

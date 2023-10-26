@@ -545,6 +545,33 @@ final class NodeFunctionsTest extends HackTest {
     expect(Pha\node_is_trivium($node))->toEqual($results['trivium']);
   }
 
+  public function provide_node_get_syntax_ancestors(
+  )[]: vec<(Pha\Node, vec<Pha\Syntax>)> {
+    $math = $this->fixtures()->math;
+    return vec[
+      tuple(Pha\SCRIPT_NODE, vec[Pha\SCRIPT_NODE]),
+      tuple($math->declarationList, vec[Pha\SCRIPT_NODE]),
+      tuple(
+        $math->licenseComment,
+        vec[
+          $math->namespaceDeclarationHeader,
+          $math->namespaceDeclaration,
+          $math->declarationList,
+          Pha\SCRIPT_NODE,
+        ],
+      ),
+    ];
+  }
+
+  <<DataProvider('provide_node_get_syntax_ancestors')>>
+  public function test_node_get_syntax_ancestors(
+    Pha\Node $node,
+    vec<Pha\Syntax> $ancestors,
+  )[]: void {
+    $script = $this->fixtures()->math->script;
+    expect(Pha\node_get_syntax_ancestors($script, $node))->toEqual($ancestors);
+  }
+
   private function fixtures()[]: Fixtures\Fixtures {
     return $this->fixtures as nonnull;
   }
