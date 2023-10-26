@@ -1,6 +1,8 @@
 /** portable-hack-ast is MIT licensed, see /LICENSE. */
 namespace HTL\Pha\_Private;
 
+use namespace HTL\Pha;
+
 const int FIELD_0_SIZE = 0b11;
 const int FIELD_1_SIZE = 0xff;
 const int FIELD_2_SIZE = 0x3ffff;
@@ -47,6 +49,30 @@ function node_get_interned_kind<<<__Explicit>> T as Kind>(
   Node $node,
 )[]: InternedString<T> {
   return node_get_field_1($node) |> interned_string_from_int<T>($$);
+}
+
+/**
+ * This *may* read past the end of the Node to find the very next trivium.
+ * This is a very strange function, therefore private.
+ */
+function node_get_next_trivium(
+  Script $script,
+  NillableNode $node,
+)[]: NillableTrivium {
+  if ($node === NIL) {
+    return NIL;
+  }
+
+  $tu = translation_unit_reveal($script);
+
+  do {
+    $node = cast_away_nil($node)
+      |> node_get_id($$)
+      |> node_id_add($$, 1)
+      |> $tu->getNodeById($$);
+  } while (!Pha\node_is_trivium($node) && $node !== NIL);
+
+  return $node === NIL ? NIL : trivium_from_node($node);
 }
 
 function node_get_parent_id(Node $node)[]: NodeId {

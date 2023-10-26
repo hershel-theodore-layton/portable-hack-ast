@@ -63,7 +63,11 @@ final class ExpectObj<T> {
     }
 
     $_error = null;
-    return json_encode_pure($value, inout $_error);
+    return json_encode_pure(
+      $value,
+      inout $_error,
+      \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE,
+    );
   }
 
   private static function fail(

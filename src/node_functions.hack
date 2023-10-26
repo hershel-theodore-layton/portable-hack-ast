@@ -1,7 +1,7 @@
 /** portable-hack-ast is MIT licensed, see /LICENSE. */
 namespace HTL\Pha;
 
-use namespace HH\Lib\{C, Str};
+use namespace HH\Lib\{C, Math, Str};
 
 /**
  * @package This file contains all the functions that operate on `Node`.
@@ -169,6 +169,44 @@ function node_get_children(Script $script, NillableNode $node)[]: vec<Node> {
     case NodeElaboratedGroup::MISSING:
       return vec[];
   }
+}
+
+function node_get_code(Script $script, NillableNode $node)[]: string {
+  if ($node === NIL) {
+    return '';
+  }
+
+  $node = _Private\cast_away_nil($node);
+
+  $start = node_is_trivium($node)
+    ? $node
+    : _Private\node_get_next_trivium($script, $node);
+  $end = node_get_last_descendant_or_self($script, $node)
+    |> _Private\node_get_next_trivium($script, $$);
+
+  if ($start === NIL) {
+    // I am unable to imagine a script that has nodes past its last Trivium.
+    // My reasoning goes:
+    //  1. Every Syntax (except for Missing) has at least one member.
+    //  2. Each of these members is either a Syntax or a Token.
+    //  3. If the last member is a Syntax, goto 1.
+    //  4. You'll now either have a Token or a missing.
+    //  5. If you have a Token, it will always have a token-text-trivium.
+    //  6. If you have a Missing, and there is no end-of-file token after you,
+    //     what kind of mangled input have you given to the parser?
+    //
+    // For this reason, I return an empty string here, your input confuses me.
+    return '';
+  }
+
+  $start_offset =
+    _Private\cast_away_nil($start) |> _Private\node_get_field_3($$);
+  $length = $end === NIL
+    ? Math\INT64_MAX
+    : _Private\node_get_field_3(_Private\cast_away_nil($end)) - $start_offset;
+
+  $tu = _Private\translation_unit_reveal($script);
+  return $tu->sliceSourceText($start_offset, $length);
 }
 
 /**

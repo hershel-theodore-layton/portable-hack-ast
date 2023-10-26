@@ -75,4 +75,8 @@ final class TranslationUnit {
   public function sliceSourceOrder(NodeId $start, int $length)[]: vec<Node> {
     return Vec\slice($this->sourceOrder, node_id_to_int($start), $length);
   }
+
+  public function sliceSourceText(int $start, int $length)[]: string {
+    return Str\slice($this->sourceText, $start, $length);
+  }
 }

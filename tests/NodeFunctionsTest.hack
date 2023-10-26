@@ -574,6 +574,42 @@ final class NodeFunctionsTest extends HackTest {
     expect(Pha\node_get_syntax_ancestors($script, $node))->toEqual($ancestors);
   }
 
+  public function provide_node_get_code()[]: vec<(Pha\NillableNode, string)> {
+    $math = $this->fixtures()->math;
+    return vec[
+      tuple(Pha\NIL, ''),
+      tuple(
+        $math->licenseComment,
+        '/** portable-hack-ast is MIT licensed, see /LICENSE. */',
+      ),
+      tuple(
+        $math->namespaceToken,
+        "/** portable-hack-ast is MIT licensed, see /LICENSE. */\n".
+        'namespace ',
+      ),
+      tuple(
+        $math->namespaceDeclaration,
+        "/** portable-hack-ast is MIT licensed, see /LICENSE. */\n".
+        "namespace HTL\\Pha\\Tests\\Fixtures;\n",
+      ),
+      tuple(
+        $math->returnStatement,
+        "  return \$a > \$b ? \$a - \$b : \$b - \$a;\n",
+      ),
+      tuple($math->missingTypeParameterList, ""),
+      tuple($math->endOfFileSyntax, "")
+    ];
+  }
+
+  <<DataProvider('provide_node_get_code')>>
+  public function test_node_get_code(
+    Pha\NillableNode $node,
+    string $code,
+  )[]: void {
+    $script = $this->fixtures()->math->script;
+    expect(Pha\node_get_code($script, $node))->toEqual($code);
+  }
+
   private function fixtures()[]: Fixtures\Fixtures {
     return $this->fixtures as nonnull;
   }
