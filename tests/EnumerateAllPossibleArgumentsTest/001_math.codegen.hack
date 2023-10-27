@@ -10,21 +10,7 @@ async function math_001_async(): Awaitable<void> {
     $source = await $file->readAllAsync();
   }
 
-  $ctx = new Pha\_Private\ParseContext(
-    new Pha\_Private\Structs(dict[]),
-    new Pha\_Private\InternedStringStorage(
-      vec[],
-      Pha\syntax_kind_from_string<>,
-    ),
-    new Pha\_Private\InternedStringStorage(vec[], Pha\token_kind_from_string<>),
-    new Pha\_Private\InternedStringStorage(
-      vec[],
-      Pha\trivium_kind_from_string<>,
-    ),
-  )
-    |> Pha\_Private\context_hide($$);
-
-  list($script, $_) = Pha\parse($source, $ctx);
+  list($script, $_) = Pha\parse($source, Pha\create_context());
 
   $nodes = Vec\concat(
     vec[Pha\SCRIPT_NODE],

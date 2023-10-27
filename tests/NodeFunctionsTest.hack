@@ -662,24 +662,8 @@ final class NodeFunctionsTest extends HackTest {
       $source = await $file->readAllAsync();
     }
 
-    $ctx = new Pha\_Private\ParseContext(
-      new Pha\_Private\Structs(dict[]),
-      new Pha\_Private\InternedStringStorage(
-        vec[],
-        Pha\syntax_kind_from_string<>,
-      ),
-      new Pha\_Private\InternedStringStorage(
-        vec[],
-        Pha\token_kind_from_string<>,
-      ),
-      new Pha\_Private\InternedStringStorage(
-        vec[],
-        Pha\trivium_kind_from_string<>,
-      ),
-    )
-      |> Pha\_Private\context_hide($$);
-
-    list($script, $_) = Pha\parse($source, $ctx);
+    $ctx = Pha\create_context();
+    list($script, $ctx) = Pha\parse($source, $ctx);
 
     return $script;
   }
