@@ -2,7 +2,6 @@
 namespace HTL\Pha\_Private;
 
 use namespace HH\Lib\{Str, Vec};
-use function dechex;
 
 final class TranslationUnit {
   /**
