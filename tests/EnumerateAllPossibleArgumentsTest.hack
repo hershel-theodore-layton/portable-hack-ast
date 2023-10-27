@@ -141,6 +141,14 @@ SUFFIX;
         $n ==> Pha\as_syntax($n)
           |> shape(
             'name' => Pha\syntax_member($script, $$, Pha\MEMBER_PARAMETER_NAME)
+              |> Pha\node_get_kind($script, $$) !== Pha\KIND_VARIABLE_TOKEN
+                ? Pha\as_syntax($$)
+                  |> Pha\syntax_member(
+                    $script,
+                    $$,
+                    Pha\MEMBER_DECORATED_EXPRESSION_EXPRESSION,
+                  )
+                : $$
               |> Pha\as_token($$)
               |> Pha\token_get_text_trivium($script, $$)
               |> Pha\node_get_code($script, $$),
