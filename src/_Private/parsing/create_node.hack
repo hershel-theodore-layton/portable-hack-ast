@@ -16,33 +16,33 @@ function create_node(
   // See bin/pseudo-fields.documentation.txt
   switch ($node->getGroup()) {
     case IntermediateGroup::SYNTAX:
-      $field_0 = Math\INT64_MIN; // 10
+      $field_0 = SYNTAX_TAG;
       $field_1 =
         $ctx->getSyntaxKinds()->intern($kind) |> interned_string_to_int($$);
       $field_3 = $child_range[0];
       break;
     case IntermediateGroup::TOKEN:
-      $field_0 = 1 << 62; // 01
+      $field_0 = TOKEN_TAG;
       $field_1 =
         $ctx->getTokenKinds()->intern($kind) |> interned_string_to_int($$);
       $field_3 = $source_order_idx + $node->getTokenTextTriviumOffsetx();
       break;
     case IntermediateGroup::TRIVIUM:
-      $field_0 = 0;
+      $field_0 = TRIVIUM_TAG;
       $field_1 =
         $ctx->getTriviumKinds()->intern($kind) |> interned_string_to_int($$);
       $field_3 = $byte_offset;
       $byte_offset += Str\length($node->getTextx());
       break;
     case IntermediateGroup::LIST:
-      $field_0 = Math\INT64_MIN | (1 << 62); // 11
+      $field_0 = LIST_OR_MISSING_TAG;
       // + 1, because a range from x to x is of length 1, not 0.
       $field_1 =
         Math\minva(FIELD_1_SIZE, $child_range[1] - $child_range[0] + 1);
       $field_3 = $child_range[0];
       break;
     case IntermediateGroup::MISSING:
-      $field_0 = Math\INT64_MIN | (1 << 62); // 11
+      $field_0 = LIST_OR_MISSING_TAG;
       $field_1 = 0;
       $field_3 = 0;
   }

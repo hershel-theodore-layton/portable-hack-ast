@@ -399,7 +399,7 @@ function node_get_kind(Script $script, Node $node)[]: Kind {
         |> $kinds->fromInterned($$);
 
     case NodeElaboratedGroup::LIST:
-      return KIND_LIST;
+      return KIND_LIST_EXPRESSION;
     case NodeElaboratedGroup::MISSING:
       return KIND_MISSING;
   }
