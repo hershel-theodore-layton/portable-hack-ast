@@ -42,13 +42,17 @@ HHAST_URI="$BASE_URI/hhast/bin/hhast-lint.hack?0=--config-file"
 echo -n " - Testing: "
 curl --silent "$HACKTEST_URI=../../../../tests"
 
-if [ "$1" = "--skip-hh-client-linter" ]; then
-  cat ./hhast-lint.json | sed /HHClientLinter/d > ./hhast-lint.deleteme.json
-  echo -n " - Linting (skipping HHClientLinter): "
-else
-  cp ./hhast-lint.json ./hhast-lint.deleteme.json
-  echo -n " - Linting: "
+if [ ! -f './hhast-lint.ignore-hh-client-linter.json' ]; then
+  cat ./hhast-lint.json | sed /HHClientLinter/d > \
+    './hhast-lint.ignore-hh-client-linter.json'
 fi
 
-curl --silent "$HHAST_URI=../../../../hhast-lint.deleteme.json"
-rm ./hhast-lint.deleteme.json
+if [ "$1" = "--skip-hh-client-linter" ]; then
+  echo -n " - Linting (skipping HHClientLinter): "
+  HHAST_CONFIG='hhast-lint.ignore-hh-client-linter.json'
+else
+  echo -n " - Linting: "
+  HHAST_CONFIG='hhast-lint.json'
+fi
+
+curl --silent "$HHAST_URI=../../../../$HHAST_CONFIG"
