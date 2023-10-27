@@ -649,6 +649,84 @@ final class NodeFunctionsTest extends HackTest {
     );
   }
 
+  public function provide_create_matcher(
+  )[]: vec<((function(Pha\NillableNode)[]: bool), Pha\NillableNode, bool)> {
+    $math = $this->fixtures()->math;
+    $script = $math->script;
+
+    $is_always_false = Pha\create_matcher($script, vec[], vec[], vec[]);
+    $is_list_or_missing = Pha\create_syntax_matcher(
+      $script,
+      Pha\KIND_LIST_EXPRESSION,
+      Pha\KIND_MISSING,
+    );
+    $is_list = Pha\create_syntax_matcher($script, Pha\KIND_LIST_EXPRESSION);
+    $is_missing = Pha\create_syntax_matcher($script, Pha\KIND_MISSING);
+
+    $is_return_statement_or_minus_or_delimited_comment = Pha\create_matcher(
+      $script,
+      vec[Pha\KIND_RETURN_STATEMENT],
+      vec[Pha\KIND_MINUS],
+      vec[Pha\KIND_DELIMITED_COMMENT],
+    );
+    // Testing the vec-ish branch of the switch requires 8+ kinds.
+    $is_operator = Pha\create_token_matcher(
+      $script,
+      Pha\KIND_PLUS,
+      Pha\KIND_MINUS,
+      Pha\KIND_STAR,
+      Pha\KIND_SLASH,
+      Pha\KIND_LESS_THAN,
+      Pha\KIND_GREATER_THAN,
+      Pha\KIND_LESS_THAN_EQUAL,
+      Pha\KIND_GREATER_THAN_EQUAL,
+      Pha\KIND_EQUAL_EQUAL_EQUAL,
+    );
+
+    return vec[
+      tuple($is_always_false, Pha\SCRIPT_NODE, false),
+      tuple($is_list_or_missing, Pha\NIL, false),
+      tuple($is_list_or_missing, Pha\NIL, false),
+      tuple($is_list, $math->declarationList, true),
+      tuple($is_list, $math->missingTypeParameterList, false),
+      tuple($is_missing, $math->declarationList, false),
+      tuple($is_missing, $math->missingTypeParameterList, true),
+      tuple($is_list_or_missing, $math->missingTypeParameterList, true),
+      tuple($is_list_or_missing, $math->licenseComment, false),
+      tuple(
+        $is_return_statement_or_minus_or_delimited_comment,
+        $math->returnStatement,
+        true,
+      ),
+      tuple(
+        $is_return_statement_or_minus_or_delimited_comment,
+        $math->firstMinusToken,
+        true,
+      ),
+      tuple(
+        $is_return_statement_or_minus_or_delimited_comment,
+        $math->licenseComment,
+        true,
+      ),
+      tuple(
+        $is_return_statement_or_minus_or_delimited_comment,
+        Pha\SCRIPT_NODE,
+        false,
+      ),
+      tuple($is_operator, $math->firstMinusToken, true),
+      tuple($is_operator, $math->namespaceToken, false),
+    ];
+  }
+
+  <<DataProvider('provide_create_matcher')>>
+  public function test_create_matcher(
+    (function(Pha\NillableNode)[]: bool) $is_x,
+    Pha\NillableNode $node,
+    bool $matches,
+  )[]: void {
+    expect($is_x($node))->toEqual($matches);
+  }
+
   private function fixtures()[]: Fixtures\Fixtures {
     return $this->fixtures as nonnull;
   }

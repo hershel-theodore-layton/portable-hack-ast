@@ -36,6 +36,7 @@ final class Math extends Fixture {
   public Pha\Syntax $ternaryExpression;
   public Pha\Syntax $ternaryCondition;
   public Pha\Syntax $ternaryTrue;
+  public Pha\Token $firstMinusToken;
   public Pha\Syntax $ternaryFalse;
   public Pha\Syntax $endOfFileSyntax;
   public Pha\Token $endOfFileToken;
@@ -146,6 +147,10 @@ final class Math extends Fixture {
       $this->ternaryExpression,
       Pha\MEMBER_CONDITIONAL_CONSEQUENCE,
     );
+
+    $this->firstMinusToken =
+      Pha\syntax_member($script, $this->ternaryTrue, Pha\MEMBER_BINARY_OPERATOR)
+      |> Pha\as_token($$);
 
     $this->ternaryFalse = $this->memberAsSyntax(
       $this->ternaryExpression,

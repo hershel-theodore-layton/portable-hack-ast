@@ -1,6 +1,7 @@
 /** portable-hack-ast is MIT licensed, see /LICENSE. */
 namespace HTL\Pha\_Private;
 
+use namespace HH\Lib\Math;
 use namespace HTL\Pha;
 
 const int FIELD_0_SIZE = 0b11;
@@ -13,6 +14,44 @@ const int FIELD_1_OFFSET = 54;
 const int FIELD_2_OFFSET = 36;
 const int FIELD_3_OFFSET = 18;
 const int FIELD_4_OFFSET = 0;
+
+const int FIELD_01_MASK =
+  (FIELD_0_SIZE << FIELD_0_OFFSET) | (FIELD_1_SIZE << FIELD_1_OFFSET);
+const int SYNTAX_TAG = Math\INT64_MIN;
+const int TOKEN_TAG = 1 << 62;
+const int TRIVIUM_TAG = 0;
+const int LIST_OR_MISSING_TAG = (Math\INT64_MIN) | (1 << 62);
+
+const int MAX_INTERNED_STRING = FIELD_1_SIZE;
+
+function create_syntax_mask(Script $script, SyntaxKind $kind)[]: int {
+  if ($kind === Pha\KIND_LIST_EXPRESSION || $kind === Pha\KIND_MISSING) {
+    // This is a hack, these nodes don't have an identity.
+    // Just return the greatest trivium kind there is.
+    // If we ever get to a world with max trivia, consider this
+    // a classic case of "This should never happen.".
+    return TRIVIUM_TAG | (MAX_INTERNED_STRING << FIELD_1_OFFSET);
+  }
+
+  $ctx = translation_unit_reveal($script)->getParseContext();
+  return $ctx->getSyntaxKinds()->internOrMax($kind)
+    |> interned_string_to_int($$) << FIELD_1_OFFSET
+    |> $$ | SYNTAX_TAG;
+}
+
+function create_token_mask(Script $script, TokenKind $kind)[]: int {
+  $ctx = translation_unit_reveal($script)->getParseContext();
+  return $ctx->getTokenKinds()->internOrMax($kind)
+    |> interned_string_to_int($$) << FIELD_1_OFFSET
+    |> $$ | TOKEN_TAG;
+}
+
+function create_trivium_mask(Script $script, TriviumKind $kind)[]: int {
+  $ctx = translation_unit_reveal($script)->getParseContext();
+  return $ctx->getTriviumKinds()->internOrMax($kind)
+    |> interned_string_to_int($$) << FIELD_1_OFFSET
+    |> $$ | TRIVIUM_TAG;
+}
 
 /**
  * Mind the sign extension,
@@ -40,6 +79,10 @@ function node_get_field_4(NillableNode $node)[]: int {
 
 function node_get_id(Node $node)[]: NodeId {
   return node_get_field_4($node) |> node_id_from_int($$);
+}
+
+function node_get_identity_mask(Node $node)[]: int {
+  return node_to_int($node) & FIELD_01_MASK;
 }
 
 /**

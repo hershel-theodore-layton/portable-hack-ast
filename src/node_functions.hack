@@ -107,6 +107,135 @@ function as_trivium_or_nil(NillableNode $node)[]: NillableTrivium {
 }
 
 /**
+ * This returns an optimized predicate that checks the kind of the node passed.
+ * Don't create these matchers in a loop. That defeats the perf benefits.
+ * Prefer using matchers over checking the kind if the code becomes easier to read.
+ *
+ * ```
+ * $is_basic_math_operator = create_matcher(
+ *   $script,
+ *   vec[],
+ *   vec[Pha\KIND_PLUS, Pha\KIND_MINUS, Pha\KIND_STAR, Pha\KIND_SLASH],
+ *   vec[],
+ * );
+ *
+ * $some_node_or_nil = ...;
+ * if ($is_basic_math_operator($some_node_or_nil)) { ... }
+ * ```
+ */
+function create_matcher(
+  Script $script,
+  vec<SyntaxKind> $syntax_kinds,
+  vec<TokenKind> $token_kinds,
+  vec<TriviumKind> $trivium_kinds,
+)[]: (function(NillableNode)[]: bool) {
+  $identities = Vec\concat(
+    Vec\map($syntax_kinds, $k ==> _Private\create_syntax_mask($script, $k)),
+    Vec\map($token_kinds, $k ==> _Private\create_token_mask($script, $k)),
+    Vec\map($trivium_kinds, $k ==> _Private\create_trivium_mask($script, $k)),
+  )
+    |> Vec\unique($$);
+
+  // `-1` is a `false`, since all bits are set, even those outside the mask.
+  $id_0 = idx($identities, 0, -1);
+  $id_1 = idx($identities, 1, -1);
+  $id_2 = idx($identities, 2, -1);
+  $id_3 = idx($identities, 3, -1);
+  $id_4 = idx($identities, 4, -1);
+  $id_5 = idx($identities, 5, -1);
+  $id_6 = idx($identities, 6, -1);
+  $id_7 = idx($identities, 7, -1);
+
+  // All arms are equivalent to the `default:` arm,
+  // but they don't need to iterate the $identities vec.
+  $matcher = () ==> {
+    switch (C\count($identities)) {
+      case 0:
+        return $_ ==> false;
+      case 1:
+        return $n ==> $n !== NIL &&
+          (
+            _Private\node_get_identity_mask(_Private\cast_away_nil($n))
+            |> $$ === $id_0
+          );
+      case 2:
+      case 3:
+      case 4:
+        return $n ==> $n !== NIL &&
+          (
+            _Private\node_get_identity_mask(_Private\cast_away_nil($n))
+            |> $$ === $id_0 || $$ === $id_1 || $$ === $id_2 || $$ === $id_3
+          );
+      case 5:
+      case 6:
+      case 7:
+      case 8:
+        return $n ==> $n !== NIL &&
+          // hackfmt-ignore
+          (
+            _Private\node_get_identity_mask(_Private\cast_away_nil($n))
+            |> $$ === $id_0 || $$ === $id_1 || $$ === $id_2 || $$ === $id_3 ||
+               $$ === $id_4 || $$ === $id_5 || $$ === $id_6 || $$ === $id_7
+          );
+      default:
+        return $n ==> $n !== NIL &&
+          (
+            _Private\node_get_identity_mask(_Private\cast_away_nil($n))
+            |> C\contains($identities, $$)
+          );
+    }
+  }();
+
+  $look_for_list = C\contains($syntax_kinds, KIND_LIST_EXPRESSION);
+  $look_for_missing = C\contains($syntax_kinds, KIND_MISSING);
+
+  if ($look_for_list || $look_for_missing) {
+    return $n ==> {
+      if ($n === NIL) {
+        return false;
+      }
+
+      $n = _Private\cast_away_nil($n);
+
+      switch (node_get_elaborated_group($n)) {
+        case NodeElaboratedGroup::LIST:
+          return $look_for_list;
+        case NodeElaboratedGroup::MISSING:
+          return $look_for_missing;
+        default:
+          return $matcher($n);
+      }
+    };
+  }
+
+  return $matcher;
+}
+
+function create_syntax_matcher(
+  Script $script,
+  SyntaxKind $first,
+  SyntaxKind ...$rest
+)[]: (function(NillableNode)[]: bool) {
+  return create_matcher($script, Vec\concat(vec[$first], $rest), vec[], vec[]);
+}
+
+function create_token_matcher(
+  Script $script,
+  TokenKind $first,
+  TokenKind ...$rest
+)[]: (function(NillableNode)[]: bool) {
+  return create_matcher($script, vec[], Vec\concat(vec[$first], $rest), vec[]);
+}
+
+function create_trivium_matcher(
+  Script $script,
+  TriviumKind $first,
+  TriviumKind ...$rest
+)[]: (function(NillableNode)[]: bool) {
+  return create_matcher($script, vec[], vec[], Vec\concat(vec[$first], $rest));
+}
+
+/**
  * The children are returned in source order.
  *
  * For the purposes of this function, NIL and MISSING are treated as a list of

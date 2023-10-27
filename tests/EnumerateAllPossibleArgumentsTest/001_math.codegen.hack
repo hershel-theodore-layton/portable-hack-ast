@@ -64,6 +64,14 @@ async function math_001_async(): Awaitable<void> {
     foreach ($nillable_nodes as $p0)
       Pha\as_trivium_or_nil($p0);
 
+    // Could not enumerate: Pha\create_matcher: ["vec<SyntaxKind>","vec<TokenKind>","vec<TriviumKind>"]
+
+    // Could not enumerate: Pha\create_syntax_matcher: ["SyntaxKind","SyntaxKind"]
+
+    // Could not enumerate: Pha\create_token_matcher: ["TokenKind","TokenKind"]
+
+    // Could not enumerate: Pha\create_trivium_matcher: ["TriviumKind","TriviumKind"]
+
     foreach ($nillable_syntaxes as $p0)
       try {
         Pha\list_get_items_of_children($script, $p0);

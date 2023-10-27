@@ -2,8 +2,9 @@
 namespace HTL\Pha\_Private;
 
 use namespace HH\Lib\{C, Dict};
+use namespace HTL\Pha;
 
-final class InternedStringStorage<T> {
+final class InternedStringStorage<T as Kind> {
   private dict<string, int> $flipped;
   private int $size;
 
@@ -25,6 +26,12 @@ final class InternedStringStorage<T> {
 
   public function intern(string $string)[]: InternedString<T> {
     return interned_string_from_int<T>($this->flipped[$string]);
+  }
+
+  public function internOrMax(T $string)[]: InternedString<T> {
+    return interned_string_from_int<T>(
+      idx($this->flipped, Pha\kind_to_string($string), MAX_INTERNED_STRING),
+    );
   }
 
   public function isOfSameSize(keyset<string> $new_names)[]: bool {
