@@ -21,15 +21,22 @@ final class TranslationUnit {
   public function debugDumpHex()[]: string {
     $out = "SOURCE ORDER:\n";
 
+    $dump_node = $node ==> Str\format(
+      '%x|%02x|%05x|%05x|%05x',
+      node_get_field_0($node) & 0b11,
+      node_get_field_1($node),
+      node_get_field_2($node),
+      node_get_field_3($node),
+      node_get_field_4($node),
+    );
+
     foreach ($this->sourceOrder as $node) {
-      $node = node_to_int($node);
-      $out .= '  '.Str\pad_left(dechex($node), 16, '0')."\n";
+      $out .= '  '.$dump_node($node)."\n";
     }
 
     $out .= "SIBLINGS:\n";
     foreach ($this->siblings as $node) {
-      $node = node_to_int($node);
-      $out .= '  '.Str\pad_left(dechex($node), 16, '0')."\n";
+      $out .= '  '.$dump_node($node)."\n";
     }
 
     $out .= "SOURCE TEXT:\n";
