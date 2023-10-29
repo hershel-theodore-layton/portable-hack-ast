@@ -234,7 +234,6 @@ function create_trivium_matcher(
   return create_matcher($script, vec[], vec[], Vec\concat(vec[$first], $rest));
 }
 
-
 function is_syntax(NillableNode $node)[]: bool {
   if ($node === NIL) {
     return false;
@@ -837,6 +836,10 @@ function syntax_get_members(Script $script, Syntax $node)[]: vec<Member> {
   return $structs->getRaw()[$kind] ?? vec[];
 }
 
+function syntax_get_parent(Script $script, Syntax $node)[]: Syntax {
+  return node_get_parent($script, $node) |> _Private\syntax_from_node($$);
+}
+
 function syntax_member(Script $script, Syntax $node, Member $member)[]: Node {
   $ii = 0;
 
@@ -853,10 +856,6 @@ function syntax_member(Script $script, Syntax $node, Member $member)[]: Node {
     node_get_kind($script, $node) |> kind_to_string($$),
     $member |> member_to_string($$),
   ));
-}
-
-function syntax_get_parent(Script $script, Syntax $node)[]: Syntax {
-  return node_get_parent($script, $node) |> _Private\syntax_from_node($$);
 }
 
 function token_get_parent(Script $script, Token $node)[]: Syntax {

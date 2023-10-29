@@ -157,10 +157,10 @@ async function math_001_async(): Awaitable<void> {
     foreach ($syntaxes as $p0)
       Pha\syntax_get_members($script, $p0);
 
-    // Could not enumerate: Pha\syntax_member: ["Syntax","Member"]
-
     foreach ($syntaxes as $p0)
       Pha\syntax_get_parent($script, $p0);
+
+    // Could not enumerate: Pha\syntax_member: ["Syntax","Member"]
 
     foreach ($tokens as $p0)
       Pha\token_get_parent($script, $p0);
