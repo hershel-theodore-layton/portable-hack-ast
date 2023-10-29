@@ -1,7 +1,7 @@
 /** portable-hack-ast is MIT licensed, see /LICENSE. */
 namespace HTL\Pha;
 
-use namespace HH\Lib\{C, Math, Str, Vec};
+use namespace HH\Lib\{C, Dict, Math, Str, Vec};
 
 /**
  * @package This file contains all the functions that operate on `Node`.
@@ -208,6 +208,67 @@ function create_matcher(
   }
 
   return $matcher;
+}
+
+/**
+ * A useful utility when dealing with code that intends to be polymorphic over
+ * multiple Syntax nodes.
+ *
+ * ```
+ * $get_clauses = create_member_accessor($script, dict[
+ *   Pha\KIND_NAMESPACE_USE_DECLARATION => Pha\MEMBER_NAMESPACE_USE_CLAUSES,
+ *   Pha\KIND_NAMESPACE_GROUP_USE_DECLARATION => Pha\MEMBER_NAMESPACE_GROUP_USE_CLAUSES,
+ * ]);
+ *
+ * $namespace_use_or_group_use_declaration = ...;
+ * $clauses = $get_clauses($namespace_use_or_group_use_declaration);
+ * ```
+ */
+function create_member_accessor(
+  Script $script,
+  dict<SyntaxKind, Member> $accessors,
+)[]: (function(Syntax)[]: Node) {
+  $tu = _Private\translation_unit_reveal($script);
+  $structs = $tu->getParseContext()->getStructs();
+
+  $interned = Dict\pull_with_key(
+    $accessors,
+    ($syntax_kind, $member) ==> {
+      $members = idx($structs->getRaw(), $syntax_kind);
+
+      if ($members is null) {
+        return null;
+      }
+
+      $idx = C\find_key($members, $m ==> $member === $m);
+
+      if ($idx is nonnull) {
+        return $idx;
+      }
+
+      throw new _Private\PhaException(
+        Str\format(
+          '%s does not have a member named %s.',
+          $syntax_kind,
+          member_to_string($member),
+        ),
+      );
+    },
+    ($syntax_kind, $_) ==> _Private\create_syntax_mask($script, $syntax_kind),
+  );
+
+  return $n ==> {
+    $idx = idx($interned, _Private\node_get_identity_mask($n));
+
+    if ($idx is null) {
+      throw new _Private\PhaException(Str\format(
+        'No syntax accessor defined for %s.',
+        node_get_kind($script, $n),
+      ));
+    }
+
+    return node_get_nth_childx($script, $n, $idx);
+  };
 }
 
 function create_syntax_matcher(

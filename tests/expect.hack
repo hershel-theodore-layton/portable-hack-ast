@@ -35,6 +35,17 @@ final class ExpectObj<T> {
     );
   }
 
+  public function toReturn()[]: void where T as (function()[]: mixed) {
+    try {
+      ($this->value)();
+    } catch (Pha\PhaException $e) {
+      static::fail(
+        'Expected a value return, got a throw: %s',
+        $e->getMessage(),
+      );
+    }
+  }
+
   public function toThrowPhaException(string $pattern)[]: void
   where
     T as (function()[]: mixed) {

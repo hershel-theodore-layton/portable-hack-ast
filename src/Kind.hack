@@ -1,7 +1,7 @@
 /** portable-hack-ast is MIT licensed, see /LICENSE. */
 namespace HTL\Pha;
 
-newtype Kind = string;
+newtype Kind as string = string;
 newtype SyntaxKind as Kind = Kind;
 newtype TokenKind as Kind = Kind;
 newtype TriviumKind as Kind = Kind;

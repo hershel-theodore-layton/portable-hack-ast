@@ -727,6 +727,83 @@ final class NodeFunctionsTest extends HackTest {
     expect($is_x($node))->toEqual($matches);
   }
 
+  public function provide_create_member_accessor(
+  )[]: vec<(Pha\Syntax, (function(Pha\Syntax)[]: Pha\Node), Pha\Node)> {
+    $math = $this->fixtures()->math;
+    $script = $math->script;
+    return vec[
+      tuple(
+        $math->functionDeclaration,
+        Pha\create_member_accessor($script, dict[
+          Pha\KIND_FUNCTION_DECLARATION =>
+            Pha\MEMBER_FUNCTION_DECLARATION_HEADER,
+          Pha\KIND_METHODISH_DECLARATION =>
+            Pha\MEMBER_METHODISH_FUNCTION_DECL_HEADER,
+        ]),
+        $math->functionDeclarationHeader,
+      ),
+      tuple(
+        $math->functionDeclaration,
+        Pha\create_member_accessor($script, dict[
+          Pha\KIND_METHODISH_DECLARATION =>
+            Pha\MEMBER_METHODISH_FUNCTION_DECL_HEADER,
+          Pha\KIND_FUNCTION_DECLARATION =>
+            Pha\MEMBER_FUNCTION_DECLARATION_HEADER,
+        ]),
+        $math->functionDeclarationHeader,
+      ),
+    ];
+  }
+
+  <<DataProvider('provide_create_member_accessor')>>
+  public function test_create_member_accessor(
+    Pha\Syntax $node,
+    (function(Pha\Syntax)[]: Pha\Node) $get_member,
+    Pha\Node $result,
+  )[]: void {
+    expect($get_member($node))->toEqual($result);
+  }
+
+  public function test_create_member_accessor_faulty_members()[]: void {
+    $script = $this->fixtures()->math->script;
+
+    // The parse context has not "learned" what an InclusionDirective is.
+    // In those cases, it will return.
+    // It is not valid to hand this accessor an InclusionDirective, since this
+    // would imply a the node is from a different script.
+    expect(
+      () ==> Pha\create_member_accessor(
+        $script,
+        dict[Pha\KIND_INCLUSION_DIRECTIVE => Pha\MEMBER_BINARY_OPERATOR],
+      ),
+    )->toReturn();
+
+    // If the ParseContext has "learned" the node and you have given a faulty
+    // member, an exception will be raised at creation time.
+    expect(
+      () ==> Pha\create_member_accessor(
+        $script,
+        dict[Pha\KIND_BINARY_EXPRESSION => Pha\MEMBER_INCLUSION_REQUIRE],
+      ),
+    )->toThrowPhaException(
+      'binary_expression does not have a member named inclusion_require',
+    );
+  }
+
+  public function test_create_member_accessor_unknown_node()[]: void {
+    $math = $this->fixtures()->math;
+    $script = $math->script;
+    $get_member = Pha\create_member_accessor(
+      $script,
+      dict[Pha\KIND_BINARY_EXPRESSION => Pha\MEMBER_BINARY_OPERATOR],
+    );
+
+    expect(() ==> $get_member($math->functionDeclaration))
+      ->toThrowPhaException(
+        'No syntax accessor defined for function_declaration.',
+      );
+  }
+
   private function fixtures()[]: Fixtures\Fixtures {
     return $this->fixtures as nonnull;
   }
