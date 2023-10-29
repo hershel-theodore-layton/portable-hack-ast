@@ -6,10 +6,6 @@ newtype SyntaxKind as Kind = Kind;
 newtype TokenKind as Kind = Kind;
 newtype TriviumKind as Kind = Kind;
 
-function kind_to_string(Kind $kind)[]: string {
-  return $kind;
-}
-
 function syntax_kind_from_kind(Kind $kind)[]: SyntaxKind {
   return $kind;
 }

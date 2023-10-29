@@ -373,7 +373,7 @@ function list_get_items_of_children(
       throw new _Private\PhaException(Str\format(
         '%s expected a list or a missing, got a %s',
         __FUNCTION__,
-        node_get_kind($script, $node) |> kind_to_string($$),
+        node_get_kind($script, $node),
       ));
   }
 
@@ -385,7 +385,7 @@ function list_get_items_of_children(
         $kind === KIND_LIST_ITEM,
         '%s expected a list with list_items, but found a %s in the list.',
         __FUNCTION__,
-        kind_to_string($kind),
+        $kind,
       );
 
       return node_get_first_childx($script, $list_item);
@@ -586,7 +586,7 @@ function node_get_first_childx(Script $script, Node $node)[]: Node {
   throw new _Private\PhaException(Str\format(
     '%s expected at least one child, got %s with 0 children.',
     __FUNCTION__,
-    node_get_kind($script, $node) |> kind_to_string($$),
+    node_get_kind($script, $node),
   ));
 }
 
@@ -707,7 +707,7 @@ function node_get_last_childx(Script $script, Node $node)[]: Node {
     Str\format(
       '%s expected at least one child, got %s without children.',
       __FUNCTION__,
-      node_get_kind($script, $node) |> kind_to_string($$),
+      node_get_kind($script, $node),
     ),
   );
 }
@@ -833,7 +833,7 @@ function node_get_nth_childx(Script $script, Node $node, int $n)[]: Node {
     '%s expected at least %d children, the given %s has no %s child.',
     __FUNCTION__,
     $n,
-    node_get_kind($script, $node) |> kind_to_string($$),
+    node_get_kind($script, $node),
     _Private\grammatical_nth($n),
   ));
 }
@@ -891,7 +891,7 @@ function node_get_syntax_ancestors(
 function syntax_get_members(Script $script, Syntax $node)[]: vec<Member> {
   $tu = _Private\translation_unit_reveal($script);
   $structs = $tu->getParseContext()->getStructs();
-  $kind = node_get_kind($script, $node) |> kind_to_string($$);
+  $kind = node_get_kind($script, $node);
   // This default is needed for List and Missing.
   // They don't get "learned" in the same way any other syntax would.
   return $structs->getRaw()[$kind] ?? vec[];
@@ -914,7 +914,7 @@ function syntax_member(Script $script, Syntax $node, Member $member)[]: Node {
 
   throw new _Private\PhaException(Str\format(
     'This %s does not have a member named %s.',
-    node_get_kind($script, $node) |> kind_to_string($$),
+    node_get_kind($script, $node),
     $member |> member_to_string($$),
   ));
 }

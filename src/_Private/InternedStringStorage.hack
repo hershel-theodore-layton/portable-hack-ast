@@ -30,7 +30,7 @@ final class InternedStringStorage<T as Kind> {
 
   public function internOrMax(T $string)[]: InternedString<T> {
     return interned_string_from_int<T>(
-      idx($this->flipped, Pha\kind_to_string($string), MAX_INTERNED_STRING),
+      idx($this->flipped, $string, MAX_INTERNED_STRING),
     );
   }
 
