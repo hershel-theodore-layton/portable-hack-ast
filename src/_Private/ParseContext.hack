@@ -28,9 +28,9 @@ final class ParseContext {
   }
 
   public function upgradeIfNeeded(
-    dict<string, vec<Member>> $new_member_names,
-    keyset<string> $new_token_kinds,
-    keyset<string> $new_trivium_kinds,
+    dict<SyntaxKind, vec<Member>> $new_member_names,
+    keyset<TokenKind> $new_token_kinds,
+    keyset<TriviumKind> $new_trivium_kinds,
   )[]: ParseContext {
     $structs = $this->structs;
     $syntax_kinds = $this->syntaxKinds;

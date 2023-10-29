@@ -5,14 +5,14 @@ use namespace HH\Lib\{C, Dict};
 use namespace HTL\Pha;
 
 final class InternedStringStorage<T as Kind> {
-  private dict<string, int> $flipped;
+  private dict<T, int> $flipped;
   private int $size;
 
   /**
    * @param $items is keyed by interned string (0..n-1).
    */
   public function __construct(
-    private vec<string> $items,
+    private vec<T> $items,
     private (function(string)[]: T) $castFunc,
   )[] {
     $this->flipped = Dict\flip($items);
@@ -24,7 +24,7 @@ final class InternedStringStorage<T as Kind> {
       $this->items[interned_string_to_int($interned)] |> ($this->castFunc)($$);
   }
 
-  public function intern(string $string)[]: InternedString<T> {
+  public function intern(T $string)[]: InternedString<T> {
     return interned_string_from_int<T>($this->flipped[$string]);
   }
 

@@ -8,7 +8,7 @@ use namespace HTL\Pha;
 final class Structs {
   private int $size;
   public function __construct(
-    private dict<string, vec<Pha\Member>> $rawMembers,
+    private dict<SyntaxKind, vec<Member>> $rawMembers,
   )[] {
     $this->size = C\count($rawMembers);
   }
@@ -20,7 +20,7 @@ final class Structs {
     );
   }
 
-  public function getRaw()[]: dict<string, vec<Member>> {
+  public function getRaw()[]: dict<SyntaxKind, vec<Member>> {
     return $this->rawMembers;
   }
 

@@ -891,7 +891,7 @@ function node_get_syntax_ancestors(
 function syntax_get_members(Script $script, Syntax $node)[]: vec<Member> {
   $tu = _Private\translation_unit_reveal($script);
   $structs = $tu->getParseContext()->getStructs();
-  $kind = node_get_kind($script, $node);
+  $kind = node_get_kind($script, $node) |> syntax_kind_from_kind($$);
   // This default is needed for List and Missing.
   // They don't get "learned" in the same way any other syntax would.
   return $structs->getRaw()[$kind] ?? vec[];

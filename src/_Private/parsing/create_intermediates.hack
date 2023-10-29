@@ -6,9 +6,9 @@ use namespace HTL\Pha;
 
 function create_intermediates(
   dict<arraykey, mixed> $parse_tree,
-  inout dict<string, vec<Member>> $known_member_names,
-  inout keyset<string> $known_token_kinds,
-  inout keyset<string> $known_trivium_kinds,
+  inout dict<SyntaxKind, vec<Member>> $known_member_names,
+  inout keyset<TokenKind> $known_token_kinds,
+  inout keyset<TriviumKind> $known_trivium_kinds,
 )[]: vec<Intermediate> {
   $id = 0;
   $completed = vec[];
@@ -22,9 +22,9 @@ function create_intermediates(
         $wrapped_nodes = vec[];
         list($token, $trivia) = create_intermediate_token($to_parse, $id);
         $intermediates = Vec\concat(vec[$token], $trivia);
-        $known_token_kinds[] = $token->getKind();
+        $known_token_kinds[] = $token->getTokenKind();
         foreach ($trivia as $trivium) {
-          $known_trivium_kinds[] = $trivium->getKind();
+          $known_trivium_kinds[] = $trivium->getTriviumKind();
         }
         break;
       case 'list':
@@ -39,7 +39,7 @@ function create_intermediates(
         list($syntax, $wrapped_nodes) =
           create_intermediate_syntax($to_parse, $id);
         $intermediates = vec[$syntax];
-        if (!C\contains_key($known_member_names, $syntax->getKind())) {
+        if (!C\contains_key($known_member_names, $syntax->getSyntaxKind())) {
           $new_names = vec[];
 
           foreach (Vec\keys($to_parse->getItem()) as $member_name) {
@@ -48,7 +48,7 @@ function create_intermediates(
             }
           }
 
-          $known_member_names[$syntax->getKind()] = $new_names;
+          $known_member_names[$syntax->getSyntaxKind()] = $new_names;
         }
     }
 

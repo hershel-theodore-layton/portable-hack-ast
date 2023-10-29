@@ -11,26 +11,24 @@ function create_node(
   ParseContext $ctx,
   inout int $byte_offset,
 )[]: Node {
-  $kind = $node->getKind();
-
   // See bin/pseudo-fields.documentation.txt
   switch ($node->getGroup()) {
     case IntermediateGroup::SYNTAX:
       $field_0 = SYNTAX_TAG;
-      $field_1 =
-        $ctx->getSyntaxKinds()->intern($kind) |> interned_string_to_int($$);
+      $field_1 = $ctx->getSyntaxKinds()->intern($node->getSyntaxKind())
+        |> interned_string_to_int($$);
       $field_3 = $child_range[0];
       break;
     case IntermediateGroup::TOKEN:
       $field_0 = TOKEN_TAG;
-      $field_1 =
-        $ctx->getTokenKinds()->intern($kind) |> interned_string_to_int($$);
+      $field_1 = $ctx->getTokenKinds()->intern($node->getTokenKind())
+        |> interned_string_to_int($$);
       $field_3 = $source_order_idx + $node->getTokenTextTriviumOffsetx();
       break;
     case IntermediateGroup::TRIVIUM:
       $field_0 = TRIVIUM_TAG;
-      $field_1 =
-        $ctx->getTriviumKinds()->intern($kind) |> interned_string_to_int($$);
+      $field_1 = $ctx->getTriviumKinds()->intern($node->getTriviumKind())
+        |> interned_string_to_int($$);
       $field_3 = $byte_offset;
       $byte_offset += Str\length($node->getTextx());
       break;

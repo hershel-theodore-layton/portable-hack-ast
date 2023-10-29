@@ -2,6 +2,7 @@
 namespace HTL\Pha\_Private;
 
 use namespace HH\Lib\Dict;
+use namespace HTL\Pha;
 use type JsonSerializable;
 
 final class Intermediate implements JsonSerializable {
@@ -40,8 +41,34 @@ final class Intermediate implements JsonSerializable {
     return $this->parentId;
   }
 
-  public function getKind()[]: string {
-    return $this->kind;
+  public function getSyntaxKind()[]: SyntaxKind {
+    invariant(
+      $this->group === IntermediateGroup::SYNTAX,
+      '%s can not be called on a %s.',
+      __FUNCTION__,
+      $this->getGroupName(),
+    );
+    return $this->kind |> Pha\syntax_kind_from_string($$);
+  }
+
+  public function getTokenKind()[]: TokenKind {
+    invariant(
+      $this->group === IntermediateGroup::TOKEN,
+      '%s can not be called on a %s.',
+      __FUNCTION__,
+      $this->getGroupName(),
+    );
+    return $this->kind |> Pha\token_kind_from_string($$);
+  }
+
+  public function getTriviumKind()[]: TriviumKind {
+    invariant(
+      $this->group === IntermediateGroup::TRIVIUM,
+      '%s can not be called on a %s.',
+      __FUNCTION__,
+      $this->getGroupName(),
+    );
+    return $this->kind |> Pha\trivium_kind_from_string($$);
   }
 
   public function getText()[]: ?string {
@@ -78,7 +105,7 @@ final class Intermediate implements JsonSerializable {
       'id' => $this->id,
       'parentId' => $this->parentId,
       'kind' => $this->kind,
-      'text' => $this->text
+      'text' => $this->text,
     ]
       |> Dict\filter_nulls($$);
   }
