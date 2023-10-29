@@ -20,17 +20,16 @@ async function math_001_async(): Awaitable<void> {
   $nillable_nodes[] = Pha\NIL;
 
   $syntaxes =
-    Vec\filter($nodes, Pha\node_is_syntax<>) |> Vec\map($$, Pha\as_syntax<>);
+    Vec\filter($nodes, Pha\is_syntax<>) |> Vec\map($$, Pha\as_syntax<>);
   $nillable_syntaxes = $syntaxes;
   $nillable_syntaxes[] = Pha\NIL;
 
-  $tokens =
-    Vec\filter($nodes, Pha\node_is_token<>) |> Vec\map($$, Pha\as_token<>);
+  $tokens = Vec\filter($nodes, Pha\is_token<>) |> Vec\map($$, Pha\as_token<>);
   $nillable_tokens = $tokens;
   $nillable_tokens[] = Pha\NIL;
 
   $trivia =
-    Vec\filter($nodes, Pha\node_is_trivium<>) |> Vec\map($$, Pha\as_trivium<>);
+    Vec\filter($nodes, Pha\is_trivium<>) |> Vec\map($$, Pha\as_trivium<>);
   $nillable_trivia = $trivia;
   $nillable_trivia[] = Pha\NIL;
 
@@ -71,6 +70,15 @@ async function math_001_async(): Awaitable<void> {
     // Could not enumerate: Pha\create_token_matcher: ["TokenKind","TokenKind"]
 
     // Could not enumerate: Pha\create_trivium_matcher: ["TriviumKind","TriviumKind"]
+
+    foreach ($nillable_nodes as $p0)
+      Pha\is_syntax($p0);
+
+    foreach ($nillable_nodes as $p0)
+      Pha\is_token($p0);
+
+    foreach ($nillable_nodes as $p0)
+      Pha\is_trivium($p0);
 
     foreach ($nillable_syntaxes as $p0)
       try {
@@ -145,15 +153,6 @@ async function math_001_async(): Awaitable<void> {
 
     foreach ($nillable_nodes as $p0)
       Pha\node_get_syntax_ancestors($script, $p0);
-
-    foreach ($nillable_nodes as $p0)
-      Pha\node_is_syntax($p0);
-
-    foreach ($nillable_nodes as $p0)
-      Pha\node_is_token($p0);
-
-    foreach ($nillable_nodes as $p0)
-      Pha\node_is_trivium($p0);
 
     foreach ($syntaxes as $p0)
       Pha\syntax_get_members($script, $p0);

@@ -113,7 +113,7 @@ function node_get_next_trivium(
       |> node_get_id($$)
       |> node_id_add($$, 1)
       |> $tu->getNodeById($$);
-  } while (!Pha\node_is_trivium($node) && $node !== NIL);
+  } while (!Pha\is_trivium($node) && $node !== NIL);
 
   return $node === NIL ? NIL : trivium_from_node($node);
 }

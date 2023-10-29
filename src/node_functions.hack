@@ -13,12 +13,11 @@ use namespace HH\Lib\{C, Math, Str, Vec};
  *    sometimes even nillable nodes.
  *  - Functions that start with `syntax_`, `token_`, or `trivium_` only work on
  *    syntaxes, tokens, and trivia (or their nillable counterparts) respectively.
- *  - If you have a (nillable) `Node`, but you need a `Syntax`, `Token`,
- *    or `Trivium`, use `as_{syntax,token,trivium}()` or use
- *    `as_nillable_{syntax,token,trivium}()` if you want nil on errors.
- *    Think of them as `as Syntax` and `?as Syntax` respectively.
- *  - If you have a Nillable<T> and you wish to remove the NIL,
- *    use `as_nonnil()`. It returns a nonnill T or throws an exception.
+ *  - `Node`, `Syntax`, `Token`, and `Trivium` is not `<<__Enforceable>>`.
+ *    Replacements are provided in the form of functions.
+ *    - `is`: `Pha\is_x()`
+ *    - `as`: `Pha\as_x()`
+ *    - `?as`: `Pha\as_x_or_nil()` will return `Pha\NIL`, not `null` on failure.
  */
 
 /**
@@ -235,6 +234,56 @@ function create_trivium_matcher(
   return create_matcher($script, vec[], vec[], Vec\concat(vec[$first], $rest));
 }
 
+
+function is_syntax(NillableNode $node)[]: bool {
+  if ($node === NIL) {
+    return false;
+  }
+
+  $node = _Private\cast_away_nil($node);
+
+  switch (node_get_group($node)) {
+    case NodeGroup::SYNTAX:
+      return true;
+    case NodeGroup::TOKEN:
+    case NodeGroup::TRIVIUM:
+      return false;
+  }
+}
+
+function is_token(NillableNode $node)[]: bool {
+  if ($node === NIL) {
+    return false;
+  }
+
+  $node = _Private\cast_away_nil($node);
+
+  switch (node_get_group($node)) {
+    case NodeGroup::SYNTAX:
+      return false;
+    case NodeGroup::TOKEN:
+      return true;
+    case NodeGroup::TRIVIUM:
+      return false;
+  }
+}
+
+function is_trivium(NillableNode $node)[]: bool {
+  if ($node === NIL) {
+    return false;
+  }
+
+  $node = _Private\cast_away_nil($node);
+
+  switch (node_get_group($node)) {
+    case NodeGroup::SYNTAX:
+    case NodeGroup::TOKEN:
+      return false;
+    case NodeGroup::TRIVIUM:
+      return true;
+  }
+}
+
 /**
  * The children are returned in source order.
  *
@@ -368,9 +417,8 @@ function node_get_code(Script $script, NillableNode $node)[]: string {
 
   $node = _Private\cast_away_nil($node);
 
-  $start = node_is_trivium($node)
-    ? $node
-    : _Private\node_get_next_trivium($script, $node);
+  $start =
+    is_trivium($node) ? $node : _Private\node_get_next_trivium($script, $node);
   $end = node_get_last_descendant_or_self($script, $node)
     |> _Private\node_get_next_trivium($script, $$);
 
@@ -762,7 +810,7 @@ function node_get_syntax_ancestors(
 
   do {
     $node = node_get_parent($script, $node);
-  } while (!node_is_syntax($node));
+  } while (!is_syntax($node));
 
   $node = _Private\syntax_from_node($node);
 
@@ -775,55 +823,6 @@ function node_get_syntax_ancestors(
   }
 
   return $out;
-}
-
-function node_is_syntax(NillableNode $node)[]: bool {
-  if ($node === NIL) {
-    return false;
-  }
-
-  $node = _Private\cast_away_nil($node);
-
-  switch (node_get_group($node)) {
-    case NodeGroup::SYNTAX:
-      return true;
-    case NodeGroup::TOKEN:
-    case NodeGroup::TRIVIUM:
-      return false;
-  }
-}
-
-function node_is_token(NillableNode $node)[]: bool {
-  if ($node === NIL) {
-    return false;
-  }
-
-  $node = _Private\cast_away_nil($node);
-
-  switch (node_get_group($node)) {
-    case NodeGroup::SYNTAX:
-      return false;
-    case NodeGroup::TOKEN:
-      return true;
-    case NodeGroup::TRIVIUM:
-      return false;
-  }
-}
-
-function node_is_trivium(NillableNode $node)[]: bool {
-  if ($node === NIL) {
-    return false;
-  }
-
-  $node = _Private\cast_away_nil($node);
-
-  switch (node_get_group($node)) {
-    case NodeGroup::SYNTAX:
-    case NodeGroup::TOKEN:
-      return false;
-    case NodeGroup::TRIVIUM:
-      return true;
-  }
 }
 
 /**

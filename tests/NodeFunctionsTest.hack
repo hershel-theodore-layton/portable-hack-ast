@@ -541,9 +541,9 @@ final class NodeFunctionsTest extends HackTest {
     Pha\NillableNode $node,
     shape('syntax' => bool, 'token' => bool, 'trivium' => bool) $results,
   )[]: void {
-    expect(Pha\node_is_syntax($node))->toEqual($results['syntax']);
-    expect(Pha\node_is_token($node))->toEqual($results['token']);
-    expect(Pha\node_is_trivium($node))->toEqual($results['trivium']);
+    expect(Pha\is_syntax($node))->toEqual($results['syntax']);
+    expect(Pha\is_token($node))->toEqual($results['token']);
+    expect(Pha\is_trivium($node))->toEqual($results['trivium']);
   }
 
   public function provide_node_get_syntax_ancestors(
