@@ -1,7 +1,7 @@
 /** portable-hack-ast is MIT licensed, see /LICENSE. */
 namespace HTL\Pha\_Private;
 
-use namespace HH\Lib\{Math, Str};
+use namespace HH\Lib\Math;
 
 function create_node(
   Intermediate $node,
@@ -30,7 +30,7 @@ function create_node(
       $field_1 = $ctx->getTriviumKinds()->intern($node->getTriviumKind())
         |> interned_string_to_int($$);
       $field_3 = $byte_offset;
-      $byte_offset += Str\length($node->getTextx());
+      $byte_offset += $node->getTextLengthx();
       break;
     case IntermediateGroup::LIST:
       $field_0 = LIST_OR_MISSING_TAG;

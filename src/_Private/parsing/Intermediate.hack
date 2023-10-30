@@ -1,27 +1,15 @@
 /** portable-hack-ast is MIT licensed, see /LICENSE. */
 namespace HTL\Pha\_Private;
 
-use namespace HH\Lib\Dict;
 use namespace HTL\Pha;
-use type JsonSerializable;
 
-final class Intermediate implements JsonSerializable {
-  /**
-   * A representation trick:
-   *            token
-   *              |
-   *     --------------------
-   *     |        |         |
-   *(leading*)   ttt   (trailing)*
-   */
-  const string TOKEN_TEXT_TRIVIUM = 'token_text';
-
+final class Intermediate {
   public function __construct(
     private IntermediateGroup $group,
     private int $id,
     private int $parentId,
-    private string $kind,
-    private ?string $text = null,
+    private Kind $kind,
+    private ?int $textLength = null,
     private ?int $tokenTextTriviumOffset = null,
   )[] {}
 
@@ -48,7 +36,7 @@ final class Intermediate implements JsonSerializable {
       __FUNCTION__,
       $this->getGroupName(),
     );
-    return $this->kind |> Pha\syntax_kind_from_string($$);
+    return $this->kind |> Pha\syntax_kind_from_kind($$);
   }
 
   public function getTokenKind()[]: TokenKind {
@@ -58,7 +46,7 @@ final class Intermediate implements JsonSerializable {
       __FUNCTION__,
       $this->getGroupName(),
     );
-    return $this->kind |> Pha\token_kind_from_string($$);
+    return $this->kind |> Pha\token_kind_from_kind($$);
   }
 
   public function getTriviumKind()[]: TriviumKind {
@@ -68,21 +56,21 @@ final class Intermediate implements JsonSerializable {
       __FUNCTION__,
       $this->getGroupName(),
     );
-    return $this->kind |> Pha\trivium_kind_from_string($$);
+    return $this->kind |> Pha\trivium_kind_from_kind($$);
   }
 
-  public function getText()[]: ?string {
-    return $this->text;
+  public function getTextLength()[]: ?int {
+    return $this->textLength;
   }
 
-  public function getTextx()[]: string {
+  public function getTextLengthx()[]: int {
     invariant(
-      $this->text is nonnull,
+      $this->textLength is nonnull,
       '%s (%s) has no text',
       $this->kind,
       $this->getGroupName(),
     );
-    return $this->text;
+    return $this->textLength;
   }
 
   public function getTokenTextTriviumOffset()[]: ?int {
@@ -97,16 +85,5 @@ final class Intermediate implements JsonSerializable {
       $this->getGroupName(),
     );
     return $this->tokenTextTriviumOffset;
-  }
-
-  public function jsonSerialize()[]: dict<string, mixed> {
-    return dict[
-      'group' => $this->getGroupName(),
-      'id' => $this->id,
-      'parentId' => $this->parentId,
-      'kind' => $this->kind,
-      'text' => $this->text,
-    ]
-      |> Dict\filter_nulls($$);
   }
 }

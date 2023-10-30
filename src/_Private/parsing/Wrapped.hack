@@ -1,6 +1,8 @@
 /** portable-hack-ast is MIT licensed, see /LICENSE. */
 namespace HTL\Pha\_Private;
 
+use namespace HTL\Pha;
+
 final class Wrapped {
   public function __construct(
     private dict<arraykey, mixed> $item,
@@ -12,8 +14,12 @@ final class Wrapped {
   }
 
   public function createList(int $id)[]: Intermediate {
-    return
-      new Intermediate(IntermediateGroup::LIST, $id, $this->parentId, 'list');
+    return new Intermediate(
+      IntermediateGroup::LIST,
+      $id,
+      $this->parentId,
+      Pha\KIND_LIST_EXPRESSION,
+    );
   }
 
   public function createMissing(int $id)[]: Intermediate {
@@ -21,18 +27,18 @@ final class Wrapped {
       IntermediateGroup::MISSING,
       $id,
       $this->parentId,
-      'missing',
+      Pha\KIND_MISSING,
     );
   }
 
-  public function createSyntax(int $id, string $kind)[]: Intermediate {
+  public function createSyntax(int $id, SyntaxKind $kind)[]: Intermediate {
     return
       new Intermediate(IntermediateGroup::SYNTAX, $id, $this->parentId, $kind);
   }
 
   public function createToken(
     int $pid,
-    string $kind,
+    TokenKind $kind,
     int $number_of_leading,
   )[]: Intermediate {
     return new Intermediate(

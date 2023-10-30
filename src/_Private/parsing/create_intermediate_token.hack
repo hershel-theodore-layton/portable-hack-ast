@@ -1,7 +1,8 @@
 /** portable-hack-ast is MIT licensed, see /LICENSE. */
 namespace HTL\Pha\_Private;
 
-use namespace HH\Lib\C;
+use namespace HH\Lib\{C, Str};
+use namespace HTL\Pha;
 
 function create_intermediate_token(
   Wrapped $next,
@@ -11,8 +12,11 @@ function create_intermediate_token(
   $leading_raw = $token['leading'] as dict<_, _>;
   $trailing_raw = $token['trailing'] as dict<_, _>;
 
-  $intermediate =
-    $next->createToken($id, $token['kind'] as string, C\count($leading_raw));
+  $intermediate = $next->createToken(
+    $id,
+    Pha\token_kind_from_string($token['kind'] as string),
+    C\count($leading_raw),
+  );
 
   $count = 1;
   $leading = create_intermediate_trivia($id, $count, $leading_raw);
@@ -22,8 +26,8 @@ function create_intermediate_token(
     IntermediateGroup::TRIVIUM,
     $id + $count,
     $id,
-    Intermediate::TOKEN_TEXT_TRIVIUM,
-    $token['text'] as string,
+    Pha\KIND_TOKEN_TEXT,
+    Str\length($token['text'] as string),
   );
   ++$count;
 
