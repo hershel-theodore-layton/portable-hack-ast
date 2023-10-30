@@ -22,9 +22,15 @@ function create_intermediates(
         $wrapped_nodes = vec[];
         list($token, $trivia) = create_intermediate_token($to_parse, $id);
         $intermediates = Vec\concat(vec[$token], $trivia);
-        $known_token_kinds[] = $token->getTokenKind();
+        $token_kind = $token->getTokenKind();
+        if (!C\contains_key($known_token_kinds, $token_kind)) {
+          $known_token_kinds[] = $token_kind;
+        }
         foreach ($trivia as $trivium) {
-          $known_trivium_kinds[] = $trivium->getTriviumKind();
+          $trivium_kind = $trivium->getTriviumKind();
+          if (!C\contains_key($known_trivium_kinds, $trivium_kind)) {
+            $known_trivium_kinds[] = $trivium_kind;
+          }
         }
         break;
       case 'list':
