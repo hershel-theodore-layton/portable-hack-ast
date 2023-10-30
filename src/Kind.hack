@@ -36,6 +36,10 @@ const SyntaxKind KIND_MISSING = 'missing';
 
 const TriviumKind KIND_DELIMITED_COMMENT = 'delimited_comment';
 const TriviumKind KIND_END_OF_LINE = 'end_of_line';
+const TriviumKind KIND_FALL_THROUGH_COMMENT = 'fall_through';
+const TriviumKind KIND_FIX_ME = 'fix_me';
+const TriviumKind KIND_IGNORE_ERROR = 'ignore_error';
+const TriviumKind KIND_SINGLE_LINE_COMMENT = 'single_line_comment';
 const TriviumKind KIND_TOKEN_TEXT = 'token_text';
 const TriviumKind KIND_WHITESPACE = 'whitespace';
 
