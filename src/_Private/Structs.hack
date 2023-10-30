@@ -1,7 +1,7 @@
 /** portable-hack-ast is MIT licensed, see /LICENSE. */
 namespace HTL\Pha\_Private;
 
-use namespace HH\Lib\{C, Vec};
+use namespace HH\Lib\{C, Keyset};
 use namespace HTL\Pha;
 
 // Note to self: This is incomplete
@@ -15,7 +15,7 @@ final class Structs {
 
   public function asInternedStrings()[]: InternedStringStorage<SyntaxKind> {
     return new InternedStringStorage<SyntaxKind>(
-      Vec\keys($this->rawMembers),
+      Keyset\keys($this->rawMembers),
       Pha\syntax_kind_from_string<>,
     );
   }

@@ -2,9 +2,9 @@
 namespace HTL\Pha\_Private;
 
 use namespace HH\Lib\{C, Dict};
-use namespace HTL\Pha;
 
 final class InternedStringStorage<T as Kind> {
+  private vec<T> $items;
   private dict<T, int> $flipped;
   private int $size;
 
@@ -12,11 +12,16 @@ final class InternedStringStorage<T as Kind> {
    * @param $items is keyed by interned string (0..n-1).
    */
   public function __construct(
-    private vec<T> $items,
+    private keyset<T> $asKeyset,
     private (function(string)[]: T) $castFunc,
   )[] {
-    $this->flipped = Dict\flip($items);
-    $this->size = C\count($items);
+    $this->items = vec($this->asKeyset);
+    $this->flipped = Dict\flip($this->items);
+    $this->size = C\count($this->items);
+  }
+
+  public function asKeyset()[]: keyset<T> {
+    return $this->asKeyset;
   }
 
   public function fromInterned(InternedString<T> $interned)[]: T {

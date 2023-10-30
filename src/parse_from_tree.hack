@@ -13,8 +13,8 @@ function parse_from_tree(
   $ctx = _Private\context_reveal($ctx);
   $structs = $ctx->getStructs();
   $member_names = $structs->getRaw();
-  $known_token_kinds = keyset[];
-  $known_trivium_kinds = keyset[];
+  $known_token_kinds = $ctx->getTokenKinds()->asKeyset();
+  $known_trivium_kinds = $ctx->getTriviumKinds()->asKeyset();
 
   $intermediates = _Private\create_intermediates(
     $parse_tree,

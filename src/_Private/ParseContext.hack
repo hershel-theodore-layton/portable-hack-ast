@@ -48,7 +48,7 @@ final class ParseContext {
     if (!$token_kinds->isOfSameSize($new_token_kinds)) {
       $upgrade_needed = true;
       $token_kinds = new InternedStringStorage<TokenKind>(
-        vec($new_token_kinds),
+        $new_token_kinds,
         Pha\token_kind_from_string<>,
       );
     }
@@ -56,7 +56,7 @@ final class ParseContext {
     if (!$trivium_kinds->isOfSameSize($new_trivium_kinds)) {
       $upgrade_needed = true;
       $trivium_kinds = new InternedStringStorage<TriviumKind>(
-        vec($new_trivium_kinds),
+        $new_trivium_kinds,
         Pha\trivium_kind_from_string<>,
       );
     }
