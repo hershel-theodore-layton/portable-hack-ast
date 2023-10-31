@@ -125,3 +125,7 @@ function node_get_parent_id(Node $node)[]: NodeId {
 function syntax_get_first_child_sibling_id(Syntax $node)[]: SiblingId {
   return node_get_field_3($node) |> sibling_id_from_int($$);
 }
+
+function trivium_get_source_byte_offset(Trivium $trivium)[]: SourceByteOffset {
+  return node_get_field_3($trivium) |> source_byte_offset_from_int($$);
+}

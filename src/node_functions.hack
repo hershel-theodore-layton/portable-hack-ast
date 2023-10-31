@@ -477,8 +477,9 @@ function node_get_code(Script $script, NillableNode $node)[]: string {
 
   $node = _Private\cast_away_nil($node);
 
-  $start =
-    is_trivium($node) ? $node : _Private\node_get_next_trivium($script, $node);
+  $start = is_trivium($node)
+    ? _Private\trivium_from_node($node)
+    : _Private\node_get_next_trivium($script, $node);
   $end = node_get_last_descendant_or_self($script, $node)
     |> _Private\node_get_next_trivium($script, $$);
 
@@ -497,14 +498,14 @@ function node_get_code(Script $script, NillableNode $node)[]: string {
     return '';
   }
 
-  $start_offset =
-    _Private\cast_away_nil($start) |> _Private\node_get_field_3($$);
-  $length = $end === NIL
-    ? Math\INT64_MAX
-    : _Private\node_get_field_3(_Private\cast_away_nil($end)) - $start_offset;
+  $start_offset = _Private\cast_away_nil($start)
+    |> _Private\trivium_get_source_byte_offset($$);
+  $end = $end === NIL
+    ? null
+    : _Private\trivium_get_source_byte_offset(_Private\cast_away_nil($end));
 
   $tu = _Private\translation_unit_reveal($script);
-  return $tu->sliceSourceText($start_offset, $length);
+  return $tu->cutSourceText($start_offset, $end);
 }
 
 /**
