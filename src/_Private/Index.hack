@@ -69,7 +69,7 @@ final class Index<Tnode as Node, Tkind as Kind> {
       }
     }
 
-    $ranges[$last_interned] = tuple($start_range, $i - $start_range);
+    $ranges[$last_interned] = tuple($start_range, $i - $start_range + 1);
 
     return new Index<Tnode_, Tkind_>($group, $sorted, $ranges);
   }
