@@ -29,6 +29,15 @@ final class TranslationUnit {
       : Str\slice($this->sourceText, $from, $to_exclusive - $from);
   }
 
+  public function cutSourceOrder(
+    NodeId $from,
+    NodeId $to_exclusive,
+  )[]: vec<Node> {
+    $from = node_id_to_int($from);
+    $to_exclusive = node_id_to_int($to_exclusive);
+    return Vec\slice($this->sourceOrder, $from, $to_exclusive - $from);
+  }
+
   public function debugDumpHex()[]: string {
     $out = "SOURCE ORDER:\n";
 
@@ -88,9 +97,5 @@ final class TranslationUnit {
 
   public function sliceSiblings(SiblingId $start, int $length)[]: vec<Node> {
     return Vec\slice($this->siblings, sibling_id_to_int($start), $length);
-  }
-
-  public function sliceSourceOrder(NodeId $start, int $length)[]: vec<Node> {
-    return Vec\slice($this->sourceOrder, node_id_to_int($start), $length);
   }
 }

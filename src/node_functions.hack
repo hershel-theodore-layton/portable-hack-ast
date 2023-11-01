@@ -1,7 +1,7 @@
 /** portable-hack-ast is MIT licensed, see /LICENSE. */
 namespace HTL\Pha;
 
-use namespace HH\Lib\{C, Dict, Math, Str, Vec};
+use namespace HH\Lib\{C, Dict, Str, Vec};
 
 /**
  * @package This file contains all the functions that operate on `Node`.
@@ -524,14 +524,11 @@ function node_get_descendants(Script $script, NillableNode $node)[]: vec<Node> {
   }
 
   $last_descendant = _Private\cast_away_nil($last_descendant);
-  $start = _Private\node_get_id(node_get_first_childx($script, $node));
-
-  $length =
-    _Private\node_id_diff(_Private\node_get_id($last_descendant), $start)
-    |> _Private\node_id_to_int($$);
+  $start = node_get_first_childx($script, $node) |> _Private\node_get_id($$);
+  $to_exclusive = _Private\node_get_id($last_descendant);
 
   $tu = _Private\translation_unit_reveal($script);
-  return $tu->sliceSourceOrder($start, $length);
+  return $tu->cutSourceOrder($start, $to_exclusive);
 }
 
 function node_get_elaborated_group(Node $node)[]: NodeElaboratedGroup {
