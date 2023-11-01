@@ -34,7 +34,7 @@ function create_translation_unit(
     if ($intermediate->getGroup() === IntermediateGroup::LIST) {
       // + 1, because a range from x to x is of length 1, not 0.
       $size = $range[1] - $range[0] + 1;
-      if ($size >= FIELD_1_SIZE) {
+      if ($size >= FIELD_1_MASK) {
         $list_sizes[node_id_from_int($source_order_idx)] = $size;
       }
     }

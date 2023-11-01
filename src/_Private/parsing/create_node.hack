@@ -36,7 +36,7 @@ function create_node(
       $field_0 = LIST_OR_MISSING_TAG;
       // + 1, because a range from x to x is of length 1, not 0.
       $field_1 =
-        Math\minva(FIELD_1_SIZE, $child_range[1] - $child_range[0] + 1);
+        Math\minva(FIELD_1_MASK, $child_range[1] - $child_range[0] + 1);
       $field_3 = $child_range[0];
       break;
     case IntermediateGroup::MISSING:

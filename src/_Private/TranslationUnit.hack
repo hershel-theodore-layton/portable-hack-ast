@@ -90,7 +90,7 @@ final class TranslationUnit {
    */
   public function listGetSize(Syntax $syntax)[]: int {
     $stored_length = node_get_field_1($syntax);
-    return $stored_length < FIELD_1_SIZE
+    return $stored_length < FIELD_1_MASK
       ? $stored_length
       : $this->listSizes[node_get_id($syntax)];
   }

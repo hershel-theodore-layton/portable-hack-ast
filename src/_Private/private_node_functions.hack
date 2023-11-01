@@ -4,25 +4,33 @@ namespace HTL\Pha\_Private;
 use namespace HH\Lib\Math;
 use namespace HTL\Pha;
 
-const int FIELD_0_SIZE = 0b11;
-const int FIELD_1_SIZE = 0xff;
-const int FIELD_2_SIZE = 0x3ffff;
-const int FIELD_3_SIZE = 0x3ffff;
-const int FIELD_4_SIZE = 0x3ffff;
-const int FIELD_0_OFFSET = 62;
-const int FIELD_1_OFFSET = 54;
-const int FIELD_2_OFFSET = 36;
-const int FIELD_3_OFFSET = 18;
-const int FIELD_4_OFFSET = 0;
+const int FIELD_4_SIZE = 18;
+const int FIELD_3_SIZE = 18;
+const int FIELD_2_SIZE = 18;
+const int FIELD_1_SIZE = 8;
+const int FIELD_0_SIZE = 2;
 
-const int FIELD_01_MASK =
-  (FIELD_0_SIZE << FIELD_0_OFFSET) | (FIELD_1_SIZE << FIELD_1_OFFSET);
+const int FIELD_4_OFFSET = 0;
+const int FIELD_3_OFFSET = FIELD_4_OFFSET + FIELD_4_SIZE;
+const int FIELD_2_OFFSET = FIELD_3_OFFSET + FIELD_3_SIZE;
+const int FIELD_1_OFFSET = FIELD_2_OFFSET + FIELD_2_SIZE;
+const int FIELD_0_OFFSET = FIELD_1_OFFSET + FIELD_1_SIZE;
+
+const int FIELD_4_MASK = (1 << FIELD_4_SIZE) - 1;
+const int FIELD_3_MASK = (1 << FIELD_3_SIZE) - 1;
+const int FIELD_2_MASK = (1 << FIELD_2_SIZE) - 1;
+const int FIELD_1_MASK = (1 << FIELD_1_SIZE) - 1;
+const int FIELD_0_MASK = (1 << FIELD_0_SIZE) - 1;
+
+const int FIELD_01_PRE_SHIFT_MASK =
+  (FIELD_0_MASK << FIELD_0_OFFSET) | (FIELD_1_MASK << FIELD_1_OFFSET);
+
 const int SYNTAX_TAG = Math\INT64_MIN;
 const int TOKEN_TAG = 1 << 62;
 const int TRIVIUM_TAG = 0;
 const int LIST_OR_MISSING_TAG = (Math\INT64_MIN) | (1 << 62);
 
-const int MAX_INTERNED_STRING = FIELD_1_SIZE;
+const int MAX_INTERNED_STRING = FIELD_1_MASK;
 
 /**
  * Careful, if `$kind` is `LIST_EXPRESSION` or `MISSING`, you'll get a non
@@ -79,19 +87,19 @@ function node_get_field_0(NillableNode $node)[]: int {
 }
 
 function node_get_field_1(NillableNode $node)[]: int {
-  return node_to_int($node) >> FIELD_1_OFFSET |> $$ & FIELD_1_SIZE;
+  return node_to_int($node) >> FIELD_1_OFFSET |> $$ & FIELD_1_MASK;
 }
 
 function node_get_field_2(NillableNode $node)[]: int {
-  return node_to_int($node) >> FIELD_2_OFFSET |> $$ & FIELD_2_SIZE;
+  return node_to_int($node) >> FIELD_2_OFFSET |> $$ & FIELD_2_MASK;
 }
 
 function node_get_field_3(NillableNode $node)[]: int {
-  return node_to_int($node) >> FIELD_3_OFFSET |> $$ & FIELD_3_SIZE;
+  return node_to_int($node) >> FIELD_3_OFFSET |> $$ & FIELD_3_MASK;
 }
 
 function node_get_field_4(NillableNode $node)[]: int {
-  return node_to_int($node) & FIELD_4_SIZE;
+  return node_to_int($node) & FIELD_4_MASK;
 }
 
 function node_get_id(Node $node)[]: NodeId {
@@ -111,7 +119,8 @@ function node_get_interned_kind<<<__Explicit>> T as Kind>(
  * Careful, if `$node` is `LIST` or `MISSING`, you'll get junk.
  */
 function node_get_kind_identity(Node $node)[]: KindIdentity {
-  return node_to_int($node) & FIELD_01_MASK |> kind_identity_from_int($$);
+  return
+    node_to_int($node) & FIELD_01_PRE_SHIFT_MASK |> kind_identity_from_int($$);
 }
 
 /**
