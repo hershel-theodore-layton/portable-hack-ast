@@ -804,6 +804,30 @@ final class NodeFunctionsTest extends HackTest {
       );
   }
 
+  public function provide_script_get_nodes_by_kind(
+  )[]: vec<(Pha\SyntaxKind, vec<Pha\Syntax>)> {
+    $math = $this->fixtures()->math;
+    return vec[
+      tuple(Pha\KIND_FUNCTION_DECLARATION, vec[$math->functionDeclaration]),
+      tuple(Pha\KIND_REQUIRE_CLAUSE, vec[]),
+      tuple(
+        Pha\KIND_BINARY_EXPRESSION,
+        vec[$math->ternaryCondition, $math->ternaryTrue, $math->ternaryFalse],
+      ),
+    ];
+  }
+
+  <<DataProvider('provide_script_get_nodes_by_kind')>>
+  public function test_script_get_nodes_by_kind(
+    Pha\SyntaxKind $kind,
+    vec<Pha\Syntax> $nodes,
+  )[]: void {
+    $math = $this->fixtures()->math;
+    expect(
+      Pha\script_get_nodes_by_kind($math->script, $math->syntaxIndex, $kind),
+    )->toEqual($nodes);
+  }
+
   private function fixtures()[]: Fixtures\Fixtures {
     return $this->fixtures as nonnull;
   }

@@ -22,8 +22,12 @@ const int FIELD_2_MASK = (1 << FIELD_2_SIZE) - 1;
 const int FIELD_1_MASK = (1 << FIELD_1_SIZE) - 1;
 const int FIELD_0_MASK = (1 << FIELD_0_SIZE) - 1;
 
+// This mask is the KindIdentity mask for non-LIST and non-MISSING nodes.
 const int FIELD_01_PRE_SHIFT_MASK =
   (FIELD_0_MASK << FIELD_0_OFFSET) | (FIELD_1_MASK << FIELD_1_OFFSET);
+// This mask is the IndexMask for non-LIST and non-MISSING nodes.
+const int FIELD_14_PRE_SHIFT_MASK =
+  (FIELD_1_MASK << FIELD_1_OFFSET) | (FIELD_4_MASK << FIELD_4_OFFSET);
 
 const int SYNTAX_TAG = Math\INT64_MIN;
 const int TOKEN_TAG = 1 << 62;
@@ -104,6 +108,14 @@ function node_get_field_4(NillableNode $node)[]: int {
 
 function node_get_id(Node $node)[]: NodeId {
   return node_get_field_4($node) |> node_id_from_int($$);
+}
+
+/**
+ * Careful, if `$node` is `LIST` or `MISSING`, you'll get junk.
+ */
+function node_get_index_mask(Node $node)[]: IndexMask {
+  return
+    node_to_int($node) & FIELD_14_PRE_SHIFT_MASK |> index_mask_from_int($$);
 }
 
 /**

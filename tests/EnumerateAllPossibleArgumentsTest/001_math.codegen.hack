@@ -156,6 +156,16 @@ async function math_001_async(): Awaitable<void> {
     foreach ($nillable_nodes as $p0)
       Pha\node_get_syntax_ancestors($script, $p0);
 
+    // Could not enumerate: Pha\script_get_nodes_by_kind: ["_Private\\KindIndex<Tnode, Tkind>","Tkind"]
+
+    Pha\script_get_syntaxes($script);
+
+    Pha\script_get_syntaxes_without_missing_and_list($script);
+
+    Pha\script_get_tokens($script);
+
+    Pha\script_get_trivia($script);
+
     foreach ($syntaxes as $p0)
       Pha\syntax_get_members($script, $p0);
 

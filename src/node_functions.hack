@@ -888,6 +888,52 @@ function node_get_syntax_ancestors(
 }
 
 /**
+ * @param $index is a `ScriptIndex`, `TokenIndex`, or a `TriviumIndex`.
+ * The returned nodes are in source order.
+ */
+function script_get_nodes_by_kind<Tnode as Node, Tkind as Kind>(
+  Script $script,
+  _Private\KindIndex<Tnode, Tkind> $index,
+  Tkind $kind,
+)[]: vec<Tnode> {
+  return _Private\index_reveal($index)->getByKind($script, $kind);
+}
+
+function script_get_syntaxes(Script $script)[]: vec<Syntax> {
+  $tu = _Private\translation_unit_reveal($script);
+  return $tu->getSourceOrder()
+    |> Vec\filter($$, is_syntax<>)
+    |> _Private\syntaxes_from_nodes($$);
+}
+
+function script_get_syntaxes_without_missing_and_list(
+  Script $script,
+)[]: vec<Syntax> {
+  $tu = _Private\translation_unit_reveal($script);
+  return $tu->getSourceOrder()
+    |> Vec\filter(
+      $$,
+      $n ==> node_get_elaborated_group($n) === NodeElaboratedGroup::SYNTAX,
+    )
+    |> _Private\syntaxes_from_nodes($$);
+
+}
+
+function script_get_tokens(Script $script)[]: vec<Token> {
+  $tu = _Private\translation_unit_reveal($script);
+  return $tu->getSourceOrder()
+    |> Vec\filter($$, is_syntax<>)
+    |> _Private\tokens_from_nodes($$);
+}
+
+function script_get_trivia(Script $script)[]: vec<Trivium> {
+  $tu = _Private\translation_unit_reveal($script);
+  return $tu->getSourceOrder()
+    |> Vec\filter($$, is_syntax<>)
+    |> _Private\trivia_from_nodes($$);
+}
+
+/**
  * Member names are returned in source code order.
  */
 function syntax_get_members(Script $script, Syntax $node)[]: vec<Member> {

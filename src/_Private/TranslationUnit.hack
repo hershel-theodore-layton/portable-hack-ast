@@ -85,6 +85,10 @@ final class TranslationUnit {
     return $this->ctx;
   }
 
+  public function getSourceOrder()[]: vec<Node> {
+    return $this->sourceOrder;
+  }
+
   /**
    * Careful, if `$node` is not a `LIST` or `MISSING`, you'll get junk.
    */

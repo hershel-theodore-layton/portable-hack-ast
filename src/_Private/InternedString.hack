@@ -1,7 +1,7 @@
 /** portable-hack-ast is MIT licensed, see /LICENSE. */
 namespace HTL\Pha\_Private;
 
-newtype InternedString<+T> = int;
+newtype InternedString<+T> as arraykey = int;
 
 function interned_string_from_int<<<__Explicit>> T>(
   int $int,

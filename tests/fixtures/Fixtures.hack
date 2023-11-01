@@ -9,7 +9,15 @@ final class Fixtures {
 }
 
 abstract class Fixture {
-  public function __construct(public Pha\Script $script)[] {}
+  public Pha\SyntaxIndex $syntaxIndex;
+  public Pha\TokenIndex $tokenIndex;
+  public Pha\TriviumIndex $triviumIndex;
+
+  public function __construct(public Pha\Script $script)[] {
+    $this->syntaxIndex = Pha\create_syntax_kind_index($script);
+    $this->tokenIndex = Pha\create_token_kind_index($script);
+    $this->triviumIndex = Pha\create_trivium_kind_index($script);
+  }
 }
 
 final class Math extends Fixture {
