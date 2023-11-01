@@ -24,33 +24,50 @@ const int LIST_OR_MISSING_TAG = (Math\INT64_MIN) | (1 << 62);
 
 const int MAX_INTERNED_STRING = FIELD_1_SIZE;
 
-function create_syntax_mask(Script $script, SyntaxKind $kind)[]: int {
+/**
+ * Careful, if `$kind` is `LIST_EXPRESSION` or `MISSING`, you'll get a non
+ * matching identity.
+ */
+function create_syntax_identity(
+  Script $script,
+  SyntaxKind $kind,
+)[]: KindIdentity {
   if ($kind === Pha\KIND_LIST_EXPRESSION || $kind === Pha\KIND_MISSING) {
     // This is a hack, these nodes don't have an identity.
     // Just return the greatest trivium kind there is.
     // If we ever get to a world with max trivia, consider this
     // a classic case of "This should never happen.".
-    return TRIVIUM_TAG | (MAX_INTERNED_STRING << FIELD_1_OFFSET);
+    return TRIVIUM_TAG | (MAX_INTERNED_STRING << FIELD_1_OFFSET)
+      |> kind_identity_from_int($$);
   }
 
   $ctx = translation_unit_reveal($script)->getParseContext();
   return $ctx->getSyntaxKinds()->internOrMax($kind)
     |> interned_string_to_int($$) << FIELD_1_OFFSET
-    |> $$ | SYNTAX_TAG;
+    |> $$ | SYNTAX_TAG
+    |> kind_identity_from_int($$);
 }
 
-function create_token_mask(Script $script, TokenKind $kind)[]: int {
+function create_token_identity(
+  Script $script,
+  TokenKind $kind,
+)[]: KindIdentity {
   $ctx = translation_unit_reveal($script)->getParseContext();
   return $ctx->getTokenKinds()->internOrMax($kind)
     |> interned_string_to_int($$) << FIELD_1_OFFSET
-    |> $$ | TOKEN_TAG;
+    |> $$ | TOKEN_TAG
+    |> kind_identity_from_int($$);
 }
 
-function create_trivium_mask(Script $script, TriviumKind $kind)[]: int {
+function create_trivium_identity(
+  Script $script,
+  TriviumKind $kind,
+)[]: KindIdentity {
   $ctx = translation_unit_reveal($script)->getParseContext();
   return $ctx->getTriviumKinds()->internOrMax($kind)
     |> interned_string_to_int($$) << FIELD_1_OFFSET
-    |> $$ | TRIVIUM_TAG;
+    |> $$ | TRIVIUM_TAG
+    |> kind_identity_from_int($$);
 }
 
 /**
@@ -81,10 +98,6 @@ function node_get_id(Node $node)[]: NodeId {
   return node_get_field_4($node) |> node_id_from_int($$);
 }
 
-function node_get_identity_mask(Node $node)[]: int {
-  return node_to_int($node) & FIELD_01_MASK;
-}
-
 /**
  * Careful, if `$node` is `LIST` or `MISSING`, you'll get junk.
  */
@@ -92,6 +105,13 @@ function node_get_interned_kind<<<__Explicit>> T as Kind>(
   Node $node,
 )[]: InternedString<T> {
   return node_get_field_1($node) |> interned_string_from_int<T>($$);
+}
+
+/**
+ * Careful, if `$node` is `LIST` or `MISSING`, you'll get junk.
+ */
+function node_get_kind_identity(Node $node)[]: KindIdentity {
+  return node_to_int($node) & FIELD_01_MASK |> kind_identity_from_int($$);
 }
 
 /**

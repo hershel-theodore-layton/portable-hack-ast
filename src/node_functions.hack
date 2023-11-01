@@ -129,9 +129,12 @@ function create_matcher(
   vec<TriviumKind> $trivium_kinds,
 )[]: (function(NillableNode)[]: bool) {
   $identities = Vec\concat(
-    Vec\map($syntax_kinds, $k ==> _Private\create_syntax_mask($script, $k)),
-    Vec\map($token_kinds, $k ==> _Private\create_token_mask($script, $k)),
-    Vec\map($trivium_kinds, $k ==> _Private\create_trivium_mask($script, $k)),
+    Vec\map($syntax_kinds, $k ==> _Private\create_syntax_identity($script, $k)),
+    Vec\map($token_kinds, $k ==> _Private\create_token_identity($script, $k)),
+    Vec\map(
+      $trivium_kinds,
+      $k ==> _Private\create_trivium_identity($script, $k),
+    ),
   )
     |> Vec\unique($$);
 
@@ -154,7 +157,7 @@ function create_matcher(
       case 1:
         return $n ==> $n !== NIL &&
           (
-            _Private\node_get_identity_mask(_Private\cast_away_nil($n))
+            _Private\node_get_kind_identity(_Private\cast_away_nil($n))
             |> $$ === $id_0
           );
       case 2:
@@ -162,7 +165,7 @@ function create_matcher(
       case 4:
         return $n ==> $n !== NIL &&
           (
-            _Private\node_get_identity_mask(_Private\cast_away_nil($n))
+            _Private\node_get_kind_identity(_Private\cast_away_nil($n))
             |> $$ === $id_0 || $$ === $id_1 || $$ === $id_2 || $$ === $id_3
           );
       case 5:
@@ -172,14 +175,14 @@ function create_matcher(
         return $n ==> $n !== NIL &&
           // hackfmt-ignore
           (
-            _Private\node_get_identity_mask(_Private\cast_away_nil($n))
+            _Private\node_get_kind_identity(_Private\cast_away_nil($n))
             |> $$ === $id_0 || $$ === $id_1 || $$ === $id_2 || $$ === $id_3 ||
                $$ === $id_4 || $$ === $id_5 || $$ === $id_6 || $$ === $id_7
           );
       default:
         return $n ==> $n !== NIL &&
           (
-            _Private\node_get_identity_mask(_Private\cast_away_nil($n))
+            _Private\node_get_kind_identity(_Private\cast_away_nil($n))
             |> C\contains($identities, $$)
           );
     }
@@ -254,11 +257,12 @@ function create_member_accessor(
         ),
       );
     },
-    ($syntax_kind, $_) ==> _Private\create_syntax_mask($script, $syntax_kind),
+    ($syntax_kind, $_) ==>
+      _Private\create_syntax_identity($script, $syntax_kind),
   );
 
   return $n ==> {
-    $idx = idx($interned, _Private\node_get_identity_mask($n));
+    $idx = idx($interned, _Private\node_get_kind_identity($n));
 
     if ($idx is null) {
       throw new _Private\PhaException(Str\format(
