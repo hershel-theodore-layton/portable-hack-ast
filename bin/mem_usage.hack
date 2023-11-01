@@ -19,6 +19,7 @@ async function mem_usage_async(): Awaitable<void> {
   list(, $lib, $base_dir) = $argv;
   echo 'Parsing: '.$base_dir.' with '.$lib."\n";
 
+  $start = \clock_gettime_ns(\CLOCK_MONOTONIC);
   if ($lib === 'pha') {
     $usage = await mem_usage_pha_async($base_dir);
   } else if ($lib === 'hhast') {
@@ -28,7 +29,11 @@ async function mem_usage_async(): Awaitable<void> {
     return;
   }
 
-  echo Str\format('%g megabytes used.', $usage / 1_000_000.);
+  echo Str\format(
+    'Took %g seconds and %g megabytes.',
+    (\clock_gettime_ns(\CLOCK_MONOTONIC) - $start) / 1_000_000_000.,
+    $usage / 1_000_000.,
+  );
 }
 
 async function mem_usage_pha_async(string $base_path): Awaitable<int> {
