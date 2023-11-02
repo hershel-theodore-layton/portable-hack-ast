@@ -971,6 +971,16 @@ function token_get_parent(Script $script, Token $node)[]: Syntax {
   return node_get_parent($script, $node) |> _Private\syntax_from_node($$);
 }
 
+function token_get_text(Script $script, NillableToken $node)[]: string {
+  if ($node === NIL) {
+    return '';
+  }
+
+  return _Private\cast_away_nil($node)
+    |> token_get_text_trivium($script, $$)
+    |> node_get_code($script, $$);
+}
+
 function token_get_text_trivium(Script $script, Token $node)[]: Trivium {
   $tu = _Private\translation_unit_reveal($script);
   return _Private\node_get_field_3($node)

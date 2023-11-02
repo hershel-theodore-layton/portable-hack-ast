@@ -828,6 +828,24 @@ final class NodeFunctionsTest extends HackTest {
     )->toEqual($nodes);
   }
 
+  public function provide_token_get_text()[]: vec<(Pha\NillableToken, string)> {
+    $math = $this->fixtures()->math;
+    return vec[
+      tuple(Pha\NIL, ''),
+      tuple($math->namespaceSemicolon, ';'),
+      tuple($math->namespaceToken, 'namespace'),
+    ];
+  }
+
+  <<DataProvider('provide_token_get_text')>>
+  public function test_token_get_text(
+    Pha\NillableToken $node,
+    string $text,
+  )[]: void {
+    $script = $this->fixtures()->math->script;
+    expect(Pha\token_get_text($script, $node))->toEqual($text);
+  }
+
   private function fixtures()[]: Fixtures\Fixtures {
     return $this->fixtures as nonnull;
   }

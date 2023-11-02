@@ -177,6 +177,9 @@ async function math_001_async(): Awaitable<void> {
     foreach ($tokens as $p0)
       Pha\token_get_parent($script, $p0);
 
+    foreach ($nillable_tokens as $p0)
+      Pha\token_get_text($script, $p0);
+
     foreach ($tokens as $p0)
       Pha\token_get_text_trivium($script, $p0);
   }();
