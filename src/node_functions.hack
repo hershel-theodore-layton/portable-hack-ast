@@ -922,14 +922,14 @@ function script_get_syntaxes_without_missing_and_list(
 function script_get_tokens(Script $script)[]: vec<Token> {
   $tu = _Private\translation_unit_reveal($script);
   return $tu->getSourceOrder()
-    |> Vec\filter($$, is_syntax<>)
+    |> Vec\filter($$, is_token<>)
     |> _Private\tokens_from_nodes($$);
 }
 
 function script_get_trivia(Script $script)[]: vec<Trivium> {
   $tu = _Private\translation_unit_reveal($script);
   return $tu->getSourceOrder()
-    |> Vec\filter($$, is_syntax<>)
+    |> Vec\filter($$, is_trivium<>)
     |> _Private\trivia_from_nodes($$);
 }
 
