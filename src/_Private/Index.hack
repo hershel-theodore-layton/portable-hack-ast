@@ -58,15 +58,19 @@ final class Index<Tnode as Node, Tkind as Kind> {
     $ranges = dict[];
     $last_interned = node_get_interned_kind<Tkind_>(C\firstx($sorted));
     $start_range = 0;
-    $i = 0;
 
-    foreach ($sorted as $i => $node) {
+    // This $i is just the loop counter, I need it to outlive the loop.
+    // A foreach ($sorted as $i => $node) would be more expressive, but
+    // HHClientLinter warns about the shadowing, so a manual `++$i` it is...
+    $i = 0;
+    foreach ($sorted as $node) {
       $interned = node_get_interned_kind<Tkind_>($node);
       if ($interned !== $last_interned) {
         $ranges[$last_interned] = tuple($start_range, $i - $start_range);
         $start_range = $i;
         $last_interned = $interned;
       }
+      ++$i;
     }
 
     $ranges[$last_interned] = tuple($start_range, $i - $start_range + 1);
