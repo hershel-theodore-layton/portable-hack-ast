@@ -153,6 +153,9 @@ async function math_001_async(): Awaitable<void> {
     foreach ($nodes as $p0)
       Pha\node_get_parent($script, $p0);
 
+    foreach ($nodes as $p0)
+      Pha\node_get_source_order($p0);
+
     foreach ($nillable_nodes as $p0)
       Pha\node_get_syntax_ancestors($script, $p0);
 

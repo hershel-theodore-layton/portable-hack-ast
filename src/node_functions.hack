@@ -852,6 +852,13 @@ function node_get_parent(Script $script, Node $node)[]: Node {
 }
 
 /**
+ * This number can be used to sort nodes back into the order they came.
+ */
+function node_get_source_order(Node $node)[]: int {
+  return _Private\node_get_id($node) |> _Private\node_id_to_int($$);
+}
+
+/**
  * The ancestors are returned in opposite source order,
  * so parents precede grand parents, grand parents precede great grand parents.
  *
