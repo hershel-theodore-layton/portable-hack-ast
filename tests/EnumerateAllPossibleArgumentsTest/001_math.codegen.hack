@@ -65,7 +65,7 @@ async function math_001_async(): Awaitable<void> {
 
     // Could not enumerate: Pha\create_matcher: ["vec<SyntaxKind>","vec<TokenKind>","vec<TriviumKind>"]
 
-    // Could not enumerate: Pha\create_member_accessor: ["dict<SyntaxKind, Member>"]
+    // Could not enumerate: Pha\create_member_accessor: ["Member"]
 
     // Could not enumerate: Pha\create_syntax_matcher: ["SyntaxKind","SyntaxKind"]
 

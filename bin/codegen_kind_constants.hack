@@ -45,14 +45,28 @@ async function codegen_kind_constants_async(): Awaitable<void> {
 
   $kind_constants = GENERATED.$calling_card;
 
-  $ambiguous_kinds =
-    Keyset\intersect(Vec\keys($syntaxes), Vec\keys($tokens)) |> Vec\sort($$);
+  $ambiguous_kinds = Keyset\intersect(Vec\keys($syntaxes), Vec\keys($tokens));
+
+  $syntax_kind_to_const = Dict\map_with_key(
+    $syntaxes,
+    ($kind, $_) ==> 'KIND_'.
+      Str\uppercase(
+        C\contains_key($ambiguous_kinds, $kind) ? $kind.'_SYNTAX' : $kind,
+      ),
+  );
+
+  $token_kind_to_const = Dict\map_with_key(
+    $tokens,
+    ($kind, $_) ==> 'KIND_'.
+      Str\uppercase(
+        C\contains_key($ambiguous_kinds, $kind) ? $kind.'_TOKEN' : $kind,
+      ),
+  );
 
   foreach ($sort($syntaxes) as $name => $_) {
     $kind_constants .= Str\format(
-      "const SyntaxKind KIND_%s%s = %s;\n",
-      Str\uppercase($name),
-      C\contains($ambiguous_kinds, $name) ? '_SYNTAX' : '',
+      "const SyntaxKind %s = %s;\n",
+      $syntax_kind_to_const[$name],
       var_export_pure($name),
     );
   }
@@ -61,9 +75,8 @@ async function codegen_kind_constants_async(): Awaitable<void> {
 
   foreach ($sort($tokens) as $name => $repr) {
     $kind_constants .= Str\format(
-      "const TokenKind KIND_%s%s = %s;\n",
-      Str\uppercase($name),
-      C\contains($ambiguous_kinds, $name) ? '_TOKEN' : '',
+      "const TokenKind %s = %s;\n",
+      $token_kind_to_const[$name],
       var_export_pure($repr),
     );
   }
@@ -94,10 +107,9 @@ async function codegen_kind_constants_async(): Awaitable<void> {
 
   foreach (Dict\sort_by_key($member_to_owner) as $member => $owner) {
     $member_constants .= Str\format(
-      "/** `%s->%s` */\nconst Member MEMBER_%s = %s;\n",
-      $owner,
-      snake_case_to_camel_case($member),
+      "const Member MEMBER_%s = tuple(%s, %s);\n",
       Str\uppercase($member),
+      $syntax_kind_to_const[$owner],
       var_export_pure($member),
     );
   }

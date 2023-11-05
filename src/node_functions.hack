@@ -229,14 +229,15 @@ function create_matcher(
  */
 function create_member_accessor(
   Script $script,
-  dict<SyntaxKind, Member> $accessors,
+  Member ...$accessors
 )[]: (function(Syntax)[]: Node) {
   $tu = _Private\translation_unit_reveal($script);
   $structs = $tu->getParseContext()->getStructs();
 
-  $interned = Dict\pull_with_key(
+  $interned = Dict\pull(
     $accessors,
-    ($syntax_kind, $member) ==> {
+    $member ==> {
+      $syntax_kind = member_get_syntax_kind($member);
       $members = idx($structs->getRaw(), $syntax_kind);
 
       if ($members is null) {
@@ -251,14 +252,15 @@ function create_member_accessor(
 
       throw new _Private\PhaException(
         Str\format(
-          '%s does not have a member named %s.',
+          '%s does not have a member named %s. Only %s does have this member.',
           $syntax_kind,
-          member_to_string($member),
+          member_get_name($member),
+          member_get_syntax_kind($member),
         ),
       );
     },
-    ($syntax_kind, $_) ==>
-      _Private\create_syntax_identity($script, $syntax_kind),
+    $member ==>
+      _Private\create_syntax_identity($script, member_get_syntax_kind($member)),
   );
 
   return $n ==> {
@@ -967,9 +969,10 @@ function syntax_member(Script $script, Syntax $node, Member $member)[]: Node {
   }
 
   throw new _Private\PhaException(Str\format(
-    'This %s does not have a member named %s.',
+    'Expected a %s to get member %s, but got %s.',
+    member_get_syntax_kind($member),
+    member_get_name($member),
     node_get_kind($script, $node),
-    $member |> member_to_string($$),
   ));
 }
 

@@ -50,7 +50,9 @@ function create_intermediates(
 
           foreach (Vec\keys($to_parse->getItem()) as $member_name) {
             if ($member_name !== 'kind') {
-              $new_names[] = Pha\member_from_string($member_name as string);
+              $new_names[] = Pha\member_from_tuple(
+                tuple($syntax->getSyntaxKind(), $member_name as string),
+              );
             }
           }
 
