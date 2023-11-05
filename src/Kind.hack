@@ -32,6 +32,7 @@ function trivium_kind_from_string(string $str)[]: TriviumKind {
 
 // Missing the codegen...
 const SyntaxKind KIND_NAME_EXPRESSION = 'name_expression';
+const SyntaxKind KIND_NODE_LIST = 'node_list';
 const SyntaxKind KIND_MISSING = 'missing';
 
 const TriviumKind KIND_DELIMITED_COMMENT = 'delimited_comment';

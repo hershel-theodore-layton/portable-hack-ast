@@ -78,7 +78,7 @@ final class NodeFunctionsTest extends HackTest {
     $math = $this->fixtures()->math;
     return vec[
       tuple(Pha\SCRIPT_NODE, Pha\KIND_SCRIPT),
-      tuple($math->declarationList, Pha\KIND_LIST_EXPRESSION),
+      tuple($math->declarationList, Pha\KIND_NODE_LIST),
       tuple(
         $math->namespaceDeclarationHeader,
         Pha\KIND_NAMESPACE_DECLARATION_HEADER,
@@ -183,7 +183,7 @@ final class NodeFunctionsTest extends HackTest {
   )[]: vec<(Pha\NillableNode, int, ?Pha\Kind)> {
     $math = $this->fixtures()->math;
     return vec[
-      tuple(Pha\SCRIPT_NODE, 0, Pha\KIND_LIST_EXPRESSION),
+      tuple(Pha\SCRIPT_NODE, 0, Pha\KIND_NODE_LIST),
       tuple(Pha\SCRIPT_NODE, 1, null),
       tuple($math->declarationList, 0, Pha\KIND_NAMESPACE_DECLARATION),
       tuple($math->declarationList, 1, Pha\KIND_FUNCTION_DECLARATION),
@@ -302,7 +302,7 @@ final class NodeFunctionsTest extends HackTest {
   )[]: vec<(Pha\NillableNode, vec<Pha\Kind>)> {
     $math = $this->fixtures()->math;
     return vec[
-      tuple(Pha\SCRIPT_NODE, vec[Pha\KIND_LIST_EXPRESSION]),
+      tuple(Pha\SCRIPT_NODE, vec[Pha\KIND_NODE_LIST]),
       tuple(
         $math->declarationList,
         vec[
@@ -655,12 +655,9 @@ final class NodeFunctionsTest extends HackTest {
     $script = $math->script;
 
     $is_always_false = Pha\create_matcher($script, vec[], vec[], vec[]);
-    $is_list_or_missing = Pha\create_syntax_matcher(
-      $script,
-      Pha\KIND_LIST_EXPRESSION,
-      Pha\KIND_MISSING,
-    );
-    $is_list = Pha\create_syntax_matcher($script, Pha\KIND_LIST_EXPRESSION);
+    $is_list_or_missing =
+      Pha\create_syntax_matcher($script, Pha\KIND_NODE_LIST, Pha\KIND_MISSING);
+    $is_list = Pha\create_syntax_matcher($script, Pha\KIND_NODE_LIST);
     $is_missing = Pha\create_syntax_matcher($script, Pha\KIND_MISSING);
 
     $is_return_statement_or_minus_or_delimited_comment = Pha\create_matcher(

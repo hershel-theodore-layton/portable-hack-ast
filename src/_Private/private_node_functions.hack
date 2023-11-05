@@ -37,14 +37,14 @@ const int LIST_OR_MISSING_TAG = (Math\INT64_MIN) | (1 << 62);
 const int MAX_INTERNED_STRING = FIELD_1_MASK;
 
 /**
- * Careful, if `$kind` is `LIST_EXPRESSION` or `MISSING`, you'll get a non
+ * Careful, if `$kind` is `KIND_NODE_LIST` or `KIND_MISSING`, you'll get a non
  * matching identity.
  */
 function create_syntax_identity(
   Script $script,
   SyntaxKind $kind,
 )[]: KindIdentity {
-  if ($kind === Pha\KIND_LIST_EXPRESSION || $kind === Pha\KIND_MISSING) {
+  if ($kind === Pha\KIND_NODE_LIST || $kind === Pha\KIND_MISSING) {
     // This is a hack, these nodes don't have an identity.
     // Just return the greatest trivium kind there is.
     // If we ever get to a world with max trivia, consider this

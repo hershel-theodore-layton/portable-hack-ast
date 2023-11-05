@@ -188,7 +188,7 @@ function create_matcher(
     }
   }();
 
-  $look_for_list = C\contains($syntax_kinds, KIND_LIST_EXPRESSION);
+  $look_for_list = C\contains($syntax_kinds, KIND_NODE_LIST);
   $look_for_missing = C\contains($syntax_kinds, KIND_MISSING);
 
   if ($look_for_list || $look_for_missing) {
@@ -638,7 +638,7 @@ function node_get_kind(Script $script, Node $node)[]: Kind {
         |> $kinds->fromInterned($$);
 
     case NodeElaboratedGroup::LIST:
-      return KIND_LIST_EXPRESSION;
+      return KIND_NODE_LIST;
     case NodeElaboratedGroup::MISSING:
       return KIND_MISSING;
   }

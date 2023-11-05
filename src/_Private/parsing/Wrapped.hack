@@ -18,7 +18,7 @@ final class Wrapped {
       IntermediateGroup::LIST,
       $id,
       $this->parentId,
-      Pha\KIND_LIST_EXPRESSION,
+      Pha\KIND_NODE_LIST,
     );
   }
 
