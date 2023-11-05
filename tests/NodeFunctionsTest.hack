@@ -801,7 +801,7 @@ final class NodeFunctionsTest extends HackTest {
       );
   }
 
-  public function provide_script_get_nodes_by_kind(
+  public function provide_index_get_nodes_by_kind(
   )[]: vec<(Pha\SyntaxKind, vec<Pha\Syntax>)> {
     $math = $this->fixtures()->math;
     return vec[
@@ -814,15 +814,15 @@ final class NodeFunctionsTest extends HackTest {
     ];
   }
 
-  <<DataProvider('provide_script_get_nodes_by_kind')>>
-  public function test_script_get_nodes_by_kind(
+  <<DataProvider('provide_index_get_nodes_by_kind')>>
+  public function test_index_get_nodes_by_kind(
     Pha\SyntaxKind $kind,
     vec<Pha\Syntax> $nodes,
   )[]: void {
     $math = $this->fixtures()->math;
-    expect(
-      Pha\script_get_nodes_by_kind($math->script, $math->syntaxIndex, $kind),
-    )->toEqual($nodes);
+    expect(Pha\index_get_nodes_by_kind($math->syntaxIndex, $kind))->toEqual(
+      $nodes,
+    );
   }
 
   public function provide_token_get_text()[]: vec<(Pha\NillableToken, string)> {

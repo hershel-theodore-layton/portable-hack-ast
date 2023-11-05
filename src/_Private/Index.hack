@@ -11,6 +11,7 @@ final class Index<Tnode as Node, Tkind as Kind> {
    *   The order is interned string numeric order, but this is not relied upon.
    */
   public function __construct(
+    private ParseContext $ctx,
     private Pha\NodeGroup $group,
     private vec<Tnode> $nodes,
     private dict<InternedString<Tkind>, (int, int)> $ranges,
@@ -19,21 +20,19 @@ final class Index<Tnode as Node, Tkind as Kind> {
   /**
    * The returned nodes are in source order.
    */
-  public function getByKind(Script $script, Tkind $kind)[]: vec<Tnode> {
-    $ctx = translation_unit_reveal($script)->getParseContext();
-
+  public function getByKind(Tkind $kind)[]: vec<Tnode> {
     switch ($this->group) {
       case Pha\NodeGroup::SYNTAX:
         $interned = Pha\syntax_kind_from_kind($kind)
-          |> $ctx->getSyntaxKinds()->internOrMax($$);
+          |> $this->ctx->getSyntaxKinds()->internOrMax($$);
         break;
       case Pha\NodeGroup::TOKEN:
         $interned = Pha\token_kind_from_kind($kind)
-          |> $ctx->getTokenKinds()->internOrMax($$);
+          |> $this->ctx->getTokenKinds()->internOrMax($$);
         break;
       case Pha\NodeGroup::TRIVIUM:
         $interned = Pha\trivium_kind_from_kind($kind)
-          |> $ctx->getTriviumKinds()->internOrMax($$);
+          |> $this->ctx->getTriviumKinds()->internOrMax($$);
     }
 
     return idx($this->ranges, $interned)
@@ -47,11 +46,12 @@ final class Index<Tnode as Node, Tkind as Kind> {
    * `$group` has to belong together with `Tnode_` and `Tkind_`.
    */
   public static function create<Tnode_ as Node, <<__Explicit>> Tkind_ as Kind>(
+    ParseContext $ctx,
     Pha\NodeGroup $group,
     vec<Tnode_> $nodes,
   )[]: Index<Tnode_, Tkind_> {
     if (C\is_empty($nodes)) {
-      return new Index<Tnode_, Tkind_>($group, vec[], dict[]);
+      return new Index<Tnode_, Tkind_>($ctx, $group, vec[], dict[]);
     }
 
     $sorted = Vec\sort_by($nodes, node_get_index_mask<>);
@@ -71,6 +71,6 @@ final class Index<Tnode as Node, Tkind as Kind> {
 
     $ranges[$last_interned] = tuple($start_range, $i - $start_range + 1);
 
-    return new Index<Tnode_, Tkind_>($group, $sorted, $ranges);
+    return new Index<Tnode_, Tkind_>($ctx, $group, $sorted, $ranges);
   }
 }

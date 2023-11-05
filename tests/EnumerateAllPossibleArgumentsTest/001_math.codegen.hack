@@ -73,6 +73,8 @@ async function math_001_async(): Awaitable<void> {
 
     // Could not enumerate: Pha\create_trivium_matcher: ["TriviumKind","TriviumKind"]
 
+    // Could not enumerate: Pha\index_get_nodes_by_kind: ["_Private\\KindIndex<Tnode, Tkind>","Tkind"]
+
     foreach ($nillable_nodes as $p0)
       Pha\is_syntax($p0);
 
@@ -158,8 +160,6 @@ async function math_001_async(): Awaitable<void> {
 
     foreach ($nillable_nodes as $p0)
       Pha\node_get_syntax_ancestors($script, $p0);
-
-    // Could not enumerate: Pha\script_get_nodes_by_kind: ["_Private\\KindIndex<Tnode, Tkind>","Tkind"]
 
     Pha\script_get_syntaxes($script);
 

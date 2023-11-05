@@ -299,6 +299,17 @@ function create_trivium_matcher(
   return create_matcher($script, vec[], vec[], Vec\concat(vec[$first], $rest));
 }
 
+/**
+ * @param $index is a `ScriptIndex`, `TokenIndex`, or a `TriviumIndex`.
+ * The returned nodes are in source order.
+ */
+function index_get_nodes_by_kind<Tnode as Node, Tkind as Kind>(
+  _Private\KindIndex<Tnode, Tkind> $index,
+  Tkind $kind,
+)[]: vec<Tnode> {
+  return _Private\index_reveal($index)->getByKind($kind);
+}
+
 function is_syntax(NillableNode $node)[]: bool {
   if ($node === NIL) {
     return false;
@@ -892,18 +903,6 @@ function node_get_syntax_ancestors(
   }
 
   return $out;
-}
-
-/**
- * @param $index is a `ScriptIndex`, `TokenIndex`, or a `TriviumIndex`.
- * The returned nodes are in source order.
- */
-function script_get_nodes_by_kind<Tnode as Node, Tkind as Kind>(
-  Script $script,
-  _Private\KindIndex<Tnode, Tkind> $index,
-  Tkind $kind,
-)[]: vec<Tnode> {
-  return _Private\index_reveal($index)->getByKind($script, $kind);
 }
 
 function script_get_syntaxes(Script $script)[]: vec<Syntax> {
