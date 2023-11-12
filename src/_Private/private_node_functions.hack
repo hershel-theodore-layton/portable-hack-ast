@@ -32,7 +32,7 @@ const int FIELD_14_PRE_SHIFT_MASK =
 const int SYNTAX_TAG = Math\INT64_MIN;
 const int TOKEN_TAG = 1 << 62;
 const int TRIVIUM_TAG = 0;
-const int LIST_OR_MISSING_TAG = (Math\INT64_MIN) | (1 << 62);
+const int LIST_OR_MISSING_TAG = Math\INT64_MIN | (1 << 62);
 
 const int MAX_INTERNED_STRING = FIELD_1_MASK;
 
