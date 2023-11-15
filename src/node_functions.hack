@@ -526,6 +526,42 @@ function node_get_code(Script $script, NillableNode $node)[]: string {
 }
 
 /**
+ * Returns the code with all the tokens glued together, (no comments / whitespace).
+ *
+ * The text returned is not code that can be reparsed.
+ * This canonicalizes code by stripping comments and whitespace, but in doing so
+ * it removes spaces that were needed for he program to parse:
+ * ```
+ * return 3; // >> return3;
+ * ```
+ */
+function node_get_code_compressed(
+  Script $script,
+  NillableNode $node,
+)[]: string {
+  if ($node === NIL) {
+    return '';
+  }
+
+  $node = _Private\cast_away_nil($node);
+
+  switch (node_get_group($node)) {
+    case NodeGroup::SYNTAX:
+      return node_get_descendants($script, $node)
+        |> Vec\filter($$, is_token<>)
+        |> Vec\map($$, $t ==> token_get_text($script, as_token($t)))
+        |> Str\join($$, '');
+    case NodeGroup::TOKEN:
+      return token_get_text($script, as_token($node));
+    case NodeGroup::TRIVIUM:
+      $token = trivium_get_parent($script, as_trivium($node));
+      return token_get_text_trivium($script, $token) === $node
+        ? node_get_code($script, $node)
+        : '';
+  }
+}
+
+/**
  * Descendants are returned in source order.
  */
 function node_get_descendants(Script $script, NillableNode $node)[]: vec<Node> {
@@ -996,4 +1032,8 @@ function token_get_text_trivium(Script $script, Token $node)[]: Trivium {
     |> _Private\node_id_from_int($$)
     |> $tu->getNodeByIdx($$)
     |> _Private\trivium_from_node($$);
+}
+
+function trivium_get_parent(Script $script, Trivium $node)[]: Token {
+  return node_get_parent($script, $node) |> _Private\token_from_node($$);
 }

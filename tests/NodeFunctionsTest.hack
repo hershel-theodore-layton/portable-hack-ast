@@ -814,6 +814,28 @@ final class NodeFunctionsTest extends HackTest {
     expect(Pha\token_get_text($script, $node))->toEqual($text);
   }
 
+  public function provide_node_get_code_compressed(
+  )[]: vec<(Pha\NillableNode, string)> {
+    $math = $this->fixtures()->math;
+    return vec[
+      tuple($math->ternaryExpression, '$a>$b?$a-$b:$b-$a'),
+      tuple($math->namespaceToken, 'namespace'),
+      tuple($math->licenseComment, ''),
+      tuple(Pha\NIL, ''),
+    ];
+  }
+
+  <<DataProvider('provide_node_get_code_compressed')>>
+  public function test_node_get_code_compressed(
+    Pha\NillableNode $node,
+    string $compressed_code,
+  )[]: void {
+    $script = $this->fixtures()->math->script;
+    expect(Pha\node_get_code_compressed($script, $node))->toEqual(
+      $compressed_code,
+    );
+  }
+
   private function fixtures()[]: Fixtures\Fixtures {
     return $this->fixtures as nonnull;
   }

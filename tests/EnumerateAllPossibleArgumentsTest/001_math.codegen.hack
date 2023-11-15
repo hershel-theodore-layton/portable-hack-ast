@@ -100,6 +100,9 @@ async function math_001_async(): Awaitable<void> {
       Pha\node_get_code($script, $p0);
 
     foreach ($nillable_nodes as $p0)
+      Pha\node_get_code_compressed($script, $p0);
+
+    foreach ($nillable_nodes as $p0)
       Pha\node_get_descendants($script, $p0);
 
     foreach ($nodes as $p0)
@@ -185,5 +188,8 @@ async function math_001_async(): Awaitable<void> {
 
     foreach ($tokens as $p0)
       Pha\token_get_text_trivium($script, $p0);
+
+    foreach ($trivia as $p0)
+      Pha\trivium_get_parent($script, $p0);
   }();
 }
