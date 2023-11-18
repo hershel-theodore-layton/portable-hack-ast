@@ -7,6 +7,7 @@ type NillableSyntax = _Private\NillableSyntax;
 type NillableToken = _Private\NillableToken;
 type NillableTrivium = _Private\NillableTrivium;
 type Node = _Private\Node;
+type Resolver = _Private\Resolver;
 type Script = _Private\Script;
 type Syntax = _Private\Syntax;
 type SyntaxIndex = _Private\KindIndex<Syntax, SyntaxKind>;

@@ -163,6 +163,16 @@ function node_get_parent_id(Node $node)[]: NodeId {
   return node_get_field_2($node) |> node_id_from_int($$);
 }
 
+function node_is_between_or_at_boundary(
+  Node $compare,
+  NodeId $start,
+  NodeId $end,
+)[]: bool {
+  return node_get_id($compare)
+    |> node_id_to_int($$)
+    |> $$ >= node_id_to_int($start) && $$ <= node_id_to_int($end);
+}
+
 function syntax_get_first_child_sibling_id(Syntax $node)[]: SiblingId {
   return node_get_field_3($node) |> sibling_id_from_int($$);
 }
