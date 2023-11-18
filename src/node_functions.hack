@@ -13,7 +13,7 @@ use namespace HH\Lib\{C, Dict, Math, Str, Vec};
  *    sometimes even nillable nodes.
  *  - Functions that start with `syntax_`, `token_`, or `trivium_` only work on
  *    syntaxes, tokens, and trivia (or their nillable counterparts) respectively.
- *  - `Node`, `Syntax`, `Token`, and `Trivium` is not `<<__Enforceable>>`.
+ *  - `Node`, `Syntax`, `Token`, and `Trivium` are not `<<__Enforceable>>`.
  *    Replacements are provided in the form of functions.
  *    - `is`: `Pha\is_x()`
  *    - `as`: `Pha\as_x()`
