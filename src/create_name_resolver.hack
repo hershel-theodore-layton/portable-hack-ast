@@ -351,8 +351,8 @@ function create_name_resolver(
       $n ==>
         node_get_ancestors($script, $n) |> C\find($$, $is_qualfied_name) ?? $n,
     )
-    |> Vec\unique_by($$, _Private\node_get_id<>)
-    |> Dict\pull($$, $resolve_name, _Private\node_get_id<>)
+    |> Vec\unique_by($$, node_get_id<>)
+    |> Dict\pull($$, $resolve_name, node_get_id<>)
     |> Dict\filter_nulls($$)
     |> new NameResolver(
       $namespaces,

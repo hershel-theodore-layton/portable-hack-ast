@@ -454,7 +454,7 @@ function node_get_children(Script $script, NillableNode $node)[]: vec<Node> {
       );
 
     case NodeElaboratedGroup::TOKEN:
-      $parent_id = _Private\node_get_id($node);
+      $parent_id = node_get_id($node);
       $child_id = $parent_id;
       $children = vec[];
 
@@ -577,8 +577,8 @@ function node_get_descendants(Script $script, NillableNode $node)[]: vec<Node> {
   }
 
   $last_descendant = _Private\cast_away_nil($last_descendant);
-  $start = node_get_first_childx($script, $node) |> _Private\node_get_id($$);
-  $to_exclusive = _Private\node_get_id($last_descendant);
+  $start = node_get_first_childx($script, $node) |> node_get_id($$);
+  $to_exclusive = node_get_id($last_descendant);
 
   $tu = _Private\translation_unit_reveal($script);
   return $tu->cutSourceOrder($start, $to_exclusive);
@@ -614,7 +614,7 @@ function node_get_first_child(
     case NodeElaboratedGroup::SYNTAX:
     case NodeElaboratedGroup::TOKEN:
     case NodeElaboratedGroup::LIST:
-      return _Private\node_get_id($node)
+      return node_get_id($node)
         |> _Private\node_id_add($$, 1)
         |> $tu->getNodeByIdx($$);
 
@@ -667,6 +667,10 @@ function node_get_group_name(NillableNode $node)[]: string {
   }
 }
 
+function node_get_id(Node $node)[]: NodeId {
+  return _Private\node_get_id($node);
+}
+
 function node_get_kind(Script $script, Node $node)[]: Kind {
   $tu = _Private\translation_unit_reveal($script);
 
@@ -714,7 +718,7 @@ function node_get_last_child(
       );
 
     case NodeElaboratedGroup::TOKEN:
-      $parent_id = _Private\node_get_id($node);
+      $parent_id = node_get_id($node);
       $child_id = $parent_id;
       $last_child = NIL;
 
@@ -844,13 +848,12 @@ function node_get_nth_child(
       }
 
       $child_node = _Private\cast_away_nil($child_node);
-      return
-        _Private\node_get_parent_id($child_node) === _Private\node_get_id($node)
-          ? $child_node
-          : NIL;
+      return _Private\node_get_parent_id($child_node) === node_get_id($node)
+        ? $child_node
+        : NIL;
 
     case NodeElaboratedGroup::TOKEN:
-      $child_node = _Private\node_get_id($node)
+      $child_node = node_get_id($node)
         |> _Private\node_id_add($$, 1 + $n)
         |> $tu->getNodeById($$);
 
@@ -859,10 +862,9 @@ function node_get_nth_child(
       }
 
       $child_node = _Private\cast_away_nil($child_node);
-      return
-        _Private\node_get_parent_id($child_node) === _Private\node_get_id($node)
-          ? $child_node
-          : NIL;
+      return _Private\node_get_parent_id($child_node) === node_get_id($node)
+        ? $child_node
+        : NIL;
 
     case NodeElaboratedGroup::TRIVIUM:
     case NodeElaboratedGroup::MISSING:
@@ -904,7 +906,7 @@ function node_get_parent(Script $script, Node $node)[]: Node {
  * This number can be used to sort nodes back into the order they came.
  */
 function node_get_source_order(Node $node)[]: int {
-  return _Private\node_get_id($node) |> _Private\node_id_to_int($$);
+  return node_get_id($node) |> _Private\node_id_to_int($$);
 }
 
 /**
