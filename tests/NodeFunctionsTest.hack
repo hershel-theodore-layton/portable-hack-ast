@@ -836,6 +836,39 @@ final class NodeFunctionsTest extends HackTest {
     );
   }
 
+  public function provide_source_range_get_line_and_column_numbers(
+  )[]: vec<(Pha\Node, (int, int), (int, int))> {
+    $math = $this->fixtures()->math;
+    return vec[
+      tuple(Pha\SCRIPT_NODE, tuple(1, 0), tuple(7, 1)),
+      tuple($math->declarationList, tuple(1, 0), tuple(7, 1)),
+      tuple($math->functionDeclaration, tuple(2, 34), tuple(6, 2)),
+      tuple($math->missingTypeParameterList, tuple(4, 13), tuple(4, 13)),
+      tuple(
+        $math->functionDeclarationHeaderLeftParen,
+        tuple(4, 13),
+        tuple(4, 14),
+      ),
+      tuple($math->parameterList, tuple(4, 14), tuple(4, 28)),
+      tuple($math->parameterA, tuple(4, 14), tuple(4, 20)),
+      tuple($math->returnStatement, tuple(4, 39), tuple(5, 38)),
+    ];
+  }
+
+  <<DataProvider('provide_source_range_get_line_and_column_numbers')>>
+  public function test_source_range_get_line_and_column_numbers(
+    Pha\Node $node,
+    (int, int) $start,
+    (int, int) $end,
+  )[]: void {
+    $script = $this->fixtures()->math->script;
+    expect(
+      Pha\node_get_source_range($script, $node)
+        |> Pha\source_range_to_file_and_line_numbers($script, $$)
+        |> tuple($$->getStart(), $$->getEnd()),
+    )->toEqual(tuple($start, $end));
+  }
+
   private function fixtures()[]: Fixtures\Fixtures {
     return $this->fixtures as nonnull;
   }

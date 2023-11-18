@@ -1,7 +1,7 @@
 /** portable-hack-ast is MIT licensed, see /LICENSE. */
 namespace HTL\Pha;
 
-use namespace HH\Lib\{C, Dict, Str, Vec};
+use namespace HH\Lib\{C, Dict, Math, Str, Vec};
 
 /**
  * @package This file contains all the functions that operate on `Node`.
@@ -981,6 +981,61 @@ function script_get_trivia(Script $script)[]: vec<Trivium> {
   return $tu->getSourceOrder()
     |> Vec\filter($$, is_trivium<>)
     |> _Private\trivia_from_nodes($$);
+}
+
+function source_range_to_file_and_line_numbers(
+  Script $script,
+  SourceRange $range,
+)[]: LineAndColumnNumbers {
+  $breaks = _Private\translation_unit_reveal($script)->getLineBreaks();
+
+  list($start, $end_exclusive) = _Private\source_range_reveal($range);
+  $end_exclusive ??= C\lastx($breaks);
+
+  $count = C\count($breaks);
+  $i = $count - 1;
+
+  while (_Private\source_byte_offset_is_less_than($start, $breaks[$i])) {
+    // Quickly find a good place to start looking.
+    $i = Math\maxva(0, $i - _Private\TranslationUnit::SOME_LARGE_JUMP);
+  }
+
+  while (
+    $i < $count &&
+    _Private\source_byte_offset_is_less_than_or_equal($breaks[$i], $start)
+  ) {
+    ++$i;
+  }
+
+  if ($i === 0) {
+    $start_line = 1;
+    $start_column = 0;
+  } else {
+    $start_line = $i;
+    $start_column = _Private\source_byte_offset_to_int($start) -
+      _Private\source_byte_offset_to_int($breaks[$i - 1]);
+  }
+
+  while (
+    $i < $count &&
+    _Private\source_byte_offset_is_less_than_or_equal(
+      $breaks[$i],
+      $end_exclusive,
+    )
+  ) {
+    ++$i;
+  }
+
+  $end_line = $i;
+  $end_column = _Private\source_byte_offset_to_int($end_exclusive) -
+    _Private\source_byte_offset_to_int($breaks[$i - 1]);
+
+  return new LineAndColumnNumbers(
+    $start_line,
+    $start_column,
+    $end_line,
+    $end_column,
+  );
 }
 
 /**

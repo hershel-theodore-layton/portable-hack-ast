@@ -33,6 +33,9 @@ async function math_001_async(): Awaitable<void> {
   $nillable_trivia = $trivia;
   $nillable_trivia[] = Pha\NIL;
 
+  $source_ranges =
+    Vec\map($nodes, $n ==> Pha\node_get_source_range($script, $n));
+
   ()[] ==> {
     // Could not enumerate: Pha\as_nonnil: ["_Private\\Tagged<_Private\\Maybe<T>>"]
 
@@ -177,6 +180,9 @@ async function math_001_async(): Awaitable<void> {
     Pha\script_get_tokens($script);
 
     Pha\script_get_trivia($script);
+
+    foreach ($source_ranges as $p0)
+      Pha\source_range_to_file_and_line_numbers($script, $p0);
 
     foreach ($syntaxes as $p0)
       Pha\syntax_get_members($script, $p0);

@@ -35,6 +35,7 @@ final class Math extends Fixture {
   public Pha\Syntax $functionDeclaration;
   public Pha\Syntax $functionDeclarationHeader;
   public Pha\Syntax $missingTypeParameterList;
+  public Pha\Token $functionDeclarationHeaderLeftParen;
   public Pha\Syntax $parameterList;
   public Pha\Syntax $parameterA;
   public Pha\Syntax $parameterB;
@@ -112,6 +113,12 @@ final class Math extends Fixture {
       $this->functionDeclarationHeader,
       Pha\MEMBER_FUNCTION_TYPE_PARAMETER_LIST,
     );
+
+    $this->functionDeclarationHeaderLeftParen = $this->member(
+      $this->functionDeclarationHeader,
+      Pha\MEMBER_FUNCTION_LEFT_PAREN,
+    )
+      |> Pha\as_token($$);
 
     $this->parameterList = $this->memberAsSyntax(
       $this->functionDeclarationHeader,

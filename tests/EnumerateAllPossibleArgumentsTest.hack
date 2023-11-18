@@ -57,6 +57,8 @@ async function math_001_async(): Awaitable<void> {
     $nillable_trivia = $trivia;
     $nillable_trivia[] = Pha\NIL;
 
+    $source_ranges = Vec\map($nodes, $n ==> Pha\node_get_source_range($script, $n));
+
     ()[] ==> {
 
 PREFIX;
@@ -77,6 +79,7 @@ SUFFIX;
     'Node' => '$nodes',
     'NillableNode' => '$nillable_nodes',
     'int' => 'Vec\\range(-100, 100)',
+    'SourceRange' => '$source_ranges',
   ];
 
   <<__Override>>

@@ -4,6 +4,9 @@ namespace HTL\Pha\_Private;
 use namespace HH\Lib\{Str, Vec};
 
 final class TranslationUnit {
+  const SOME_LARGE_JUMP = 64;
+
+  private vec<SourceByteOffset> $lineBreaks;
   /**
    * @param $sourceOrder is keyed by NodeId (0..n-1).
    * @param $siblings is keyed by SiblingId (0..n-1).
@@ -15,7 +18,17 @@ final class TranslationUnit {
     private dict<NodeId, int> $listSizes,
     private string $sourceText,
     private ParseContext $ctx,
-  )[] {}
+  )[] {
+    $line_breaks = vec[source_byte_offset_from_int(0)];
+
+    $byte = 0;
+    foreach (Str\split($sourceText, "\n") as $line) {
+      $byte += Str\length($line) + 1;
+      $line_breaks[] = source_byte_offset_from_int($byte);
+    }
+
+    $this->lineBreaks = $line_breaks;
+  }
 
   public function cutSourceOrder(
     NodeId $from,
@@ -61,6 +74,10 @@ final class TranslationUnit {
     $out .= $this->sourceText;
 
     return $out;
+  }
+
+  public function getLineBreaks()[]: vec<SourceByteOffset> {
+    return $this->lineBreaks;
   }
 
   public function getNodeById(NodeId $node_id)[]: NillableNode {
