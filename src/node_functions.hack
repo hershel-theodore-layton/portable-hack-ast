@@ -848,7 +848,7 @@ function node_get_nth_child(
 }
 
 /**
- * @throws Iff $n > 0 or $node has no $nth child.
+ * @throws Iff $n < 0 or $node has no $nth child.
  */
 function node_get_nth_childx(Script $script, Node $node, int $n)[]: Node {
   $nth_child = node_get_nth_child($script, $node, $n);
