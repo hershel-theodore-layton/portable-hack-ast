@@ -143,10 +143,6 @@ function create_matcher(
   $id_1 = idx($identities, 1, -1);
   $id_2 = idx($identities, 2, -1);
   $id_3 = idx($identities, 3, -1);
-  $id_4 = idx($identities, 4, -1);
-  $id_5 = idx($identities, 5, -1);
-  $id_6 = idx($identities, 6, -1);
-  $id_7 = idx($identities, 7, -1);
 
   // All arms are equivalent to the `default:` arm,
   // but they don't need to iterate the $identities vec.
@@ -167,17 +163,6 @@ function create_matcher(
           (
             _Private\node_get_kind_identity(_Private\cast_away_nil($n))
             |> $$ === $id_0 || $$ === $id_1 || $$ === $id_2 || $$ === $id_3
-          );
-      case 5:
-      case 6:
-      case 7:
-      case 8:
-        return $n ==> $n !== NIL &&
-          // hackfmt-ignore
-          (
-            _Private\node_get_kind_identity(_Private\cast_away_nil($n))
-            |> $$ === $id_0 || $$ === $id_1 || $$ === $id_2 || $$ === $id_3 ||
-               $$ === $id_4 || $$ === $id_5 || $$ === $id_6 || $$ === $id_7
           );
       default:
         return $n ==> $n !== NIL &&
@@ -262,6 +247,25 @@ function create_member_accessor(
     $member ==>
       _Private\create_syntax_identity($script, member_get_syntax_kind($member)),
   );
+
+  // Optimize for the common case
+  if (C\count($interned) === 1) {
+    $identity = C\first_keyx($interned);
+    $child_number = $interned[$identity];
+    return $n ==> {
+      if (
+        _Private\node_get_kind_identity($n) !== $identity ||
+        $child_number is null
+      ) {
+        throw new _Private\PhaException(Str\format(
+          'No syntax accessor defined for %s.',
+          node_get_kind($script, $n),
+        ));
+      }
+
+      return node_get_nth_childx($script, $n, $child_number);
+    };
+  }
 
   return $n ==> {
     $idx = idx($interned, _Private\node_get_kind_identity($n));
