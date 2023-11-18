@@ -17,18 +17,6 @@ final class TranslationUnit {
     private ParseContext $ctx,
   )[] {}
 
-  public function cutSourceText(
-    SourceByteOffset $from,
-    ?SourceByteOffset $to_exclusive,
-  )[]: string {
-    $from = source_byte_offset_to_int($from);
-    $to_exclusive =
-      $to_exclusive is null ? null : source_byte_offset_to_int($to_exclusive);
-    return $to_exclusive is null
-      ? Str\slice($this->sourceText, $from)
-      : Str\slice($this->sourceText, $from, $to_exclusive - $from);
-  }
-
   public function cutSourceOrder(
     NodeId $from,
     NodeId $to_exclusive,
@@ -36,6 +24,16 @@ final class TranslationUnit {
     $from = node_id_to_int($from);
     $to_exclusive = node_id_to_int($to_exclusive);
     return Vec\slice($this->sourceOrder, $from, $to_exclusive - $from);
+  }
+
+  public function cutSourceRange(SourceRange $range)[]: string {
+    list($from, $to_exclusive) = source_range_reveal($range);
+    $from = source_byte_offset_to_int($from);
+    $to_exclusive =
+      $to_exclusive is null ? null : source_byte_offset_to_int($to_exclusive);
+    return $to_exclusive is null
+      ? Str\slice($this->sourceText, $from)
+      : Str\slice($this->sourceText, $from, $to_exclusive - $from);
   }
 
   public function debugDumpHex()[]: string {
