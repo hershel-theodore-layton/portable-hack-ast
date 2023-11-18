@@ -1,13 +1,29 @@
 /** portable-hack-ast is MIT licensed, see /LICENSE. */
 namespace HTL\Pha\_Private;
 
-use namespace HH\Lib\{C, Vec};
+use namespace HH\Lib\{C, Str, Vec};
 
 function create_translation_unit(
   vec<Intermediate> $intermediates,
   string $source_text,
   ParseContext $ctx,
 )[]: TranslationUnit {
+  enforce(
+    Str\length($source_text) < FIELD_3_MASK,
+    'Implementation limit: Source may not exceed %d (0x%x) bytes, got %d.',
+    FIELD_3_MASK,
+    FIELD_3_MASK,
+    Str\length($source_text),
+  );
+
+  enforce(
+    C\count($intermediates) < FIELD_4_MASK,
+    'Implementation limit: Source may not exceed %d (0x%x) nodes, got %d.',
+    FIELD_4_MASK,
+    FIELD_4_MASK,
+    C\count($intermediates),
+  );
+
   list($parent_ranges, $siblings_intermediates) =
     layout_siblings($intermediates);
   $source_order = layout_source_order($intermediates);
