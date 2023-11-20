@@ -151,7 +151,10 @@ final class ResolveTest extends HackTest {
   }
 
   <<DataProvider('provide_resolve_name')>>
-  public function test_resolve_name(string $code, string $expected_name): void {
+  public function test_resolve_name(
+    string $code,
+    string $expected_name,
+  )[]: void {
     list($script, $token_index, $resolver) = static::parse($code);
     $is_qualified_name =
       Pha\create_syntax_matcher($script, Pha\KIND_QUALIFIED_NAME);

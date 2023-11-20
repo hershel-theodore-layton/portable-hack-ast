@@ -24,6 +24,10 @@ final class InternedStringStorage<T as Kind> {
     return $this->asKeyset;
   }
 
+  public function asVec()[]: vec<string> {
+    return $this->items;
+  }
+
   public function fromInterned(InternedString<T> $interned)[]: T {
     return
       $this->items[interned_string_to_int($interned)] |> ($this->castFunc)($$);

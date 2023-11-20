@@ -10,6 +10,7 @@ type Node = _Private\Node;
 type NodeId = _Private\NodeId;
 type Resolver = _Private\Resolver;
 type Script = _Private\Script;
+type ReadyToSerializeScript = _Private\ReadyToSerializeScript;
 type SourceRange = _Private\SourceRange;
 type Syntax = _Private\Syntax;
 type SyntaxIndex = _Private\KindIndex<Syntax, SyntaxKind>;

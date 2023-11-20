@@ -1,10 +1,9 @@
 /** portable-hack-ast is MIT licensed, see /LICENSE. */
 namespace HTL\Pha\_Private;
 
-use namespace HH\Lib\{C, Keyset};
+use namespace HH\Lib\{C, Dict, Keyset, Vec};
 use namespace HTL\Pha;
 
-// Note to self: This is incomplete
 final class Structs {
   private int $size;
   public function __construct(
@@ -27,4 +26,29 @@ final class Structs {
   public function isOfSameSize(dict<string, vec<Member>> $new_members)[]: bool {
     return $this->size === C\count($new_members);
   }
+
+  //#region Materialization
+  const string VERSION = 'VERSION';
+  const string MEMBERS = 'MEMBERS';
+
+  public function dematerialize()[]: dict<arraykey, mixed> {
+    return dict[
+      static::VERSION => 1,
+      static::MEMBERS => Vec\flatten($this->rawMembers),
+    ];
+  }
+
+  public static function materialize(dict<arraykey, mixed> $raw)[]: this {
+    enforce(
+      idx($raw, static::VERSION) === 1,
+      'Could not materialize these Structs, '.
+      'they were dematerialized with a later version of this library.',
+    );
+
+    return $raw[static::MEMBERS]
+      |> as_vec_of_member($$)
+      |> Dict\group_by($$, Pha\member_get_syntax_kind<>)
+      |> new static($$);
+  }
+  //#endregion
 }

@@ -65,4 +65,62 @@ final class ParseContext {
       ? new ParseContext($structs, $syntax_kinds, $token_kinds, $trivium_kinds)
       : $this;
   }
+
+  // #region Materialization
+  const string VERSION = 'VERSION';
+  const string STRUCTS = 'STRUCTS';
+  const string SYNTAX_KINDS = 'SYNTAX_KINDS';
+  const string TOKEN_KINDS = 'TOKEN_KINDS';
+  const string TRIVIUM_KINDS = 'TRIVIUM_KINDS';
+
+  // Memoize because this value can be shared across many scripts.
+  <<__Memoize>>
+  public function getMaterializationHash()[]: string {
+    return $this->dematerialize()
+      |> \fb_compact_serialize($$)
+      |> \sha1($$, true);
+  }
+
+  // Memoize because this value can be shared across many scripts.
+  <<__Memoize>>
+  public function dematerialize()[]: dict<arraykey, mixed> {
+    return dict[
+      static::VERSION => 1,
+      static::STRUCTS => $this->structs->dematerialize(),
+      static::SYNTAX_KINDS => $this->syntaxKinds->asVec(),
+      static::TOKEN_KINDS => $this->tokenKinds->asVec(),
+      static::TRIVIUM_KINDS => $this->triviumKinds->asVec(),
+    ];
+  }
+
+  public static function materialize(dict<arraykey, mixed> $raw)[]: this {
+    $version = idx($raw, static::VERSION, -1);
+    enforce(
+      $version === 1,
+      'Could not materialize this Context, '.
+      'it was dematerialized with a later version of this library.',
+    );
+
+    try {
+      return new static(
+        $raw[static::STRUCTS] |> Structs::materialize($$ as dict<_, _>),
+        $raw[static::SYNTAX_KINDS]
+          |> as_vec_of_syntax_kind($$)
+          |> keyset($$)
+          |> new InternedStringStorage($$, Pha\syntax_kind_from_string<>),
+        $raw[static::TOKEN_KINDS]
+          |> as_vec_of_token_kind($$)
+          |> keyset($$)
+          |> new InternedStringStorage($$, Pha\token_kind_from_string<>),
+        $raw[static::TRIVIUM_KINDS]
+          |> as_vec_of_trivium_kind($$)
+          |> keyset($$)
+          |> new InternedStringStorage($$, Pha\trivium_kind_from_string<>),
+      );
+    } catch (\Exception $e) {
+      throw
+        new PhaException('Could not materialize Context.', $e->getCode(), $e);
+    }
+  }
+  // #endregion
 }

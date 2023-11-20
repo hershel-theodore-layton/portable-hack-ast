@@ -117,4 +117,58 @@ final class TranslationUnit {
   public function sliceSiblings(SiblingId $start, int $length)[]: vec<Node> {
     return Vec\slice($this->siblings, sibling_id_to_int($start), $length);
   }
+
+  // #region Materialization
+  const string VERSION = 'VERSION';
+  const string SOURCE_ORDER = 'SOURCE_ORDER';
+  const string SIBLINGS = 'SIBLINGS';
+  const string LIST_SIZES = 'LIST_SIZES';
+  const string SOURCE_TEXT = 'SOURCE_TEXT';
+  const string CONTEXT_ID = 'CONTEXT_ID';
+
+  public function dematerialize()[]: ReadyToSerializeScript {
+    return shape(
+      'script' => dict[
+        'VERSION' => 1,
+        'SOURCE_ORDER' => $this->sourceOrder,
+        'SIBLINGS' => $this->siblings,
+        'LIST_SIZES' => $this->listSizes,
+        'SOURCE_TEXT' => $this->sourceText,
+        'CONTEXT_ID' => $this->ctx->getMaterializationHash(),
+      ],
+      'context' => $this->ctx->dematerialize(),
+      'context_hash' => $this->ctx->getMaterializationHash(),
+    );
+  }
+
+  public static function materialize(
+    dict<arraykey, mixed> $raw,
+    ParseContext $ctx,
+  )[]: TranslationUnit {
+    enforce(
+      idx($raw, static::VERSION) === 1,
+      'Could not materialize this Script, '.
+      'it was dematerialized with a different version of this library.',
+    );
+    enforce(
+      $ctx->getMaterializationHash() === $raw[static::CONTEXT_ID],
+      'The Context and the Script do not belong together.',
+    );
+
+    try {
+      return new static(
+        $raw['SOURCE_ORDER'] |> as_vec_of_node($$),
+        $raw['SIBLINGS'] |> as_vec_of_node($$),
+        $raw['LIST_SIZES'] |> as_dict_of_node_id_to_int($$),
+        $raw['SOURCE_TEXT'] as string,
+        $ctx,
+      );
+    } catch (\Exception $e) {
+      throw new PhaException(
+        'Failed to materialize this Script.',
+        $e->getCode(),
+        $e,
+      );
+    }
+  }
 }
