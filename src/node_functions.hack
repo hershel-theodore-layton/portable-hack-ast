@@ -783,6 +783,14 @@ function node_get_last_descendant_or_self(Script $script, Node $node)[]: Node {
   }
 }
 
+function node_get_line_and_column_numbers(
+  Script $script,
+  Node $node,
+)[]: LineAndColumnNumbers {
+  return node_get_source_range($script, $node)
+    |> source_range_to_file_and_line_numbers($script, $$);
+}
+
 /**
  * @throws Iff $n < 0.
  */
