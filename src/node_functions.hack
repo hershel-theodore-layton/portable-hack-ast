@@ -768,18 +768,20 @@ function node_get_last_descendant(
 }
 
 function node_get_last_descendant_or_self(Script $script, Node $node)[]: Node {
-  switch (node_get_elaborated_group($node)) {
-    case NodeElaboratedGroup::SYNTAX:
-    case NodeElaboratedGroup::LIST:
-      return node_get_last_childx($script, $node)
-        |> node_get_last_descendant_or_self($script, $$);
+  for (; ; ) {
+    switch (node_get_elaborated_group($node)) {
+      case NodeElaboratedGroup::SYNTAX:
+      case NodeElaboratedGroup::LIST:
+        $node = node_get_last_childx($script, $node);
+        break;
 
-    case NodeElaboratedGroup::TOKEN:
-      return node_get_last_childx($script, $node);
+      case NodeElaboratedGroup::TOKEN:
+        return node_get_last_childx($script, $node);
 
-    case NodeElaboratedGroup::TRIVIUM:
-    case NodeElaboratedGroup::MISSING:
-      return $node;
+      case NodeElaboratedGroup::TRIVIUM:
+      case NodeElaboratedGroup::MISSING:
+        return $node;
+    }
   }
 }
 
