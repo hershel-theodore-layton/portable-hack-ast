@@ -147,6 +147,9 @@ async function math_001_async(): Awaitable<void> {
     foreach ($nodes as $p0)
       Pha\node_get_last_descendant_or_self($script, $p0);
 
+    foreach ($nodes as $p0)
+      Pha\node_get_line_and_column_numbers($script, $p0);
+
     foreach ($nillable_nodes as $p0)
       foreach (Vec\range(-100, 100) as $p1)
         try {
