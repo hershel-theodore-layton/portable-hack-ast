@@ -56,3 +56,28 @@ Parsing: ../vendor/hhvm/hhast with pha
 27.2852 megabytes used.
 
 It would be interesting to see where the memory is being used.
+
+## Stack exhaustion
+
+_This doesn't belong in a README._
+
+I have tested for stack exhastuion, but quickly came to the conclusion that the
+Hack typechecker would become your bottleneck before this library gives out.\*
+Given the following code:
+
+```HACK
+function some_function_name(): void {
+  $_ = 4 |> (((...(((())))...)))
+  //           ^^^        ^^^
+  //            |          |
+  // -----------/----------/
+  // These dots represent 2400 more parens each.
+}
+```
+
+The typechecker took 8 extra seconds to start.
+No programmer would ever write this of course!
+
+\* The default stack depth of `\HH\ffp_parse_string(...)` is bound by the
+`\json_decode_with_error()` default stack depth (512 at the time of writing).
+This input caused a TypeError `(null value returned from HH\ffp_parse_string())`.
