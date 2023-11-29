@@ -1045,9 +1045,9 @@ function source_range_to_file_and_line_numbers(
     _Private\source_byte_offset_to_int($breaks[$i - 1]);
 
   return new LineAndColumnNumbers(
-    $start_line,
+    $start_line - 1,
     $start_column,
-    $end_line,
+    $end_line - 1,
     $end_column,
   );
 }

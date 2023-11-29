@@ -840,18 +840,18 @@ final class NodeFunctionsTest extends HackTest {
   )[]: vec<(Pha\Node, (int, int), (int, int))> {
     $math = $this->fixtures()->math;
     return vec[
-      tuple(Pha\SCRIPT_NODE, tuple(1, 0), tuple(7, 1)),
-      tuple($math->declarationList, tuple(1, 0), tuple(7, 1)),
-      tuple($math->functionDeclaration, tuple(2, 34), tuple(6, 2)),
-      tuple($math->missingTypeParameterList, tuple(4, 13), tuple(4, 13)),
+      tuple(Pha\SCRIPT_NODE, tuple(0, 0), tuple(6, 1)),
+      tuple($math->declarationList, tuple(0, 0), tuple(6, 1)),
+      tuple($math->functionDeclaration, tuple(1, 34), tuple(5, 2)),
+      tuple($math->missingTypeParameterList, tuple(3, 13), tuple(3, 13)),
       tuple(
         $math->functionDeclarationHeaderLeftParen,
-        tuple(4, 13),
-        tuple(4, 14),
+        tuple(3, 13),
+        tuple(3, 14),
       ),
-      tuple($math->parameterList, tuple(4, 14), tuple(4, 28)),
-      tuple($math->parameterA, tuple(4, 14), tuple(4, 20)),
-      tuple($math->returnStatement, tuple(4, 39), tuple(5, 38)),
+      tuple($math->parameterList, tuple(3, 14), tuple(3, 28)),
+      tuple($math->parameterA, tuple(3, 14), tuple(3, 20)),
+      tuple($math->returnStatement, tuple(3, 39), tuple(4, 38)),
     ];
   }
 
