@@ -46,7 +46,7 @@ async function mem_usage_pha_async(string $base_path): Awaitable<int> {
     $scripts[] = $script;
   }
 
-  $memory_usage = \memory_get_usage(true);
+  $memory_usage = \memory_get_peak_usage(true);
 
   // Ensure the scripts didn't get optimized away by hhvm.
   foreach ($scripts as $script) {
@@ -61,7 +61,7 @@ async function mem_usage_hhast_async(string $base_path): Awaitable<int> {
 
   $scripts = await Vec\map_async($files, HHAST\from_file_async<>);
 
-  $memory_usage = \memory_get_usage(true);
+  $memory_usage = \memory_get_peak_usage(true);
 
   // Ensure the scripts didn't get optimized away by hhvm.
   foreach ($scripts as $script) {
