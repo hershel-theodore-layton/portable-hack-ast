@@ -11,6 +11,11 @@ namespace HTL\Pha\_Private;
  * You'd do well to deduplicate those before storing them.
  * You can use the 'context_hash' for this.
  */
+type ReadyToSerializeContext = shape(
+  'context' => dict<arraykey, mixed>,
+  'context_hash' => string,
+);
+
 type ReadyToSerializeScript = shape(
   'script' => dict<arraykey, mixed>,
   'context' => dict<arraykey, mixed>,

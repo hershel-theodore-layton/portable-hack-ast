@@ -1,6 +1,14 @@
 /** portable-hack-ast is MIT licensed, see /LICENSE. */
 namespace HTL\Pha;
 
+function dematerialize_context(Context $ctx)[]: ReadyToSerializeContext {
+  return _Private\context_reveal($ctx)
+    |> shape(
+      'context' => $$->dematerialize(),
+      'context_hash' => $$->getMaterializationHash(),
+    );
+}
+
 function dematerialize_script(Script $script)[]: ReadyToSerializeScript {
   return _Private\translation_unit_reveal($script)->dematerialize();
 }
