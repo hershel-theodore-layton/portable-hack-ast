@@ -5,16 +5,27 @@ use namespace HH\Lib\{C, Str, Vec};
 use namespace HTL\Pha;
 
 final class NameResolver {
+  private (function(Pha\Node)[]: bool) $parentMakesMeGuessItIsAType;
+
   public function __construct(
+    Pha\Script $script,
     private vec<NamespaceResolution> $namespaceResolution,
     private dict<NodeId, string> $resolvedNames,
     private dict<string, string> $aliasedNamespaces,
     private keyset<string> $autoImportedFunctions,
     private keyset<string> $autoImportedTypes,
-  )[] {}
+  )[] {
+    $this->parentMakesMeGuessItIsAType = Pha\create_syntax_matcher(
+      $script,
+      Pha\KIND_GENERIC_TYPE_SPECIFIER,
+      Pha\KIND_SCOPE_RESOLUTION_EXPRESSION,
+      Pha\KIND_SIMPLE_TYPE_SPECIFIER,
+    );
+  }
 
   public function resolveName(
     Pha\Node $name,
+    Pha\Node $parent,
     string $compressed_code,
     Pha\ResolveStrategy $strategy = Pha\ResolveStrategy::JUST_GUESS,
   )[]: (string, NillableSyntax) {
@@ -38,7 +49,9 @@ final class NameResolver {
         if (static::isUnderscoreOrBuiltinAttribute($compressed_code)) {
           return tuple($compressed_code, NIL);
         }
-        $kind = static::guessKind($parts);
+        $kind = ($this->parentMakesMeGuessItIsAType)($parent)
+          ? UseKind::TYPE
+          : static::guessKind($parts);
     }
 
     $original_namespace =

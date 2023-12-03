@@ -28,19 +28,22 @@ use type HTL\Pha\_Private\{NameResolver, NamespaceResolution, UseInfo, UseKind};
  */
 function resolve_name(
   Resolver $resolver,
+  Script $script,
   Node $node,
-  string $code_compressed,
 )[]: string {
-  return resolve_name_and_use_clause($resolver, $node, $code_compressed)[0];
+  return resolve_name_and_use_clause($resolver, $script, $node)[0];
 }
 
 function resolve_name_and_use_clause(
   Resolver $resolver,
+  Script $script,
   Node $node,
-  string $code_compressed,
 )[]: (string, NillableSyntax) {
-  return
-    _Private\resolver_reveal($resolver)->resolveName($node, $code_compressed);
+  return _Private\resolver_reveal($resolver)->resolveName(
+    $node,
+    node_get_parent($script, $node),
+    node_get_code_compressed($script, $node),
+  );
 }
 
 /**
@@ -355,6 +358,7 @@ function create_name_resolver(
     |> Dict\pull($$, $resolve_name, node_get_id<>)
     |> Dict\filter_nulls($$)
     |> new NameResolver(
+      $script,
       $namespaces,
       $$,
       $aliased_namespaces,

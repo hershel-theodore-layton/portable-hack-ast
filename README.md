@@ -73,7 +73,7 @@ function check_for_unsafe_render_calls(
 
   $to_txt = $n ==> Pha\node_get_code($script, $n);
   $to_short_txt = $n ==> Pha\node_get_code_compressed($script, $n);
-  $to_function_name = $n ==> Pha\resolve_name($resolver, $n, $to_short_txt($n));
+  $to_function_name = $n ==> Pha\resolve_name($resolver, $script, $n);
   $to_line = $n ==>
     Pha\node_get_line_and_column_numbers($script, $n)->getStartLineOneBased();
 
