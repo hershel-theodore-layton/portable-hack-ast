@@ -261,7 +261,7 @@ the result of the operation is undefined[^4].
 The caching mechanism is very fast and small. This is important, because most
 parsing is actually reparsing. Uncached performance only matters when:
  - Checking out a new repository for the first time.
- - Switching branches to a one that you have never seen before.
+ - Switching branches to one that you have never seen before.
  - Pulling changes / syncing with HEAD.
 
 As noted in [performance](#performance), uncached parse performance is still good,
