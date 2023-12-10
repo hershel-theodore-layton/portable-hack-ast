@@ -14,7 +14,7 @@ async function file_put_hackfmt_async(
   $md5 = md5($source);
 
   $success = false;
-  $previous_md5 = \apc_fetch_with_pure_wakeup($apc_key, inout $success);
+  $previous_md5 = \apc_fetch($apc_key, inout $success);
 
   if ($success && $md5 === $previous_md5) {
     return;
@@ -31,5 +31,5 @@ async function file_put_hackfmt_async(
   }
 
   shell_exec('hackfmt -i '.escapeshellarg($path));
-  \apc_store_with_pure_sleep($apc_key, $md5);
+  \apc_store($apc_key, $md5);
 }
