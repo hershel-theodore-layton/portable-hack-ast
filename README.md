@@ -256,8 +256,36 @@ This library contains a lot of functions that take a `Script` and one or more
 or `NIL`. If you hand an unrelated `Script` and a `Node` to a function,
 the result of the operation is undefined[^4].
 
+### Serialization
+
+The caching mechanism is very fast and small. This is important, because most
+parsing is actually reparsing. Uncached performance only matters when:
+ - Checking out a new repository for the first time.
+ - Switching branches to a one that you have never seen before.
+ - Pulling changes / syncing with HEAD.
+
+As noted in [performance](#performance), uncached parse performance is still good,
+but cached performance is a lot better still. In order to cache Scripts
+effectively, you must dematerialize them first. You may not observe the
+dematerialized representation, it is subject to change The following table
+doesn't account for serialization overhead. The serialized size of a given script
+is often about 10 &times; the source size in bytes[^5].
+
+| Key name     | Type                 | Approximate size                                |
+| -----------: | :------------------- | :---------------                                |
+| VERSION      | int                  | 8 bytes                                         |
+| SOURCE_ORDER | vec&lt;int&gt;       | node count &times; 8 bytes                      |
+| SIBLINGS     | vec&lt;int&gt;       | syntax&token count &times; 8 bytes              |
+| LIST_SIZES   | dict&lt;int, int&lt; | list count where size &gt; 253 &times; 16 bytes |
+| SOURCE_TEXT  | string               | Str\length() of source in bytes                 |
+| CONTEXT_ID   | string               | 40 bytes                                        |
+
+The Context will also need to be serialized, but a Context is rarely unique.
+If you deduplicate them by `context_hash`, the storage requirements fade away.
+
 [^1]: Some some cases, you do think about this, when the precedence is weird.
 [^2]: Run `bin/mem_usage.hack` in repo authoritative mode to verify these results.
 [^3]: I am not saying HHAST does, has done, or will do funny business. I am just
       saying that auditing for funny business is easier in pure well-typed code.
 [^4]: This doesn't mean it is unsafe, but you may get incorrect results or exceptions.
+[^5]: A quick utility is included in `bin/serializer.hack` to verify serialized sizes.
