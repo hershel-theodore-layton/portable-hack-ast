@@ -505,7 +505,7 @@ function node_get_code(Script $script, NillableNode $node)[]: string {
  *
  * The text returned is not code that can be reparsed.
  * This canonicalizes code by stripping comments and whitespace, but in doing so
- * it removes spaces that were needed for he program to parse:
+ * it removes spaces that were needed for the program to parse:
  * ```
  * return 3; // >> return3;
  * ```
