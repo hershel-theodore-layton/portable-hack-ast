@@ -4,7 +4,6 @@ namespace HTL\Pha\Tests;
 use type Facebook\HackTest\HackTest;
 use namespace HH\Lib\{C, File, Str, Vec};
 use namespace HTL\Pha;
-use function json_encode_pure;
 
 /**
  * This test enforces some basic safety:
@@ -180,11 +179,8 @@ SUFFIX;
     $types = Vec\map($non_script_params, $p ==> $p['type']);
 
     if (C\any($types, $t ==> !C\contains_key(static::ENUMERATORS, $t))) {
-      $_error = null;
-      return '// Could not enumerate: '.
-        $func['name'].
-        ': '.
-        json_encode_pure($types, inout $_error);
+      return
+        '// Could not enumerate: '.$func['name'].': '.Str\join($types, ', ');
     }
 
     $loops = Vec\map_with_key(
