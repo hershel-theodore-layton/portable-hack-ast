@@ -149,7 +149,7 @@ Pha\materialize_script($deserialized['script'], $ctx);
 
 The full API for interacting with all these values can be found in [node_functions.hack](./src/node_functions.hack).
 There are about 50 functions at the time of writing, so with some auto complete,
-you should get the hand of it quite quickly.
+you should get the hang of it quite quickly.
 
 For definitions of kinds and members, see [Kind.hack](./src/Kind.hack) and [Member.hack](./src/Member.hack).
 If the definitions are incomplete for your hhvm version, you can create them at runtime.
@@ -172,7 +172,7 @@ Parsing: ../vendor/hhvm/hhast with pha
 ```
 
 Runtime is more difficult to pin a number on, but Pha is blazingly fast.
-I am able to lint everything in the `HTL\` namespace in >400 milliseconds.
+I am able to lint everything in the `HTL\` namespace in < 400 milliseconds.
 When adding parsing to it (not caching anything), the results still outshine
 HHAST, even with HHAST's `.var/cache/hhvm/hhast/parser-cache` mechanism enabled.
 
@@ -208,7 +208,7 @@ HHAST, even with HHAST's `.var/cache/hhvm/hhast/parser-cache` mechanism enabled.
  - This function "reveals" the methods again.
 
 `cast_away_nil`:
- - Perform an unchecked cast from Nillable<T> to T.
+ - Perform an unchecked cast from Nillable&lt;T&gt; to T.
 
 ### Behind the name
 
