@@ -227,7 +227,8 @@ This operation is very quick, and may even be used to "swap" large Scripts
 to disk if memory pressure becomes too large.
 
 This code is simple enough to be ported to a different language all together.
-95% of the code performs simple operations, which would translate 1-to-1 to Go.
+95% of the code performs simple operations, which would translate 1-to-1 to any
+other programming language which would perform better than Hack on HHVM.
 The performance of Pha on HHVM suffices for codebases I work with (for now).
 When the amount of code I ingest grows another 20&times;, I know there is a path
 forward I can take to achieve more performance in a couple of days.
