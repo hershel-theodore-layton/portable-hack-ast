@@ -2,8 +2,11 @@
 namespace HTL\Pha\_Private;
 
 use namespace HTL\Pha;
-use type ExceptionWithPureGetMessage;
+use type Exception;
 
-final class PhaException
-  extends ExceptionWithPureGetMessage
-  implements Pha\PhaException {}
+final class PhaException extends Exception implements Pha\PhaException {
+  <<__Override>>
+  public function getMessage()[]: string {
+    return $this->message;
+  }
+}
