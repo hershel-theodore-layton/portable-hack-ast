@@ -117,7 +117,7 @@ We filter out only those ones we are interested in.
 Transform the output for easy viewing, and you have your codebase wide search ready.
 
 We have just written our very own super specialized linter.
-For some more examples of what you can do with an ast, see [`HTL\PhaLinters`](https://github.com/hhvm/portable-hack-ast-linters)
+For some more examples of what you can do with an ast, see [`HTL\PhaLinters`](https://github.com/hershel-theodore-layton/portable-hack-ast-linters)
 
 ### Getting started
 
