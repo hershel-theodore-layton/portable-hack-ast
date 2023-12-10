@@ -5,7 +5,7 @@ namespace HTL\Pha\_Private\Bin;
 use namespace HH;
 use namespace HH\Lib\{C, Dict, File, IO, Keyset, Str, Vec};
 use type UnexpectedValueException;
-use function escapeshellarg, var_export_pure;
+use function escapeshellarg;
 
 const string CACHE_DIR = __DIR__.'/../.var/cache/curl_cache/';
 const int GITHUB_FETCH_CONCURRENCY = 4;
@@ -31,6 +31,11 @@ async function codegen_kind_constants_async(): Awaitable<void> {
   }
 
   $sort = $things ==> Dict\sort_by_key(
+    $things,
+    ($a, $b) ==> Str\uppercase($a) <=> Str\uppercase($b),
+  );
+
+  $sort_with_keyset_values = $things ==> Dict\sort_by_key(
     $things,
     ($a, $b) ==> Str\uppercase($a) <=> Str\uppercase($b),
   );
@@ -63,11 +68,11 @@ async function codegen_kind_constants_async(): Awaitable<void> {
       ),
   );
 
-  foreach ($sort($syntaxes) as $name => $_) {
+  foreach ($sort_with_keyset_values($syntaxes) as $name => $_) {
     $kind_constants .= Str\format(
       "const SyntaxKind %s = %s;\n",
       $syntax_kind_to_const[$name],
-      var_export_pure($name),
+      string_export_pure($name),
     );
   }
 
@@ -77,7 +82,7 @@ async function codegen_kind_constants_async(): Awaitable<void> {
     $kind_constants .= Str\format(
       "const TokenKind %s = %s;\n",
       $token_kind_to_const[$name],
-      var_export_pure($repr),
+      string_export_pure($repr),
     );
   }
 
@@ -110,7 +115,7 @@ async function codegen_kind_constants_async(): Awaitable<void> {
       "const Member MEMBER_%s = tuple(%s, %s);\n",
       Str\uppercase($member),
       $syntax_kind_to_const[$owner],
-      var_export_pure($member),
+      string_export_pure($member),
     );
   }
 

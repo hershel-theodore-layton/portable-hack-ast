@@ -16,8 +16,8 @@ final class SerializationTest extends HackTest {
         $dematerialized['script'],
         Pha\materialize_context($dematerialized['context']),
       )
-        |> \var_export_pure($$),
-    )->toEqual(\var_export_pure($script));
+        |> \var_export($$, true),
+    )->toEqual(\var_export($script, true));
 
     expect(
       ()[] ==>
