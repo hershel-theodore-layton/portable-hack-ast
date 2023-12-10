@@ -1,4 +1,7 @@
+#!/usr/bin/env hhvm
 /** portable-hack-ast is MIT licensed, see /LICENSE. */
+namespace HTL\Pha\_Private\Bin;
+
 use namespace Facebook\HHAST;
 use namespace HH\Lib\{C, Regex, Str, Vec};
 use namespace HTL\Pha;
