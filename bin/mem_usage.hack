@@ -34,8 +34,8 @@ async function mem_usage_async(): Awaitable<void> {
 
   echo Str\format(
     'Took %g seconds and %g megabytes.',
-    (\clock_gettime_ns(\CLOCK_MONOTONIC) - $start) / 1_000_000_000.,
-    $usage / 1_000_000.,
+    (\clock_gettime_ns(\CLOCK_MONOTONIC) - $start) / 1000000000.,
+    $usage / 1000000.,
   );
 }
 
