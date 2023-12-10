@@ -8,5 +8,17 @@ use namespace HH\Lib\File;
  * Reimplement this based on the PHP apis of your.
  */
 function ftruncate(File\Handle $file, int $size): void {
-  \fopen($file->getPath(), 'r+') |> \ftruncate($$, $size);
+  // Even more legacy baggage.
+  // $file->getPath() used to return a path object.
+  // This gets the string path on any version of hhvm.
+  $path = (): string ==> {
+    $path_as_object_or_string = $file->getPath();
+    if ($path_as_object_or_string is string) {
+      return $path_as_object_or_string;
+    }
+
+    return $path_as_object_or_string->toString();
+  }();
+
+  \fopen($path, 'r+') |> \ftruncate($$, $size);
 }
