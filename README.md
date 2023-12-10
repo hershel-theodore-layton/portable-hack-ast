@@ -176,6 +176,29 @@ I am able to lint everything in the `HTL\` namespace in < 400 milliseconds.
 When adding parsing to it (not caching anything), the results still outshine
 HHAST, even with HHAST's `.var/cache/hhvm/hhast/parser-cache` mechanism enabled.
 
+### Behind the name
+
+"Portable" Hack AST, what does portable mean?
+
+This codebase is portable between Hack AST versions (read hhvm versions).
+Everything in the `HTL\` namespace supports a wide range of hhvm versions.
+In order to do that with an AST library, you can't hardcode definitions.
+The structure and layout of the AST is dynamically learned at runtime.
+
+The parsed structure is portable between different invocations of the program.
+It is represented as two `vec<Node ~ int>`, and a `dict<Kind ~ string, int>`.
+When you dematerialize and serialize a Script, you encode arrays of value types.
+They can be deserialized and materialized without the loss of information.
+This operation is very quick, and may even be used to "swap" large Scripts
+to disk if memory pressure becomes too large.
+
+This code is simple enough to be ported to a different language all together.
+95% of the code performs simple operations, which would translate 1-to-1 to any
+other programming language which would perform better than Hack on HHVM.
+The performance of Pha on HHVM suffices for codebases I work with (for now).
+When the amount of code I ingest grows another 20&times;, I know there is a path
+forward I can take to achieve more performance in a couple of days.
+
 ### Naming of conversions
 
 `x_from_y`: (also xs_from_ys)
@@ -209,29 +232,6 @@ HHAST, even with HHAST's `.var/cache/hhvm/hhast/parser-cache` mechanism enabled.
 
 `cast_away_nil`:
  - Perform an unchecked cast from Nillable&lt;T&gt; to T.
-
-### Behind the name
-
-"Portable" Hack AST, what does portable mean?
-
-This codebase is portable between Hack AST versions (read hhvm versions).
-Everything in the `HTL\` namespace supports a wide range of hhvm versions.
-In order to do that with an AST library, you can't hardcode definitions.
-The structure and layout of the AST is dynamically learned at runtime.
-
-The parsed structure is portable between different invocations of the program.
-It is represented as two `vec<Node ~ int>`, and a `dict<Kind ~ string, int>`.
-When you dematerialize and serialize a Script, you encode arrays of value types.
-They can be deserialized and materialized without the loss of information.
-This operation is very quick, and may even be used to "swap" large Scripts
-to disk if memory pressure becomes too large.
-
-This code is simple enough to be ported to a different language all together.
-95% of the code performs simple operations, which would translate 1-to-1 to any
-other programming language which would perform better than Hack on HHVM.
-The performance of Pha on HHVM suffices for codebases I work with (for now).
-When the amount of code I ingest grows another 20&times;, I know there is a path
-forward I can take to achieve more performance in a couple of days.
 
 ### Why use PHA over HHAST or something similar?
 
