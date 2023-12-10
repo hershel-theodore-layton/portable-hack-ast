@@ -2,7 +2,7 @@
 namespace HTL\Pha\_Private;
 
 /**
- * Pha is best enjoyed on hhvm 4.103 or with `hhvm.hack_arr_dv_arrs=1`.
+ * Pha is best enjoyed on hhvm 4.103+ or with `hhvm.hack_arr_dv_arrs=1`.
  * If you are using an hhvm version with darray as a distinct type,
  * you may also use this alternative implementation of parse:
  * `HH\ffp_parse_string_native(...) |> \json_decode($$, true, 512, \JSON_FB_HACK_ARRAYS)`
