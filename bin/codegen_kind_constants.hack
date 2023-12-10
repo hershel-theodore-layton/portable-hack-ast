@@ -3,7 +3,7 @@
 namespace HTL\Pha\_Private\Bin;
 
 use namespace HH;
-use namespace HH\Lib\{C, Dict, File, IO, Keyset, Str, Vec};
+use namespace HH\Lib\{C, Dict, File, IO, Keyset, OS, Str, Vec};
 use type UnexpectedValueException;
 use function escapeshellarg, var_export_pure;
 
@@ -91,7 +91,7 @@ async function codegen_kind_constants_async(): Awaitable<void> {
     $kind_functions = await $kind_file->readAllAsync()
       |> Str\slice($$, 0, Str\search($$, GENERATED) ?? Str\length($$));
     $kind_file->seek(0);
-    $kind_file->truncate();
+    OS\ftruncate($kind_file->getFileDescriptor(), 0);
     await $kind_file->writeAllAsync($kind_functions.$kind_constants);
   }
 
@@ -124,7 +124,7 @@ async function codegen_kind_constants_async(): Awaitable<void> {
     $member_functions = await $member_file->readAllAsync()
       |> Str\slice($$, 0, Str\search($$, GENERATED) ?? Str\length($$));
     $member_file->seek(0);
-    $member_file->truncate();
+    OS\ftruncate($member_file->getFileDescriptor(), 0);
     await $member_file->writeAllAsync($member_functions.$member_constants);
   }
 }
