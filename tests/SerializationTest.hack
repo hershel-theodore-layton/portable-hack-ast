@@ -42,7 +42,14 @@ final class SerializationTest extends HackTest {
     $_err = null;
     return Pha\dematerialize_script($script)
       |> \fb_compact_serialize($$)
-      |> \fb_compact_unserialize($$, inout $_ok, inout $_err);
+      |> \fb_compact_unserialize($$, inout $_ok, inout $_err)
+      |> shape(
+        'context' =>
+          Pha\_Private\change_array_kinds_for_hhvm_4_102($$['context']),
+        'context_hash' => $$['context_hash'],
+        'script' =>
+          Pha\_Private\change_array_kinds_for_hhvm_4_102($$['script']),
+      );
   }
 
   private static function parse(string $code)[]: Pha\Script {

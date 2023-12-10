@@ -8,7 +8,7 @@ namespace HTL\Pha\_Private;
  * `HH\ffp_parse_string_native(...) |> \json_decode($$, true, 512, \JSON_FB_HACK_ARRAYS)`
  * If you don't do this, you'll incur an extra runtime cost.
  */
-function change_type_of_parse_tree_for_hhvm_4_102(
+function change_array_kinds_for_hhvm_4_102(
   AnyArray<arraykey, mixed> $value,
 )[]: dict<arraykey, mixed> {
   if ($value is dict<_, _>) {
