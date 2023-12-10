@@ -37,7 +37,7 @@ async function math_001_async(): Awaitable<void> {
     Vec\map($nodes, $n ==> Pha\node_get_source_range($script, $n));
 
   ()[] ==> {
-    // Could not enumerate: Pha\as_nonnil: ["_Private\\Tagged<_Private\\Maybe<T>>"]
+    // Could not enumerate: Pha\as_nonnil: _Private\Tagged<_Private\Maybe<T>>
 
     foreach ($nillable_nodes as $p0)
       try {
@@ -66,17 +66,17 @@ async function math_001_async(): Awaitable<void> {
     foreach ($nillable_nodes as $p0)
       Pha\as_trivium_or_nil($p0);
 
-    // Could not enumerate: Pha\create_matcher: ["vec<SyntaxKind>","vec<TokenKind>","vec<TriviumKind>"]
+    // Could not enumerate: Pha\create_matcher: vec<SyntaxKind>, vec<TokenKind>, vec<TriviumKind>
 
-    // Could not enumerate: Pha\create_member_accessor: ["Member"]
+    // Could not enumerate: Pha\create_member_accessor: Member
 
-    // Could not enumerate: Pha\create_syntax_matcher: ["SyntaxKind","SyntaxKind"]
+    // Could not enumerate: Pha\create_syntax_matcher: SyntaxKind, SyntaxKind
 
-    // Could not enumerate: Pha\create_token_matcher: ["TokenKind","TokenKind"]
+    // Could not enumerate: Pha\create_token_matcher: TokenKind, TokenKind
 
-    // Could not enumerate: Pha\create_trivium_matcher: ["TriviumKind","TriviumKind"]
+    // Could not enumerate: Pha\create_trivium_matcher: TriviumKind, TriviumKind
 
-    // Could not enumerate: Pha\index_get_nodes_by_kind: ["_Private\\KindIndex<Tnode, Tkind>","Tkind"]
+    // Could not enumerate: Pha\index_get_nodes_by_kind: _Private\KindIndex<Tnode, Tkind>, Tkind
 
     foreach ($nillable_nodes as $p0)
       Pha\is_syntax($p0);
@@ -193,7 +193,7 @@ async function math_001_async(): Awaitable<void> {
     foreach ($syntaxes as $p0)
       Pha\syntax_get_parent($script, $p0);
 
-    // Could not enumerate: Pha\syntax_member: ["Syntax","Member"]
+    // Could not enumerate: Pha\syntax_member: Syntax, Member
 
     foreach ($tokens as $p0)
       Pha\token_get_parent($script, $p0);
