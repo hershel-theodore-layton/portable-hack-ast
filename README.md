@@ -276,7 +276,7 @@ is often about 10 &times; the source size in bytes[^5].
 | VERSION      | int                  | 8 bytes                                         |
 | SOURCE_ORDER | vec&lt;int&gt;       | node count &times; 8 bytes                      |
 | SIBLINGS     | vec&lt;int&gt;       | syntax&token count &times; 8 bytes              |
-| LIST_SIZES   | dict&lt;int, int&lt; | list count where size &gt; 253 &times; 16 bytes |
+| LIST_SIZES   | dict&lt;int, int&gt; | list count where size &gt; 253 &times; 16 bytes |
 | SOURCE_TEXT  | string               | Str\length() of source in bytes                 |
 | CONTEXT_ID   | string               | 40 bytes                                        |
 
