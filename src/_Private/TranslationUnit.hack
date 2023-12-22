@@ -49,33 +49,6 @@ final class TranslationUnit {
       : Str\slice($this->sourceText, $from, $to_exclusive - $from);
   }
 
-  public function debugDumpHex()[]: string {
-    $out = "SOURCE ORDER:\n";
-
-    $dump_node = $node ==> Str\format(
-      '%x|%02x|%05x|%05x|%05x',
-      node_get_field_0($node) & 0b11,
-      node_get_field_1($node),
-      node_get_field_2($node),
-      node_get_field_3($node),
-      node_get_field_4($node),
-    );
-
-    foreach ($this->sourceOrder as $node) {
-      $out .= '  '.$dump_node($node)."\n";
-    }
-
-    $out .= "SIBLINGS:\n";
-    foreach ($this->siblings as $node) {
-      $out .= '  '.$dump_node($node)."\n";
-    }
-
-    $out .= "SOURCE TEXT:\n";
-    $out .= $this->sourceText;
-
-    return $out;
-  }
-
   public function getLineBreaks()[]: vec<SourceByteOffset> {
     return $this->lineBreaks;
   }
