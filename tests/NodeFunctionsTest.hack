@@ -864,7 +864,7 @@ final class NodeFunctionsTest extends HackTest {
     $script = $this->fixtures()->math->script;
     expect(
       Pha\node_get_source_range($script, $node)
-        |> Pha\source_range_to_file_and_line_numbers($script, $$)
+        |> Pha\source_range_to_line_and_column_numbers($script, $$)
         |> tuple($$->getStart(), $$->getEnd()),
     )->toEqual(tuple($start, $end));
   }

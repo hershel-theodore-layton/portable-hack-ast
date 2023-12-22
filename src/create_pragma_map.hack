@@ -36,7 +36,7 @@ function create_pragma_map(
       |> syntax_get_parent($script, $$)
       |> syntax_get_parent($script, $$)
       |> node_get_source_range($script, $$)
-      |> source_range_to_file_and_line_numbers($script, $$);
+      |> source_range_to_line_and_column_numbers($script, $$);
 
     $pragmas = index_get_nodes_by_kind($syntax_index, KIND_CONSTRUCTOR_CALL)
       |> Vec\filter(
@@ -74,7 +74,7 @@ function create_pragma_map(
     $pragma_to_scope = $p ==> node_get_ancestors($script, $p)
       |> C\find($$, $is_expression_statement) ?? $p
       |> node_get_source_range($script, $$)
-      |> source_range_to_file_and_line_numbers($script, $$)
+      |> source_range_to_line_and_column_numbers($script, $$)
       |> new LineAndColumnNumbers(
         $$->getStartLine(),
         $$->getStartColumn(),

@@ -790,7 +790,7 @@ function node_get_line_and_column_numbers(
   Node $node,
 )[]: LineAndColumnNumbers {
   return node_get_source_range($script, $node)
-    |> source_range_to_file_and_line_numbers($script, $$);
+    |> source_range_to_line_and_column_numbers($script, $$);
 }
 
 /**
@@ -997,7 +997,7 @@ function script_get_trivia(Script $script)[]: vec<Trivium> {
     |> _Private\trivia_from_nodes($$);
 }
 
-function source_range_to_file_and_line_numbers(
+function source_range_to_line_and_column_numbers(
   Script $script,
   SourceRange $range,
 )[]: LineAndColumnNumbers {
@@ -1040,9 +1040,14 @@ function source_range_to_file_and_line_numbers(
     ++$i;
   }
 
-  $end_line = $i;
-  $end_column = _Private\source_byte_offset_to_int($end_exclusive) -
-    _Private\source_byte_offset_to_int($breaks[$i - 1]);
+  if ($i === 0) {
+    $end_line = 1;
+    $end_column = 0;
+  } else {
+    $end_line = $i;
+    $end_column = _Private\source_byte_offset_to_int($end_exclusive) -
+      _Private\source_byte_offset_to_int($breaks[$i - 1]);
+  }
 
   return new LineAndColumnNumbers(
     $start_line - 1,

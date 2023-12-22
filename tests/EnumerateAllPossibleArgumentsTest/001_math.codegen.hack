@@ -185,7 +185,7 @@ async function math_001_async(): Awaitable<void> {
     Pha\script_get_trivia($script);
 
     foreach ($source_ranges as $p0)
-      Pha\source_range_to_file_and_line_numbers($script, $p0);
+      Pha\source_range_to_line_and_column_numbers($script, $p0);
 
     foreach ($syntaxes as $p0)
       Pha\syntax_get_members($script, $p0);
