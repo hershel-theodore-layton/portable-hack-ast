@@ -32,6 +32,7 @@ final class Math extends Fixture {
   public Pha\Trivium $namespaceSemicolonTextTrivium;
   public Pha\Trivium $newlineAfterNamespaceSemicolon;
   public Pha\Trivium $licenseComment;
+  public Pha\Trivium $newlineAfterLicenseComment;
   public Pha\Syntax $functionDeclaration;
   public Pha\Syntax $functionDeclarationHeader;
   public Pha\Syntax $missingTypeParameterList;
@@ -102,6 +103,10 @@ final class Math extends Fixture {
 
     $this->licenseComment =
       Pha\node_get_first_child($script, $this->namespaceToken)
+      |> Pha\as_trivium($$);
+
+    $this->newlineAfterLicenseComment =
+      Pha\node_get_nth_childx($script, $this->namespaceToken, 1)
       |> Pha\as_trivium($$);
 
     $this->functionDeclarationHeader = $this->memberAsSyntax(

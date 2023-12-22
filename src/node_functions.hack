@@ -1021,14 +1021,9 @@ function source_range_to_line_and_column_numbers(
     ++$i;
   }
 
-  if ($i === 0) {
-    $start_line = 1;
-    $start_column = 0;
-  } else {
-    $start_line = $i;
-    $start_column = _Private\source_byte_offset_to_int($start) -
-      _Private\source_byte_offset_to_int($breaks[$i - 1]);
-  }
+  $start_line = Math\maxva(0, $i - 1);
+  $start_column = _Private\source_byte_offset_to_int($start) -
+    _Private\source_byte_offset_to_int($breaks[$start_line]);
 
   while (
     $i < $count &&
@@ -1040,19 +1035,14 @@ function source_range_to_line_and_column_numbers(
     ++$i;
   }
 
-  if ($i === 0) {
-    $end_line = 1;
-    $end_column = 0;
-  } else {
-    $end_line = $i;
-    $end_column = _Private\source_byte_offset_to_int($end_exclusive) -
-      _Private\source_byte_offset_to_int($breaks[$i - 1]);
-  }
+  $end_line = Math\maxva(0, $i - 1);
+  $end_column = _Private\source_byte_offset_to_int($end_exclusive) -
+    _Private\source_byte_offset_to_int($breaks[$end_line]);
 
   return new LineAndColumnNumbers(
-    $start_line - 1,
+    $start_line,
     $start_column,
-    $end_line - 1,
+    $end_line,
     $end_column,
   );
 }

@@ -842,6 +842,8 @@ final class NodeFunctionsTest extends HackTest {
     return vec[
       tuple(Pha\SCRIPT_NODE, tuple(0, 0), tuple(6, 1)),
       tuple($math->declarationList, tuple(0, 0), tuple(6, 1)),
+      tuple($math->licenseComment, tuple(0, 0), tuple(0, 55)),
+      tuple($math->newlineAfterLicenseComment, tuple(0, 55), tuple(0, 56)),
       tuple($math->functionDeclaration, tuple(1, 34), tuple(5, 2)),
       tuple($math->missingTypeParameterList, tuple(3, 13), tuple(3, 13)),
       tuple(
