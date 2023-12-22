@@ -41,7 +41,9 @@ function resolve_name_and_use_clause(
 )[]: (string, NillableSyntax) {
   return _Private\resolver_reveal($resolver)->resolveName(
     $node,
-    node_get_parent($script, $node),
+    is_token($node)
+      ? token_get_parent($script, as_token($node))
+      : syntax_get_parent($script, as_syntax($node)),
     node_get_code_compressed($script, $node),
   );
 }
