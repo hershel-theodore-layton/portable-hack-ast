@@ -8,7 +8,6 @@ type NillableToken = _Private\NillableToken;
 type NillableTrivium = _Private\NillableTrivium;
 type Node = _Private\Node;
 type NodeId = _Private\NodeId;
-type Resolver = _Private\Resolver;
 type Script = _Private\Script;
 type ReadyToSerializeContext = _Private\ReadyToSerializeContext;
 type ReadyToSerializeScript = _Private\ReadyToSerializeScript;
