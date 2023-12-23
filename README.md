@@ -2,6 +2,18 @@
 
 _Query the Hack AST in a light and portable manner._
 
+### Quick start
+
+[Just want linters? look here :)](https://github.com/hershel-theodore-layton/portable-hack-ast-linters)
+
+Want to build your own tools on top of the AST?:
+ - `composer require hershel-theodore-layton/portable-hack-ast hershel-theodore-layton/portable-hack-ast-extras`
+ - Read this README
+ - Familiarize yourself with [Node kinds](./src/Kind.hack) and [Members](./src/Member.hack)
+ - Autocomplete your way through the API
+ - ...
+ - Profit?
+
 ### What is an AST?
 
 An AST is how Hack and HHVM see and reason about your source code.
@@ -134,10 +146,6 @@ list($script, $ctx) = Pha\parse($code, $ctx);
 $syntax_index = Pha\create_syntax_kind_index($script);
 $token_index = Pha\create_token_kind_index($script);
 $trivium_index = Pha\create_trivium_kind_index($script);
-// This allows you to resolve names to the namespace they belong in.
-$resolver = Pha\create_name_resolver($script, $syntax_index, $token_index);
-// This gives you all the `pragma()` declarations and `<<Pragma()>>` annotations.
-$pragma_map = Pha\create_pragma_map($script, $syntax_index);
 
 // Store your work in a cache (sqlite, apc, files on disk).
 $ready_to_serialize = Pha\dematerialize_script($script);
@@ -145,6 +153,12 @@ $ready_to_serialize = Pha\dematerialize_script($script);
 $deserialized = $ready_to_serialize;
 $ctx = Pha\materialize_context($deserialized['context']);
 Pha\materialize_script($deserialized['script'], $ctx);
+
+// resolver, and pragma_map require you install portable-hack-ast-extras
+// This allows you to resolve names to the namespace they belong in.
+$resolver = Pha\create_name_resolver($script, $syntax_index, $token_index);
+// This gives you all the `pragma()` declarations and `<<Pragma()>>` annotations.
+$pragma_map = Pha\create_pragma_map($script, $syntax_index);
 ```
 
 The full API for interacting with all these values can be found in [node_functions.hack](./src/node_functions.hack).
