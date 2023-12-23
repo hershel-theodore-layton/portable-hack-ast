@@ -281,7 +281,7 @@ parsing is actually reparsing. Uncached performance only matters when:
 As noted in [performance](#performance), uncached parse performance is still good,
 but cached performance is a lot better still. In order to cache Scripts
 effectively, you must dematerialize them first. You may not observe the
-dematerialized representation, it is subject to change The following table
+dematerialized representation, it is subject to change. The following table
 doesn't account for serialization overhead. The serialized size of a given script
 is often about 10 &times; the source size in bytes[^5].
 
