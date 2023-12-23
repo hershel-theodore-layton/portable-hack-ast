@@ -8,7 +8,7 @@ use namespace HH\Lib\{C, Dict, Math, Str, Vec};
  * Think of them as methods on the `Node` "class".
  *
  * Some help for searching:
- *  - All functions are in `camel_case()`. `SHOUT_CASE` things are constants.
+ *  - All functions are in `snake_case()`. `SHOUT_CASE` things are constants.
  *  - Functions that start with `node_` will work on all Nodes,
  *    sometimes even nillable nodes.
  *  - Functions that start with `syntax_`, `token_`, or `trivium_` only work on
