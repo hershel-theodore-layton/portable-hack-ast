@@ -102,12 +102,12 @@ final class TranslationUnit {
   public function dematerialize()[]: ReadyToSerializeScript {
     return shape(
       'script' => dict[
-        'VERSION' => 1,
-        'SOURCE_ORDER' => $this->sourceOrder,
-        'SIBLINGS' => $this->siblings,
-        'LIST_SIZES' => $this->listSizes,
-        'SOURCE_TEXT' => $this->sourceText,
-        'CONTEXT_ID' => $this->ctx->getMaterializationHash(),
+        static::VERSION => 1,
+        static::SOURCE_ORDER => $this->sourceOrder,
+        static::SIBLINGS => $this->siblings,
+        static::LIST_SIZES => $this->listSizes,
+        static::SOURCE_TEXT => $this->sourceText,
+        static::CONTEXT_ID => $this->ctx->getMaterializationHash(),
       ],
       'context' => $this->ctx->dematerialize(),
       'context_hash' => $this->ctx->getMaterializationHash(),
