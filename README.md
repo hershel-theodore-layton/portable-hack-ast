@@ -11,8 +11,8 @@ Want to build your own tools on top of the AST?:
  - Read this README
  - Familiarize yourself with [Node kinds](./src/Kind.hack) and [Members](./src/Member.hack)
  - Autocomplete your way through the API
- - ...
- - Profit?
+ - ???
+ - Profit
 
 ### What is an AST?
 
