@@ -106,7 +106,7 @@ final class Math extends Fixture {
       |> Pha\as_trivium($$);
 
     $this->newlineAfterLicenseComment =
-      Pha\node_get_nth_childx($script, $this->namespaceToken, 1)
+      Pha\node_get_child_at_offsetx($script, $this->namespaceToken, 1)
       |> Pha\as_trivium($$);
 
     $this->functionDeclarationHeader = $this->memberAsSyntax(

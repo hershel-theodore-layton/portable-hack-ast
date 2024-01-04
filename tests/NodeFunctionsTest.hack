@@ -179,7 +179,7 @@ final class NodeFunctionsTest extends HackTest {
     expect(Pha\node_get_parent($script, $node))->toEqual($parent);
   }
 
-  public function provide_node_get_nth_child(
+  public function provide_node_get_child_at_offset(
   )[]: vec<(Pha\NillableNode, int, ?Pha\Kind)> {
     $math = $this->fixtures()->math;
     return vec[
@@ -209,39 +209,46 @@ final class NodeFunctionsTest extends HackTest {
 
   // We need to test against the Kind,
   // because we have no other way to get a reference to the nth child just yet.
-  <<DataProvider('provide_node_get_nth_child')>>
-  public function test_node_get_nth_child(
+  <<DataProvider('provide_node_get_child_at_offset')>>
+  public function test_node_get_child_at_offset(
     Pha\NillableNode $node,
-    int $n,
-    ?Pha\Kind $kind_of_nth_child,
+    int $offset,
+    ?Pha\Kind $kind,
   )[]: void {
     $script = $this->fixtures()->math->script;
-    $nth_child = Pha\node_get_nth_child($script, $node, $n);
+    $child = Pha\node_get_child_at_offset($script, $node, $offset);
     expect(
-      $nth_child === Pha\NIL
+      $child === Pha\NIL
         ? null
-        : Pha\node_get_kind($script, Pha\as_nonnil($nth_child)),
-    )->toEqual($kind_of_nth_child);
+        : Pha\node_get_kind($script, Pha\as_nonnil($child)),
+    )->toEqual($kind);
   }
 
-  public function test_node_get_nth_child_preconditions()[]: void {
+  public function test_node_get_child_at_offset_preconditions()[]: void {
     $script = $this->fixtures()->math->script;
-    expect(() ==> Pha\node_get_nth_child($script, Pha\SCRIPT_NODE, -1))
+    expect(() ==> Pha\node_get_child_at_offset($script, Pha\SCRIPT_NODE, -1))
       ->toThrowPhaException('expected a valid offset (0 or greater), got -1.');
   }
 
-  public function test_node_get_nth_childx()[]: void {
+  public function test_node_get_child_at_offsetx()[]: void {
     $math = $this->fixtures()->math;
     expect(
-      Pha\node_get_nth_childx($math->script, $math->namespaceDeclaration, 0),
+      Pha\node_get_child_at_offsetx(
+        $math->script,
+        $math->namespaceDeclaration,
+        0,
+      ),
     )
       ->toEqual($math->namespaceDeclarationHeader);
 
     expect(
-      () ==>
-        Pha\node_get_nth_childx($math->script, $math->namespaceDeclaration, 3),
+      () ==> Pha\node_get_child_at_offsetx(
+        $math->script,
+        $math->namespaceDeclaration,
+        3,
+      ),
     )->toThrowPhaException(
-      'expected at least 3 children, the given namespace_declaration has no 3rd child.',
+      'expected more children, the given namespace_declaration has no child at offset 3 (4th child).',
     );
   }
 

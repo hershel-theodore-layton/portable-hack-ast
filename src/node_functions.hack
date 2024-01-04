@@ -263,7 +263,7 @@ function create_member_accessor(
         ));
       }
 
-      return node_get_nth_childx($script, $n, $child_number);
+      return node_get_child_at_offsetx($script, $n, $child_number);
     };
   }
 
@@ -277,7 +277,7 @@ function create_member_accessor(
       ));
     }
 
-    return node_get_nth_childx($script, $n, $idx);
+    return node_get_child_at_offsetx($script, $n, $idx);
   };
 }
 
@@ -436,6 +436,95 @@ function node_get_ancestors(Script $script, NillableNode $node)[]: vec<Node> {
   } while ($node !== SCRIPT_NODE);
 
   return $out;
+}
+
+/**
+ * `$node->children[$offset] ?? Pha\NIL`
+ * @throws Iff $index < 0.
+ */
+function node_get_child_at_offset(
+  Script $script,
+  NillableNode $node,
+  int $offset,
+)[]: NillableNode {
+  if ($offset === 0) {
+    return node_get_first_child($script, $node);
+  }
+
+  _Private\enforce(
+    $offset > 0,
+    '%s expected a valid offset (0 or greater), got %d.',
+    __FUNCTION__,
+    $offset,
+  );
+
+  if ($node === NIL) {
+    return NIL;
+  }
+
+  $node = _Private\cast_away_nil($node);
+
+  $tu = _Private\translation_unit_reveal($script);
+
+  switch (node_get_elaborated_group($node)) {
+    case NodeElaboratedGroup::SYNTAX:
+    case NodeElaboratedGroup::LIST:
+      $child_node = _Private\syntax_from_node($node)
+        |> _Private\syntax_get_first_child_sibling_id($$)
+        |> _Private\sibling_id_add($$, $offset)
+        |> $tu->getNodeBySiblingId($$);
+
+      if ($child_node === NIL) {
+        return NIL;
+      }
+
+      $child_node = _Private\cast_away_nil($child_node);
+      return _Private\node_get_parent_id($child_node) === node_get_id($node)
+        ? $child_node
+        : NIL;
+
+    case NodeElaboratedGroup::TOKEN:
+      $child_node = node_get_id($node)
+        |> _Private\node_id_add($$, 1 + $offset)
+        |> $tu->getNodeById($$);
+
+      if ($child_node === NIL) {
+        return NIL;
+      }
+
+      $child_node = _Private\cast_away_nil($child_node);
+      return _Private\node_get_parent_id($child_node) === node_get_id($node)
+        ? $child_node
+        : NIL;
+
+    case NodeElaboratedGroup::TRIVIUM:
+    case NodeElaboratedGroup::MISSING:
+      return NIL;
+  }
+}
+
+/**
+ * `$node->children[$offset]`
+ * @throws Iff $n < 0 or $node has no $nth child.
+ */
+function node_get_child_at_offsetx(
+  Script $script,
+  Node $node,
+  int $offset,
+)[]: Node {
+  $child_at_offset = node_get_child_at_offset($script, $node, $offset);
+
+  if ($child_at_offset !== NIL) {
+    return _Private\cast_away_nil($child_at_offset);
+  }
+
+  throw new _Private\PhaException(Str\format(
+    '%s expected more children, the given %s has no child at offset %d (%s child).',
+    __FUNCTION__,
+    node_get_kind($script, $node),
+    $offset,
+    _Private\grammatical_nth($offset + 1),
+  ));
 }
 
 /**
@@ -686,7 +775,7 @@ function node_get_last_child(
   switch (node_get_elaborated_group($node)) {
     case NodeElaboratedGroup::SYNTAX:
       $node = _Private\syntax_from_node($node);
-      return node_get_nth_child(
+      return node_get_child_at_offset(
         $script,
         $node,
         C\count(syntax_get_members($script, $node)) - 1,
@@ -715,7 +804,8 @@ function node_get_last_child(
 
     case NodeElaboratedGroup::LIST:
       $node = _Private\syntax_from_node($node);
-      return node_get_nth_child($script, $node, $tu->listGetSize($node) - 1);
+      return
+        node_get_child_at_offset($script, $node, $tu->listGetSize($node) - 1);
 
     case NodeElaboratedGroup::TRIVIUM:
     case NodeElaboratedGroup::MISSING:
@@ -791,89 +881,6 @@ function node_get_line_and_column_numbers(
 )[]: LineAndColumnNumbers {
   return node_get_source_range($script, $node)
     |> source_range_to_line_and_column_numbers($script, $$);
-}
-
-/**
- * @throws Iff $n < 0.
- */
-function node_get_nth_child(
-  Script $script,
-  NillableNode $node,
-  int $n,
-)[]: NillableNode {
-  if ($n === 0) {
-    return node_get_first_child($script, $node);
-  }
-
-  _Private\enforce(
-    $n > 0,
-    '%s expected a valid offset (0 or greater), got %d.',
-    __FUNCTION__,
-    $n,
-  );
-
-  if ($node === NIL) {
-    return NIL;
-  }
-
-  $node = _Private\cast_away_nil($node);
-
-  $tu = _Private\translation_unit_reveal($script);
-
-  switch (node_get_elaborated_group($node)) {
-    case NodeElaboratedGroup::SYNTAX:
-    case NodeElaboratedGroup::LIST:
-      $child_node = _Private\syntax_from_node($node)
-        |> _Private\syntax_get_first_child_sibling_id($$)
-        |> _Private\sibling_id_add($$, $n)
-        |> $tu->getNodeBySiblingId($$);
-
-      if ($child_node === NIL) {
-        return NIL;
-      }
-
-      $child_node = _Private\cast_away_nil($child_node);
-      return _Private\node_get_parent_id($child_node) === node_get_id($node)
-        ? $child_node
-        : NIL;
-
-    case NodeElaboratedGroup::TOKEN:
-      $child_node = node_get_id($node)
-        |> _Private\node_id_add($$, 1 + $n)
-        |> $tu->getNodeById($$);
-
-      if ($child_node === NIL) {
-        return NIL;
-      }
-
-      $child_node = _Private\cast_away_nil($child_node);
-      return _Private\node_get_parent_id($child_node) === node_get_id($node)
-        ? $child_node
-        : NIL;
-
-    case NodeElaboratedGroup::TRIVIUM:
-    case NodeElaboratedGroup::MISSING:
-      return NIL;
-  }
-}
-
-/**
- * @throws Iff $n < 0 or $node has no $nth child.
- */
-function node_get_nth_childx(Script $script, Node $node, int $n)[]: Node {
-  $nth_child = node_get_nth_child($script, $node, $n);
-
-  if ($nth_child !== NIL) {
-    return _Private\cast_away_nil($nth_child);
-  }
-
-  throw new _Private\PhaException(Str\format(
-    '%s expected at least %d children, the given %s has no %s child.',
-    __FUNCTION__,
-    $n,
-    node_get_kind($script, $node),
-    _Private\grammatical_nth($n),
-  ));
 }
 
 /**
@@ -1068,7 +1075,7 @@ function syntax_member(Script $script, Syntax $node, Member $member)[]: Node {
 
   foreach (syntax_get_members($script, $node) as $m) {
     if ($m === $member) {
-      return node_get_nth_childx($script, $node, $ii);
+      return node_get_child_at_offsetx($script, $node, $ii);
     }
 
     ++$ii;

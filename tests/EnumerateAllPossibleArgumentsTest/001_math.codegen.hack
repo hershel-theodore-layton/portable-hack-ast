@@ -97,6 +97,20 @@ async function math_001_async(): Awaitable<void> {
       Pha\node_get_ancestors($script, $p0);
 
     foreach ($nillable_nodes as $p0)
+      foreach (Vec\range(-100, 100) as $p1)
+        try {
+          Pha\node_get_child_at_offset($script, $p0, $p1);
+        } catch (Pha\PhaException $_) {
+        }
+
+    foreach ($nodes as $p0)
+      foreach (Vec\range(-100, 100) as $p1)
+        try {
+          Pha\node_get_child_at_offsetx($script, $p0, $p1);
+        } catch (Pha\PhaException $_) {
+        }
+
+    foreach ($nillable_nodes as $p0)
       Pha\node_get_children($script, $p0);
 
     foreach ($nillable_nodes as $p0)
@@ -149,20 +163,6 @@ async function math_001_async(): Awaitable<void> {
 
     foreach ($nodes as $p0)
       Pha\node_get_line_and_column_numbers($script, $p0);
-
-    foreach ($nillable_nodes as $p0)
-      foreach (Vec\range(-100, 100) as $p1)
-        try {
-          Pha\node_get_nth_child($script, $p0, $p1);
-        } catch (Pha\PhaException $_) {
-        }
-
-    foreach ($nodes as $p0)
-      foreach (Vec\range(-100, 100) as $p1)
-        try {
-          Pha\node_get_nth_childx($script, $p0, $p1);
-        } catch (Pha\PhaException $_) {
-        }
 
     foreach ($nodes as $p0)
       Pha\node_get_parent($script, $p0);
