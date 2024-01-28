@@ -2,13 +2,6 @@
 
 _Query the Hack AST in a light and portable manner._
 
-# Important pre-release note!
-
-**The APIs in this package are not 100% stable yet! I may remove, rename or change them on a whim.**
-
-_This package is published early to allow downstream dependencies to be tested in CI._
-_You may use this code [as-is](./LICENSE), but you can't complain about breakages._
-
 ### Quick start
 
 [Just want linters? look here :)](https://github.com/hershel-theodore-layton/portable-hack-ast-linters)
