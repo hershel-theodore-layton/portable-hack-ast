@@ -3,6 +3,9 @@ namespace HTL\Pha\_Private;
 
 newtype SourceRange = (SourceByteOffset, ?SourceByteOffset);
 
+const SourceRange SOURCE_RANGE_WHOLE_SCRIPT =
+  tuple(SOURCE_BYTE_OFFSET_ZERO, SOURCE_BYTE_OFFSET_END);
+
 function source_range_hide(
   (SourceByteOffset, ?SourceByteOffset) $range,
 )[]: SourceRange {

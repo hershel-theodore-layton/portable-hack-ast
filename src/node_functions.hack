@@ -970,6 +970,20 @@ function node_get_syntax_ancestors(
   return $out;
 }
 
+function patches(Script $script, (Node, string) ...$patches)[]: Patches {
+  $tu = _Private\translation_unit_reveal($script);
+  return Vec\map(
+    $patches,
+    $p ==> new _Private\Patch(node_get_source_range($script, $p[0]), $p[1]),
+  )
+    |> new _Private\PatchSet($tu, $$)
+    |> _Private\patch_set_hide($$);
+}
+
+function patches_apply(Patches $patches)[]: string {
+  return _Private\patch_set_reveal($patches)->apply();
+}
+
 function script_get_syntaxes(Script $script)[]: vec<Syntax> {
   $tu = _Private\translation_unit_reveal($script);
   return $tu->getSourceOrder()
@@ -1002,6 +1016,32 @@ function script_get_trivia(Script $script)[]: vec<Trivium> {
   return $tu->getSourceOrder()
     |> Vec\filter($$, is_trivium<>)
     |> _Private\trivia_from_nodes($$);
+}
+
+function source_range_format(SourceRange $source_range)[]: string {
+  list($start, $end) = _Private\source_range_reveal($source_range)
+    |> tuple(
+      _Private\source_byte_offset_to_int($$[0]),
+      $$ is (mixed, nonnull) ? _Private\source_byte_offset_to_int($$[1]) : null,
+    );
+
+  return $end is null ? '['.$start.', '.'...]' : '['.$start.', '.$end.']';
+}
+
+function source_range_overlaps(SourceRange $a, SourceRange $b)[]: bool {
+  $a = _Private\source_range_reveal($a);
+  $b = _Private\source_range_reveal($b);
+
+  if (_Private\source_byte_offset_is_less_than($b[0], $a[0])) {
+    $tmp = $a;
+    $a = $b;
+    $b = $tmp;
+  }
+
+  $a_end = $a[1];
+
+  return
+    $a_end is null || _Private\source_byte_offset_is_less_than($b[0], $a_end);
 }
 
 function source_range_to_line_and_column_numbers(

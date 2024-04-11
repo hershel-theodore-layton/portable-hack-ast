@@ -176,6 +176,10 @@ async function math_001_async(): Awaitable<void> {
     foreach ($nillable_nodes as $p0)
       Pha\node_get_syntax_ancestors($script, $p0);
 
+    // Could not enumerate: Pha\patches: (Node, string)
+
+    // Could not enumerate: Pha\patches_apply: Patches
+
     Pha\script_get_syntaxes($script);
 
     Pha\script_get_syntaxes_without_missing_and_list($script);
@@ -183,6 +187,13 @@ async function math_001_async(): Awaitable<void> {
     Pha\script_get_tokens($script);
 
     Pha\script_get_trivia($script);
+
+    foreach ($source_ranges as $p0)
+      Pha\source_range_format($p0);
+
+    foreach ($source_ranges as $p0)
+      foreach ($source_ranges as $p1)
+        Pha\source_range_overlaps($p0, $p1);
 
     foreach ($source_ranges as $p0)
       Pha\source_range_to_line_and_column_numbers($script, $p0);

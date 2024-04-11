@@ -31,6 +31,7 @@ final class NodeFunctionsTest extends HackTest {
 
     $this->fixtures = new Fixtures\Fixtures(
       new Fixtures\Math(await static::parseFixtureAsync('001_math.hack')),
+      new Fixtures\Tiny(await static::parseFixtureAsync('002_tiny.hack')),
     );
   }
 
@@ -876,6 +877,100 @@ final class NodeFunctionsTest extends HackTest {
         |> Pha\source_range_to_line_and_column_numbers($script, $$)
         |> tuple($$->getStart(), $$->getEnd()),
     )->toEqual(tuple($start, $end));
+  }
+
+  public function provide_source_range_format(
+  ): vec<(Pha\SourceRange, string)> {
+    return vec[
+      tuple(
+        Pha\_Private\source_range_hide(
+          tuple(Pha\_Private\source_byte_offset_from_int(0), null),
+        ),
+        '[0, ...]',
+      ),
+      tuple(
+        Pha\_Private\source_range_hide(
+          tuple(
+            Pha\_Private\source_byte_offset_from_int(14),
+            Pha\_Private\source_byte_offset_from_int(32),
+          ),
+        ),
+        '[14, 32]',
+      ),
+    ];
+  }
+
+  <<DataProvider('provide_source_range_format')>>
+  public function test_source_range_format(
+    Pha\SourceRange $range,
+    string $expected,
+  )[]: void {
+    expect(Pha\source_range_format($range))->toEqual($expected);
+  }
+
+  public function provide_patches_apply(
+  ): vec<(vec<(Pha\Node, string)>, string)> {
+    $tiny = $this->fixtures()->tiny;
+    return vec[
+      tuple(
+        vec[tuple($tiny->functionName, 'noop')],
+        'function noop()[]: void {}',
+      ),
+      tuple(
+        vec[tuple($tiny->functionBodyLines, ' $_ = 1 + 2; ')],
+        'function tiny()[]: void { $_ = 1 + 2; }',
+      ),
+      tuple(
+        vec[
+          tuple($tiny->functionName, 'add'),
+          tuple($tiny->paramaterList, 'int $a, int $b'),
+          tuple($tiny->contexts, '[write_props]'),
+          tuple($tiny->returnType, 'int '),
+          tuple($tiny->functionBodyLines, ' return $a + $b; '),
+        ],
+        'function add(int $a, int $b)[write_props]: int { return $a + $b; }',
+      ),
+    ];
+  }
+
+  <<DataProvider('provide_patches_apply')>>
+  public function test_patches_apply(
+    vec<(Pha\Node, string)> $patches,
+    string $expected,
+  )[]: void {
+    expect(
+      Pha\patches($this->fixtures()->tiny->script, ...$patches)
+        |> Pha\patches_apply($$),
+    )->toEqual($expected);
+  }
+
+  public function provide_patches_apply_overlapping_nodes(
+  ): vec<(vec<(Pha\Node, string)>, string)> {
+    $tiny = $this->fixtures()->tiny;
+    return vec[
+      tuple(
+        vec[
+          tuple($tiny->functionBody, ';'),
+          tuple($tiny->functionBodyLines, ' throw new Exception(); '),
+        ],
+        "The following two patches conflict:\n".
+        " - [24, 26]\n".
+        ";\n".
+        " - [25, 25]\n".
+        ' throw new Exception(); ',
+      ),
+    ];
+  }
+
+  <<DataProvider('provide_patches_apply_overlapping_nodes')>>
+  public function test_provide_patches_apply_overlapping_nodes(
+    vec<(Pha\Node, string)> $patches,
+    string $message,
+  )[]: void {
+    $script = $this->fixtures()->tiny->script;
+    expect(() ==> Pha\patches($script, ...$patches))->toThrowPhaException(
+      $message,
+    );
   }
 
   private function fixtures()[]: Fixtures\Fixtures {

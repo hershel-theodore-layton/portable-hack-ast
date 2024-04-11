@@ -5,7 +5,7 @@ use namespace HH\Lib\{C, Vec};
 use namespace HTL\Pha;
 
 final class Fixtures {
-  public function __construct(public Math $math)[] {}
+  public function __construct(public Math $math, public Tiny $tiny)[] {}
 }
 
 abstract class Fixture {
@@ -188,6 +188,74 @@ final class Math extends Fixture {
     $this->endOfFileTokenText =
       Pha\node_get_last_child($script, $this->endOfFileToken)
       |> Pha\as_trivium($$);
+  }
+
+  private function member(Pha\Syntax $node, Pha\Member $member)[]: Pha\Node {
+    return Pha\syntax_member($this->script, $node, $member);
+  }
+
+  private function memberAsSyntax(
+    Pha\Syntax $node,
+    Pha\Member $member,
+  )[]: Pha\Syntax {
+    return $this->member($node, $member) |> Pha\as_syntax($$);
+  }
+}
+
+final class Tiny extends Fixture {
+  public Pha\Syntax $declarationList;
+  public Pha\Syntax $functionDeclaration;
+  public Pha\Syntax $functionDeclarationHeader;
+  public Pha\Token $functionName;
+  public Pha\Syntax $paramaterList;
+  public Pha\Syntax $contexts;
+  public Pha\Syntax $returnType;
+  public Pha\Syntax $functionBody;
+  public Pha\Syntax $functionBodyLines;
+
+  public function __construct(public Pha\Script $script)[] {
+    parent::__construct($script);
+
+    $this->declarationList =
+      $this->memberAsSyntax(Pha\SCRIPT_NODE, Pha\MEMBER_SCRIPT_DECLARATIONS);
+
+    $this->functionDeclaration =
+      Pha\node_get_first_childx($this->script, $this->declarationList)
+      |> Pha\as_syntax($$);
+
+    $this->functionDeclarationHeader = $this->memberAsSyntax(
+      $this->functionDeclaration,
+      Pha\MEMBER_FUNCTION_DECLARATION_HEADER,
+    );
+
+    $this->functionName =
+      $this->member($this->functionDeclarationHeader, Pha\MEMBER_FUNCTION_NAME)
+      |> Pha\as_token($$);
+
+    $this->contexts = $this->memberAsSyntax(
+      $this->functionDeclarationHeader,
+      Pha\MEMBER_FUNCTION_CONTEXTS,
+    );
+
+    $this->paramaterList = $this->memberAsSyntax(
+      $this->functionDeclarationHeader,
+      Pha\MEMBER_FUNCTION_PARAMETER_LIST,
+    );
+
+    $this->returnType = $this->memberAsSyntax(
+      $this->functionDeclarationHeader,
+      Pha\MEMBER_FUNCTION_TYPE,
+    );
+
+    $this->functionBody = $this->memberAsSyntax(
+      $this->functionDeclaration,
+      Pha\MEMBER_FUNCTION_BODY,
+    );
+
+    $this->functionBodyLines = $this->memberAsSyntax(
+      $this->functionBody,
+      Pha\MEMBER_COMPOUND_STATEMENTS,
+    );
   }
 
   private function member(Pha\Syntax $node, Pha\Member $member)[]: Pha\Node {
