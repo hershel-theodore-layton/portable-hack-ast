@@ -13,7 +13,8 @@
   "overrides": [
     {
       "patterns": [
-        "*.codegen.hack"
+        "*.codegen.hack",
+        "tests/fixtures/*"
       ],
       "disableAllLinters": true
     },
