@@ -947,6 +947,14 @@ final class NodeFunctionsTest extends HackTest {
         'function tiny()[]: void { $_ = 1 + 2; }',
       ),
       tuple(
+        vec[Pha\patch_node(
+          $tiny->functionDeclarationHeader,
+          'function big()[]: void',
+          shape('trivia' => Pha\RetainTrivia::BOTH),
+        )],
+        'function big()[]: void {}',
+      ),
+      tuple(
         vec[
           Pha\patch_node($tiny->functionName, 'add'),
           Pha\patch_node($tiny->paramaterList, 'int $a, int $b'),

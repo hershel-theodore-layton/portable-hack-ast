@@ -51,7 +51,7 @@ final class PatchNode {
       : $this->node;
 
     $end_node = $keep_trailing
-      ? C\findx(
+      ? find_lastx(
           $descendants,
           $d ==> Pha\is_trivium($d) &&
             Pha\node_get_kind($script, $d) === Pha\KIND_TOKEN_TEXT,
