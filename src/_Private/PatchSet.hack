@@ -5,14 +5,10 @@ use namespace HH\Lib\{C, Str, Vec};
 use namespace HTL\Pha;
 
 final class PatchSet {
-  private string $beforeText;
-
   public function __construct(
-    TranslationUnit $tu,
+    private string $beforeText,
     private vec<Patch> $patches,
   )[] {
-    $this->beforeText = $tu->cutSourceRange(SOURCE_RANGE_WHOLE_SCRIPT);
-
     $sorted = Vec\sort_by($patches, $p ==> $p->getStartOffset());
     $shifted = Vec\drop($sorted, 1);
     $with_next = Vec\zip($sorted, $shifted);
@@ -61,5 +57,17 @@ final class PatchSet {
     }
 
     return $out.Str\slice($this->beforeText, $read_start);
+  }
+
+  public function cayBeCombinedWith(PatchSet $other)[]: bool {
+    return $this->beforeText === $other->beforeText;
+  }
+
+  public function getBeforeText()[]: string {
+    return $this->beforeText;
+  }
+
+  public function getPatches()[]: vec<Patch> {
+    return $this->patches;
   }
 }

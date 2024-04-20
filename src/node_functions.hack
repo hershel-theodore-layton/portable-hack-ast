@@ -970,18 +970,60 @@ function node_get_syntax_ancestors(
   return $out;
 }
 
+/**
+ * @throws If any Patch in `$patches` overlaps with any other Patch.
+ */
 function patches(Script $script, (Node, string) ...$patches)[]: Patches {
-  $tu = _Private\translation_unit_reveal($script);
   return Vec\map(
     $patches,
     $p ==> new _Private\Patch(node_get_source_range($script, $p[0]), $p[1]),
   )
-    |> new _Private\PatchSet($tu, $$)
+    |> new _Private\PatchSet(node_get_code($script, SCRIPT_NODE), $$)
     |> _Private\patch_set_hide($$);
 }
 
 function patches_apply(Patches $patches)[]: string {
   return _Private\patch_set_reveal($patches)->apply();
+}
+
+/**
+ * This API will become an alias for `patches_combine($patches, $throw_on_conflict)`
+ * where `$throw_on_conflict` is an argument that allows you to specify
+ * a conflict resolution strategy.
+ * For now, this was just easy to implement and it fulfills the basic need.
+ *
+ * @throws If any Patch in `$patches` overlaps with any other Patch.
+ * @throws If `$patches` is empty.
+ * @throws If any Patches in `$patches` was generated with a different source text.
+ */
+function patches_combine_without_conflict_resolution(
+  vec<Patches> $patches,
+)[]: Patches {
+  _Private\enforce(
+    !C\is_empty($patches),
+    '%s expected Patches, but none were provided.',
+    __FUNCTION__,
+  );
+
+  $first = C\firstx($patches) |> _Private\patch_set_reveal($$);
+
+  $function_name = __FUNCTION__;
+
+  return Vec\map($patches, $p ==> {
+    $p = _Private\patch_set_reveal($p);
+
+    _Private\enforce(
+      $first->cayBeCombinedWith($p),
+      '%s expected that all Patches could be combined, '.
+      'but one of the Patches was created for a different Script.',
+      $function_name,
+    );
+
+    return $p->getPatches();
+  })
+    |> Vec\flatten($$)
+    |> new _Private\PatchSet($first->getBeforeText(), $$)
+    |> _Private\patch_set_hide($$);
 }
 
 function script_get_syntaxes(Script $script)[]: vec<Syntax> {

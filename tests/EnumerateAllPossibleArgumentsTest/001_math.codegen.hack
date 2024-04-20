@@ -180,6 +180,8 @@ async function math_001_async(): Awaitable<void> {
 
     // Could not enumerate: Pha\patches_apply: Patches
 
+    // Could not enumerate: Pha\patches_combine_without_conflict_resolution: vec<Patches>
+
     Pha\script_get_syntaxes($script);
 
     Pha\script_get_syntaxes_without_missing_and_list($script);

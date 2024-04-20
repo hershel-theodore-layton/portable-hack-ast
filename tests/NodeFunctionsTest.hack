@@ -938,10 +938,19 @@ final class NodeFunctionsTest extends HackTest {
     vec<(Pha\Node, string)> $patches,
     string $expected,
   )[]: void {
-    expect(
-      Pha\patches($this->fixtures()->tiny->script, ...$patches)
-        |> Pha\patches_apply($$),
-    )->toEqual($expected);
+    $script = $this->fixtures()->tiny->script;
+    expect(Pha\patches_apply(Pha\patches($script, ...$patches)))
+      ->toEqual($expected);
+
+    $patch_set = Pha\patches($script);
+
+    foreach ($patches as $p) {
+      $patch_set = Pha\patches_combine_without_conflict_resolution(
+        vec[$patch_set, Pha\patches($script, $p)],
+      );
+    }
+
+    expect(Pha\patches_apply($patch_set))->toEqual($expected);
   }
 
   public function provide_patches_apply_overlapping_nodes(
@@ -971,6 +980,58 @@ final class NodeFunctionsTest extends HackTest {
     expect(() ==> Pha\patches($script, ...$patches))->toThrowPhaException(
       $message,
     );
+  }
+
+  public function provide_patches_combine_without_conflict_resolution(
+  ): vec<(vec<Pha\Patches>, string)> {
+    $math = $this->fixtures()->math;
+    $tiny = $this->fixtures()->tiny;
+
+    return vec[
+      tuple(vec[], 'expected Patches, but none were provided'),
+      tuple(
+        vec[
+          Pha\patches($tiny->script, tuple($tiny->functionName, 'short')),
+          Pha\patches($tiny->script, tuple($tiny->functionName, 'long')),
+        ],
+        "The following two patches conflict:\n".
+        " - [9, 13]\n".
+        "short\n".
+        " - [9, 13]\n".
+        "long",
+      ),
+      tuple(
+        vec[
+          Pha\patches($tiny->script, tuple($tiny->functionName, 'short')),
+          Pha\patches(
+            $tiny->script,
+            tuple($tiny->functionDeclarationHeader, 'function long()[]: void '),
+          ),
+        ],
+        "The following two patches conflict:\n".
+        " - [0, 24]\n".
+        "function long()[]: void \n".
+        " - [9, 13]\n".
+        "short",
+      ),
+      tuple(
+        vec[
+          Pha\patches($math->script, tuple($math->firstMinusToken, '+')),
+          Pha\patches($tiny->script, tuple($tiny->contexts, '')),
+        ],
+        'HTL\Pha\patches_combine_without_conflict_resolution expected that all Patches could be combined, '.
+        'but one of the Patches was created for a different Script.',
+      ),
+    ];
+  }
+
+  <<DataProvider('provide_patches_combine_without_conflict_resolution')>>
+  public function test_patches_combine_without_conflict_resolution(
+    vec<Pha\Patches> $patches,
+    string $expected_message,
+  )[]: void {
+    expect(() ==> Pha\patches_combine_without_conflict_resolution($patches))
+      ->toThrowPhaException($expected_message);
   }
 
   private function fixtures()[]: Fixtures\Fixtures {

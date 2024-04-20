@@ -3,9 +3,6 @@ namespace HTL\Pha\_Private;
 
 newtype SourceByteOffset = int;
 
-const SourceByteOffset SOURCE_BYTE_OFFSET_ZERO = 0;
-const null SOURCE_BYTE_OFFSET_END = null;
-
 function source_byte_offset_from_int(int $int)[]: SourceByteOffset {
   return $int;
 }
