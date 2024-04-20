@@ -900,6 +900,29 @@ final class NodeFunctionsTest extends HackTest {
     ];
   }
 
+  public function test_patch_node_invalid_argument()[]: void {
+    $math = $this->fixtures()->math;
+
+    // okay
+    Pha\patch_node(
+      $math->licenseComment,
+      '// no license',
+      shape('trivia' => Pha\RetainTrivia::NEITHER),
+    );
+
+    expect(
+      () ==> Pha\patch_node(
+        $math->licenseComment,
+        '// no license',
+        shape('trivia' => Pha\RetainTrivia::LEADING),
+      ),
+    )
+      ->toThrowPhaException(
+        'You may not replace a trivium with HTL\Pha\RetainTrivia::LEADING set. '.
+        'This instruction does not make sense.',
+      );
+  }
+
   <<DataProvider('provide_source_range_format')>>
   public function test_source_range_format(
     Pha\SourceRange $range,
@@ -908,25 +931,28 @@ final class NodeFunctionsTest extends HackTest {
     expect(Pha\source_range_format($range))->toEqual($expected);
   }
 
-  public function provide_patches_apply(
-  ): vec<(vec<(Pha\Node, string)>, string)> {
+  public function provide_patches_apply(): vec<(vec<Pha\Patch>, string)> {
     $tiny = $this->fixtures()->tiny;
     return vec[
       tuple(
-        vec[tuple($tiny->functionName, 'noop')],
+        vec[Pha\patch_node($tiny->functionName, 'noop')],
         'function noop()[]: void {}',
       ),
       tuple(
-        vec[tuple($tiny->functionBodyLines, ' $_ = 1 + 2; ')],
+        vec[Pha\patch_node($tiny->functionBodyLines, ' $_ = 1 + 2; ')],
         'function tiny()[]: void { $_ = 1 + 2; }',
       ),
       tuple(
         vec[
-          tuple($tiny->functionName, 'add'),
-          tuple($tiny->paramaterList, 'int $a, int $b'),
-          tuple($tiny->contexts, '[write_props]'),
-          tuple($tiny->returnType, 'int '),
-          tuple($tiny->functionBodyLines, ' return $a + $b; '),
+          Pha\patch_node($tiny->functionName, 'add'),
+          Pha\patch_node($tiny->paramaterList, 'int $a, int $b'),
+          Pha\patch_node($tiny->contexts, '[write_props]'),
+          Pha\patch_node(
+            $tiny->returnType,
+            'int',
+            shape('trivia' => Pha\RetainTrivia::TRAILING),
+          ),
+          Pha\patch_node($tiny->functionBodyLines, ' return $a + $b; '),
         ],
         'function add(int $a, int $b)[write_props]: int { return $a + $b; }',
       ),
@@ -935,7 +961,7 @@ final class NodeFunctionsTest extends HackTest {
 
   <<DataProvider('provide_patches_apply')>>
   public function test_patches_apply(
-    vec<(Pha\Node, string)> $patches,
+    vec<Pha\Patch> $patches,
     string $expected,
   )[]: void {
     $script = $this->fixtures()->tiny->script;
@@ -954,13 +980,13 @@ final class NodeFunctionsTest extends HackTest {
   }
 
   public function provide_patches_apply_overlapping_nodes(
-  ): vec<(vec<(Pha\Node, string)>, string)> {
+  ): vec<(vec<Pha\Patch>, string)> {
     $tiny = $this->fixtures()->tiny;
     return vec[
       tuple(
         vec[
-          tuple($tiny->functionBody, ';'),
-          tuple($tiny->functionBodyLines, ' throw new Exception(); '),
+          Pha\patch_node($tiny->functionBody, ';'),
+          Pha\patch_node($tiny->functionBodyLines, ' throw new Exception(); '),
         ],
         "The following two patches conflict:\n".
         " - [24, 26]\n".
@@ -973,7 +999,7 @@ final class NodeFunctionsTest extends HackTest {
 
   <<DataProvider('provide_patches_apply_overlapping_nodes')>>
   public function test_provide_patches_apply_overlapping_nodes(
-    vec<(Pha\Node, string)> $patches,
+    vec<Pha\Patch> $patches,
     string $message,
   )[]: void {
     $script = $this->fixtures()->tiny->script;
@@ -991,33 +1017,48 @@ final class NodeFunctionsTest extends HackTest {
       tuple(vec[], 'expected Patches, but none were provided'),
       tuple(
         vec[
-          Pha\patches($tiny->script, tuple($tiny->functionName, 'short')),
-          Pha\patches($tiny->script, tuple($tiny->functionName, 'long')),
+          Pha\patches(
+            $tiny->script,
+            Pha\patch_node($tiny->functionName, 'short'),
+          ),
+          Pha\patches(
+            $tiny->script,
+            Pha\patch_node($tiny->functionName, 'long'),
+          ),
         ],
         "The following two patches conflict:\n".
         " - [9, 13]\n".
         "short\n".
         " - [9, 13]\n".
-        "long",
+        'long',
       ),
       tuple(
         vec[
-          Pha\patches($tiny->script, tuple($tiny->functionName, 'short')),
           Pha\patches(
             $tiny->script,
-            tuple($tiny->functionDeclarationHeader, 'function long()[]: void '),
+            Pha\patch_node($tiny->functionName, 'short'),
+          ),
+          Pha\patches(
+            $tiny->script,
+            Pha\patch_node(
+              $tiny->functionDeclarationHeader,
+              'function long()[]: void ',
+            ),
           ),
         ],
         "The following two patches conflict:\n".
         " - [0, 24]\n".
         "function long()[]: void \n".
         " - [9, 13]\n".
-        "short",
+        'short',
       ),
       tuple(
         vec[
-          Pha\patches($math->script, tuple($math->firstMinusToken, '+')),
-          Pha\patches($tiny->script, tuple($tiny->contexts, '')),
+          Pha\patches(
+            $math->script,
+            Pha\patch_node($math->firstMinusToken, '+'),
+          ),
+          Pha\patches($tiny->script, Pha\patch_node($tiny->contexts, '')),
         ],
         'HTL\Pha\patches_combine_without_conflict_resolution expected that all Patches could be combined, '.
         'but one of the Patches was created for a different Script.',

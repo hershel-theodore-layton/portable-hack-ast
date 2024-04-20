@@ -316,6 +316,24 @@ function index_get_nodes_by_kind<Tnode as Node, Tkind as Kind>(
   return _Private\index_reveal($index)->getByKind($kind);
 }
 
+function is_missing(NillableNode $node)[]: bool {
+  if ($node === NIL) {
+    return false;
+  }
+
+  $node = _Private\cast_away_nil($node);
+
+  switch (node_get_elaborated_group($node)) {
+    case NodeElaboratedGroup::SYNTAX:
+    case NodeElaboratedGroup::TOKEN:
+    case NodeElaboratedGroup::TRIVIUM:
+    case NodeElaboratedGroup::LIST:
+      return false;
+    case NodeElaboratedGroup::MISSING:
+      return true;
+  }
+}
+
 function is_syntax(NillableNode $node)[]: bool {
   if ($node === NIL) {
     return false;
@@ -970,13 +988,26 @@ function node_get_syntax_ancestors(
   return $out;
 }
 
+function patch_node(
+  Node $node,
+  string $replacement,
+  shape(?'trivia' => RetainTrivia) $options = shape(),
+)[]: Patch {
+  return new _Private\PatchNode(
+    $node,
+    $replacement,
+    $options['trivia'] ?? RetainTrivia::NEITHER,
+  )
+    |> _Private\patch_node_hide($$);
+}
+
 /**
- * @throws If any Patch in `$patches` overlaps with any other Patch.
+ * @throws If any Replacement in `$patches` overlaps with any other Replacement.
  */
-function patches(Script $script, (Node, string) ...$patches)[]: Patches {
+function patches(Script $script, Patch ...$patches)[]: Patches {
   return Vec\map(
     $patches,
-    $p ==> new _Private\Patch(node_get_source_range($script, $p[0]), $p[1]),
+    $p ==> _Private\patch_node_reveal($p)->toReplacement($script),
   )
     |> new _Private\PatchSet(node_get_code($script, SCRIPT_NODE), $$)
     |> _Private\patch_set_hide($$);
@@ -992,7 +1023,7 @@ function patches_apply(Patches $patches)[]: string {
  * a conflict resolution strategy.
  * For now, this was just easy to implement and it fulfills the basic need.
  *
- * @throws If any Patch in `$patches` overlaps with any other Patch.
+ * @throws If any Replacement in `$patches` overlaps with any other Replacement.
  * @throws If `$patches` is empty.
  * @throws If any Patches in `$patches` was generated with a different source text.
  */
@@ -1019,7 +1050,7 @@ function patches_combine_without_conflict_resolution(
       $function_name,
     );
 
-    return $p->getPatches();
+    return $p->getReplacements();
   })
     |> Vec\flatten($$)
     |> new _Private\PatchSet($first->getBeforeText(), $$)

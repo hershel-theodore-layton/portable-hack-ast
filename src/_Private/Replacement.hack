@@ -1,7 +1,7 @@
 /** portable-hack-ast is MIT licensed, see /LICENSE. */
 namespace HTL\Pha\_Private;
 
-final class Patch {
+final class Replacement {
   public function __construct(
     private SourceRange $range,
     private string $text,

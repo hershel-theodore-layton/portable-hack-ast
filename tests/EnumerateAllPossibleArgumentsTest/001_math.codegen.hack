@@ -79,6 +79,9 @@ async function math_001_async(): Awaitable<void> {
     // Could not enumerate: Pha\index_get_nodes_by_kind: _Private\KindIndex<Tnode, Tkind>, Tkind
 
     foreach ($nillable_nodes as $p0)
+      Pha\is_missing($p0);
+
+    foreach ($nillable_nodes as $p0)
       Pha\is_syntax($p0);
 
     foreach ($nillable_nodes as $p0)
@@ -176,7 +179,9 @@ async function math_001_async(): Awaitable<void> {
     foreach ($nillable_nodes as $p0)
       Pha\node_get_syntax_ancestors($script, $p0);
 
-    // Could not enumerate: Pha\patches: (Node, string)
+    // Could not enumerate: Pha\patch_node: Node, string, shape(?'trivia' => RetainTrivia)
+
+    // Could not enumerate: Pha\patches: Patch
 
     // Could not enumerate: Pha\patches_apply: Patches
 

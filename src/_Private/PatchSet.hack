@@ -7,9 +7,9 @@ use namespace HTL\Pha;
 final class PatchSet {
   public function __construct(
     private string $beforeText,
-    private vec<Patch> $patches,
+    private vec<Replacement> $replacements,
   )[] {
-    $sorted = Vec\sort_by($patches, $p ==> $p->getStartOffset());
+    $sorted = Vec\sort_by($replacements, $r ==> $r->getStartOffset());
     $shifted = Vec\drop($sorted, 1);
     $with_next = Vec\zip($sorted, $shifted);
 
@@ -29,14 +29,14 @@ final class PatchSet {
   }
 
   public function apply()[]: string {
-    if (C\is_empty($this->patches)) {
+    if (C\is_empty($this->replacements)) {
       return $this->beforeText;
     }
 
     $out = '';
     $read_start = 0;
 
-    foreach ($this->patches as $patch) {
+    foreach ($this->replacements as $replacement) {
       invariant(
         $read_start is nonnull,
         'Only the last patch may have an open end.',
@@ -44,11 +44,11 @@ final class PatchSet {
       $out .= Str\slice(
         $this->beforeText,
         $read_start,
-        source_byte_offset_to_int($patch->getStartOffset()) - $read_start,
+        source_byte_offset_to_int($replacement->getStartOffset()) - $read_start,
       );
 
-      $out .= $patch->getText();
-      $read_start = $patch->getEndOffset()
+      $out .= $replacement->getText();
+      $read_start = $replacement->getEndOffset()
         |> $$ is null ? null : source_byte_offset_to_int($$);
     }
 
@@ -67,7 +67,7 @@ final class PatchSet {
     return $this->beforeText;
   }
 
-  public function getPatches()[]: vec<Patch> {
-    return $this->patches;
+  public function getReplacements()[]: vec<Replacement> {
+    return $this->replacements;
   }
 }
