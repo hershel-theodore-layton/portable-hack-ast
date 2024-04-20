@@ -432,7 +432,11 @@ final class NodeFunctionsTest extends HackTest {
     return vec[
       tuple(
         $math->namespaceEmptyBody,
-        vec[$math->namespaceSemicolon, $math->namespaceSemicolonTextTrivium],
+        vec[
+          $math->namespaceSemicolon,
+          $math->namespaceSemicolonTextTrivium,
+          $math->newlineAfterNamespaceSemicolon,
+        ],
       ),
       tuple(Pha\NIL, vec[]),
     ];

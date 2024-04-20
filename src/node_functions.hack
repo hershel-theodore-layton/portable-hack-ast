@@ -660,10 +660,10 @@ function node_get_descendants(Script $script, NillableNode $node)[]: vec<Node> {
 
   $last_descendant = _Private\cast_away_nil($last_descendant);
   $start = node_get_first_childx($script, $node) |> node_get_id($$);
-  $to_exclusive = node_get_id($last_descendant);
+  $to_inclusive = node_get_id($last_descendant);
 
   $tu = _Private\translation_unit_reveal($script);
-  return $tu->cutSourceOrder($start, $to_exclusive);
+  return $tu->cutSourceOrder($start, $to_inclusive);
 }
 
 function node_get_elaborated_group(Node $node)[]: NodeElaboratedGroup {

@@ -32,11 +32,11 @@ final class TranslationUnit {
 
   public function cutSourceOrder(
     NodeId $from,
-    NodeId $to_exclusive,
+    NodeId $to_inclusive,
   )[]: vec<Node> {
     $from = node_id_to_int($from);
-    $to_exclusive = node_id_to_int($to_exclusive);
-    return Vec\slice($this->sourceOrder, $from, $to_exclusive - $from);
+    $to_inclusive = node_id_to_int($to_inclusive);
+    return Vec\slice($this->sourceOrder, $from, $to_inclusive - $from + 1);
   }
 
   public function cutSourceRange(SourceRange $range)[]: string {
