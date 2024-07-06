@@ -1,6 +1,4 @@
 .var/
 .vscode/
 vendor/
-composer.lock
-core
-www.pid
+composer*lock
