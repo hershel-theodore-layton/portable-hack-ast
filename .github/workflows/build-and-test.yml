@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Create branch for version alias
         run: git checkout -b CI_current_pull_request
-      - uses: hhvm/actions/hack-lint-test@master
+      - uses: hershel-theodore-layton/actions/hack-lint-test@master
         with:
           hhvm: ${{matrix.hhvm}}
           skip_lint: true
