@@ -53,8 +53,6 @@ async function math_001_async(): Awaitable<void> {
     $nillable_tokens[] = Pha\NIL;
 
     $trivia = Vec\filter($nodes, Pha\is_trivium<>) |> Vec\map($$, Pha\as_trivium<>);
-    $nillable_trivia = $trivia;
-    $nillable_trivia[] = Pha\NIL;
 
     $source_ranges = Vec\map($nodes, $n ==> Pha\node_get_source_range($script, $n));
 
@@ -186,7 +184,7 @@ SUFFIX;
     $loops = Vec\map_with_key(
       $types,
       ($i, $t) ==>
-        Str\format('foreach(%s as $p%d)', static::ENUMERATORS[$t], $i),
+        Str\format('foreach(%s as $p%d) {', static::ENUMERATORS[$t], $i),
     )
       |> Str\join($$, "\n");
 
@@ -200,7 +198,7 @@ SUFFIX;
       $statement = 'try { '.$statement.' } catch (Pha\PhaException $_) {}';
     }
 
-    return $loops.$statement;
+    return $loops.$statement.Str\repeat('}', C\count($types));
   }
 
   private static async function parseAsync(

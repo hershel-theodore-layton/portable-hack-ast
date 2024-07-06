@@ -2,7 +2,7 @@
 namespace HTL\Pha\Tests;
 
 use type Facebook\HackTest\{DataProvider, HackTest};
-use namespace HH\Lib\{C, File, Vec};
+use namespace HH\Lib\{C, File, Str, Vec};
 use namespace HTL\Pha;
 
 /**
@@ -1100,6 +1100,12 @@ final class NodeFunctionsTest extends HackTest {
       $source = await $file->readAllAsync();
     }
 
+    // The tests for tiny.hack were written before the license header
+    // and the trailing newline was added.
+    // This chop chop take center restores the tests without altering them.
+    if ($fixture === '002_tiny.hack') {
+      $source = Str\split($source, "\n")[1];
+    }
     $ctx = Pha\create_context();
     list($script, $ctx) = Pha\parse($source, $ctx);
 
