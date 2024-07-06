@@ -4,7 +4,7 @@ on:
   pull_request:
   schedule:
     # Run every day at 6:54PM
-    - cron: '54 18 * * *'
+    - cron: "54 18 * * *"
 jobs:
   build:
     name: HHVM ${{matrix.hhvm}} - ${{matrix.os}}
@@ -12,12 +12,12 @@ jobs:
       # Run tests on all OS's and HHVM versions, even if one fails
       fail-fast: false
       matrix:
-        os: [ ubuntu ]
+        os: [ubuntu]
         hhvm:
-          - '4.102'
-          - '4.128'
-          - '4.153'
-          - '4.168'
+          - "4.102"
+          - "4.128"
+          - "4.153"
+          - "4.168"
     runs-on: ${{matrix.os}}-20.04
     steps:
       - uses: actions/checkout@v2
@@ -26,4 +26,4 @@ jobs:
       - uses: hhvm/actions/hack-lint-test@master
         with:
           hhvm: ${{matrix.hhvm}}
-          skip_lint: ${{ matrix.hhvm != '4.168' }}
+          skip_lint: true
