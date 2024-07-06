@@ -3,4 +3,3 @@ bin/ export-ignore
 tests/ export-ignore
 .hhconfig export-ignore
 .hhvmconfig.hdf export-ignore
-hhast-lint.json export-ignore

@@ -176,6 +176,8 @@ If the definitions are incomplete for your hhvm version, you can create them at 
 
 This library pulls out all the stops in the name of performance. You can parse
 very large codebases and keep all the Scripts in memory, no sweat[^2].
+HHAST is the target of this benchmark, since it contains a lot of codegenned
+definitions, which adequately represent codebases with large classes.
 
 ```
 Parsing: ../vendor/hhvm/hhast with hhast
@@ -298,7 +300,9 @@ The Context will also need to be serialized, but a Context is rarely unique.
 If you deduplicate them by `context_hash`, the storage requirements fade away.
 
 [^1]: Some some cases, you do think about this, when the precedence is weird.
-[^2]: Run `bin/mem_usage.hack` in repo authoritative mode to verify these results.
+[^2]: In order to verify these claims, you will have to `git checkout`
+      [this commit](https://github.com/hershel-theodore-layton/portable-hack-ast/blob/86e57bd5ea999c57facb790ed61179e4011f5623/bin/mem_usage.hack)
+      and run mem_usage.hack in repo auth mode.
 [^3]: I am not saying HHAST does, has done, or will do funny business. I am just
       saying that auditing for funny business is easier in pure well-typed code.
 [^4]: This doesn't mean it is unsafe, but you may get incorrect results or exceptions.

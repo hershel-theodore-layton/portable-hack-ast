@@ -2,7 +2,5 @@
 .vscode/
 vendor/
 composer.lock
-**/*.hhast.parser-cache
 core
 www.pid
-hhast-lint.ignore-hh-client-linter.json
