@@ -11,7 +11,7 @@ on:
     - cron: "54 18 * * *"
 jobs:
   build:
-    name: HHVM ${{matrix.hhvm}} - ${{matrix.os}}
+    name: HHVM ${{matrix.hhvm}}
     strategy:
       fail-fast: false
       matrix:
