@@ -100,21 +100,22 @@ SUFFIX;
   private static function scanForFunctionDefinitions(
     Pha\Script $script,
   )[]: vec<self::TFunctionDefinition> {
+    $get_function_declaration_header = Pha\create_member_accessor(
+      $script,
+      Pha\MEMBER_FUNCTION_DECLARATION_HEADER,
+    )
+      |> Pha\returns_syntax($$);
+
+    $is_function_declaration =
+      Pha\create_syntax_matcher($script, Pha\KIND_FUNCTION_DECLARATION);
+
     return Pha\node_get_first_childx($script, Pha\SCRIPT_NODE)
       |> Pha\node_get_children($script, $$)
-      |> Vec\filter(
-        $$,
-        $n ==> Pha\node_get_kind($script, $n) === Pha\KIND_FUNCTION_DECLARATION,
-      )
+      |> Vec\filter($$, $is_function_declaration)
       |> Vec\map(
         $$,
         $n ==> Pha\as_syntax($n)
-          |> Pha\syntax_member(
-            $script,
-            $$,
-            Pha\MEMBER_FUNCTION_DECLARATION_HEADER,
-          )
-          |> Pha\as_syntax($$)
+          |> $get_function_declaration_header($$)
           |> static::breakApartFunctionDeclHeader($script, $$),
       );
   }
@@ -123,38 +124,42 @@ SUFFIX;
     Pha\Script $script,
     Pha\Syntax $decl_header,
   )[]: self::TFunctionDefinition {
-    $name = Pha\syntax_member($script, $decl_header, Pha\MEMBER_FUNCTION_NAME)
-      |> Pha\as_token($$)
-      |> Pha\token_get_text_trivium($script, $$)
-      |> Pha\node_get_code($script, $$)
+    $get_decorated_expression = Pha\create_member_accessor(
+      $script,
+      Pha\MEMBER_DECORATED_EXPRESSION_EXPRESSION,
+    )
+      |> Pha\returns_token($$);
+    $get_function_name =
+      Pha\create_member_accessor($script, Pha\MEMBER_FUNCTION_NAME)
+      |> Pha\returns_token($$);
+    $get_parameter_list =
+      Pha\create_member_accessor($script, Pha\MEMBER_FUNCTION_PARAMETER_LIST)
+      |> Pha\returns_syntax($$);
+    $get_parameter_name =
+      Pha\create_member_accessor($script, Pha\MEMBER_PARAMETER_NAME);
+    $get_parameter_type =
+      Pha\create_member_accessor($script, Pha\MEMBER_PARAMETER_TYPE);
+
+    $is_variable_token =
+      Pha\create_token_matcher($script, Pha\KIND_VARIABLE_TOKEN);
+
+    $name = $get_function_name($decl_header)
+      |> Pha\token_get_text($script, $$)
       |> 'Pha\\'.$$;
 
-    $params = Pha\syntax_member(
-      $script,
-      $decl_header,
-      Pha\MEMBER_FUNCTION_PARAMETER_LIST,
-    )
-      |> Pha\as_syntax($$)
+    $params = $get_parameter_list($decl_header)
       |> Pha\list_get_items_of_children($script, $$)
       |> Vec\map(
         $$,
         $n ==> Pha\as_syntax($n)
           |> shape(
-            'name' => Pha\syntax_member($script, $$, Pha\MEMBER_PARAMETER_NAME)
-              |> Pha\node_get_kind($script, $$) !== Pha\KIND_VARIABLE_TOKEN
-                ? Pha\as_syntax($$)
-                  |> Pha\syntax_member(
-                    $script,
-                    $$,
-                    Pha\MEMBER_DECORATED_EXPRESSION_EXPRESSION,
-                  )
-                : $$
-              |> Pha\as_token($$)
-              |> Pha\token_get_text_trivium($script, $$)
-              |> Pha\node_get_code($script, $$),
-            'type' => Pha\syntax_member($script, $$, Pha\MEMBER_PARAMETER_TYPE)
-              |> Pha\node_get_code($script, $$)
-              |> Str\trim($$),
+            'name' => $get_parameter_name($$)
+              |> !$is_variable_token($$)
+                ? Pha\as_syntax($$) |> $get_decorated_expression($$)
+                : Pha\as_token($$)
+              |> Pha\token_get_text($script, $$),
+            'type' => $get_parameter_type($$)
+              |> Pha\node_get_code_compressed($script, $$),
           ),
       );
 

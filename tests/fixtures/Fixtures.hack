@@ -169,7 +169,7 @@ final class Math extends Fixture {
     );
 
     $this->firstMinusToken =
-      Pha\syntax_member($script, $this->ternaryTrue, Pha\MEMBER_BINARY_OPERATOR)
+      $this->member($this->ternaryTrue, Pha\MEMBER_BINARY_OPERATOR)
       |> Pha\as_token($$);
 
     $this->ternaryFalse = $this->memberAsSyntax(

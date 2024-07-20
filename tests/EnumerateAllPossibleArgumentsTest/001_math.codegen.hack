@@ -80,7 +80,7 @@ async function math_001_async(): Awaitable<void> {
 
     // Could not enumerate: Pha\create_trivium_matcher: TriviumKind, TriviumKind
 
-    // Could not enumerate: Pha\index_get_nodes_by_kind: _Private\KindIndex<Tnode, Tkind>, Tkind
+    // Could not enumerate: Pha\index_get_nodes_by_kind: _Private\KindIndex<Tnode,Tkind>, Tkind
 
     foreach ($nillable_nodes as $p0) {
       Pha\is_missing($p0);
@@ -213,7 +213,7 @@ async function math_001_async(): Awaitable<void> {
       Pha\node_get_syntax_ancestors($script, $p0);
     }
 
-    // Could not enumerate: Pha\patch_node: Node, string, shape(?'trivia' => RetainTrivia)
+    // Could not enumerate: Pha\patch_node: Node, string, shape(?'trivia'=>RetainTrivia)
 
     // Could not enumerate: Pha\patches: Patch
 
@@ -221,9 +221,9 @@ async function math_001_async(): Awaitable<void> {
 
     // Could not enumerate: Pha\patches_combine_without_conflict_resolution: vec<Patches>
 
-    // Could not enumerate: Pha\returns_syntax: (function(T)[]: NillableNode)
+    // Could not enumerate: Pha\returns_syntax: (function(T)[]:NillableNode)
 
-    // Could not enumerate: Pha\returns_token: (function(T)[]: NillableNode)
+    // Could not enumerate: Pha\returns_token: (function(T)[]:NillableNode)
 
     Pha\script_get_syntaxes($script);
 
