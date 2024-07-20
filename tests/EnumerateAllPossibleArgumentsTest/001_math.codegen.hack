@@ -221,6 +221,10 @@ async function math_001_async(): Awaitable<void> {
 
     // Could not enumerate: Pha\patches_combine_without_conflict_resolution: vec<Patches>
 
+    // Could not enumerate: Pha\returns_syntax: (function(T)[]: NillableNode)
+
+    // Could not enumerate: Pha\returns_token: (function(T)[]: NillableNode)
+
     Pha\script_get_syntaxes($script);
 
     Pha\script_get_syntaxes_without_missing_and_list($script);

@@ -1087,6 +1087,42 @@ final class NodeFunctionsTest extends HackTest {
       ->toThrowPhaException($expected_message);
   }
 
+  public function test_returns_syntax()[]: void {
+    $math = $this->fixtures()->math;
+    $ternary_get_test =
+      Pha\create_member_accessor($math->script, Pha\MEMBER_CONDITIONAL_TEST);
+    $ternary_get_test_typed = Pha\returns_syntax($ternary_get_test);
+
+    expect($ternary_get_test_typed($math->ternaryExpression))->toEqual(
+      $ternary_get_test($math->ternaryExpression),
+    );
+
+    $ternary_get_colon_ill_typed =
+      Pha\create_member_accessor($math->script, Pha\MEMBER_CONDITIONAL_COLON)
+      |> Pha\returns_syntax($$);
+
+    expect(() ==> $ternary_get_colon_ill_typed($math->ternaryExpression))
+      ->toThrowPhaException('HTL\Pha\as_syntax expected a Syntax, got Token.');
+  }
+
+  public function test_returns_token()[]: void {
+    $math = $this->fixtures()->math;
+    $ternary_get_colon =
+      Pha\create_member_accessor($math->script, Pha\MEMBER_CONDITIONAL_COLON);
+    $ternary_get_colon_typed = Pha\returns_token($ternary_get_colon);
+
+    expect($ternary_get_colon_typed($math->ternaryExpression))->toEqual(
+      $ternary_get_colon($math->ternaryExpression),
+    );
+
+    $ternary_get_test_ill_typed =
+      Pha\create_member_accessor($math->script, Pha\MEMBER_CONDITIONAL_TEST)
+      |> Pha\returns_token($$);
+
+    expect(() ==> $ternary_get_test_ill_typed($math->ternaryExpression))
+      ->toThrowPhaException('HTL\Pha\as_token expected a Token, got Syntax.');
+  }
+
   private function fixtures()[]: Fixtures\Fixtures {
     return $this->fixtures as nonnull;
   }

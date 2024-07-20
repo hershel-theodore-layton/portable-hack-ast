@@ -199,8 +199,9 @@ function create_matcher(
 }
 
 /**
- * A useful utility when dealing with code that intends to be polymorphic over
- * multiple Syntax nodes.
+ * An alternative to `syntax_member($script, $node, $member)`.
+ * This version returns a callable that takes `$node`.
+ * It can also pick the "right" member to create on the fly polymorphism.
  *
  * ```
  * $get_clauses = create_member_accessor($script, dict[
@@ -211,6 +212,9 @@ function create_matcher(
  * $namespace_use_or_group_use_declaration = ...;
  * $clauses = $get_clauses($namespace_use_or_group_use_declaration);
  * ```
+ *
+ * If you are always selecting Syntaxes, @see `returns_syntax`.
+ * If you are always selecting Tokens, @see `returns_token`.
  */
 function create_member_accessor(
   Script $script,
@@ -1057,6 +1061,40 @@ function patches_combine_without_conflict_resolution(
     |> _Private\patch_set_hide($$);
 }
 
+/**
+ * Integrate a cast on the return value into the callable.
+ * Commonly used in combination with `create_member_accessor`. 
+ * @example
+ * ```
+ * $get_function_name =
+ *   Pha\create_member_accessor($script, Pha\MEMBER_FUNCTION_CALL_ARGUMENT_LIST)
+ *   |> returns_syntax($$);
+ * ```
+ * hackfmt-ignore
+ */
+function returns_syntax<T>(
+  (function(T)[]: NillableNode) $func,
+)[]: (function(T)[]: Syntax) {
+  return $x ==> $func($x) |> as_syntax($$);
+}
+
+/**
+ * Integrate a cast on the return value into the callable.
+ * Commonly used in combination with `create_member_accessor`. 
+ * @example
+ * ```
+ * $get_binop_operator =
+ *   Pha\create_member_accessor($script, Pha\MEMBER_BINARY_OPERATOR)
+ *   |> returns_token($$);
+ * ```
+ * hackfmt-ignore
+ */
+function returns_token<T>(
+  (function(T)[]: NillableNode) $func,
+)[]: (function(T)[]: Token) {
+  return $x ==> $func($x) |> as_token($$);
+}
+
 function script_get_syntaxes(Script $script)[]: vec<Syntax> {
   $tu = _Private\translation_unit_reveal($script);
   return $tu->getSourceOrder()
@@ -1183,6 +1221,11 @@ function syntax_get_parent(Script $script, Syntax $node)[]: Syntax {
   return node_get_parent($script, $node) |> _Private\syntax_from_node($$);
 }
 
+/**
+ * @see `create_member_accessor`, which is preferred over this function.
+ *      `syntax_member` rediscovers offsets with each invocation.
+ *      `create_member_accessor` precomputes offsets string comparisons.
+ */
 function syntax_member(Script $script, Syntax $node, Member $member)[]: Node {
   $ii = 0;
 
