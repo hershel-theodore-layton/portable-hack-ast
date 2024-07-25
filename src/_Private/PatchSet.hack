@@ -5,13 +5,16 @@ use namespace HH\Lib\{C, Str, Vec};
 use namespace HTL\Pha;
 
 final class PatchSet {
+  private vec<Replacement> $replacements;
+
   public function __construct(
     private string $beforeText,
-    private vec<Replacement> $replacements,
+    vec<Replacement> $replacements,
   )[] {
-    $sorted = Vec\sort_by($replacements, $r ==> $r->getStartOffset());
-    $shifted = Vec\drop($sorted, 1);
-    $with_next = Vec\zip($sorted, $shifted);
+    $this->replacements =
+      Vec\sort_by($replacements, $r ==> $r->getStartOffset());
+    $shifted = Vec\drop($this->replacements, 1);
+    $with_next = Vec\zip($this->replacements, $shifted);
 
     foreach ($with_next as list($cur, $next)) {
       if (Pha\source_range_overlaps($cur->getRange(), $next->getRange())) {

@@ -956,8 +956,8 @@ final class NodeFunctionsTest extends HackTest {
       ),
       tuple(
         vec[
-          Pha\patch_node($tiny->functionName, 'add'),
           Pha\patch_node($tiny->paramaterList, 'int $a, int $b'),
+          Pha\patch_node($tiny->functionName, 'add'),
           Pha\patch_node($tiny->contexts, '[write_props]'),
           Pha\patch_node(
             $tiny->returnType,
