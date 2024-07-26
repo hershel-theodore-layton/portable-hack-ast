@@ -24,7 +24,7 @@ final class NodeFunctionsTest extends HackTest {
    * This is not possible from a test context, hence some hoop jumping.
    */
   <<__Override>>
-  public async function beforeEachTestAsync(): Awaitable<void> {
+  public async function beforeEachTestAsync()[defaults]: Awaitable<void> {
     if ($this->fixtures is nonnull) {
       return;
     }
@@ -884,7 +884,7 @@ final class NodeFunctionsTest extends HackTest {
   }
 
   public function provide_source_range_format(
-  ): vec<(Pha\SourceRange, string)> {
+  )[]: vec<(Pha\SourceRange, string)> {
     return vec[
       tuple(
         Pha\_Private\source_range_hide(
@@ -935,7 +935,7 @@ final class NodeFunctionsTest extends HackTest {
     expect(Pha\source_range_format($range))->toEqual($expected);
   }
 
-  public function provide_patches_apply(): vec<(vec<Pha\Patch>, string)> {
+  public function provide_patches_apply()[]: vec<(vec<Pha\Patch>, string)> {
     $tiny = $this->fixtures()->tiny;
     return vec[
       tuple(
@@ -992,7 +992,7 @@ final class NodeFunctionsTest extends HackTest {
   }
 
   public function provide_patches_apply_overlapping_nodes(
-  ): vec<(vec<Pha\Patch>, string)> {
+  )[]: vec<(vec<Pha\Patch>, string)> {
     $tiny = $this->fixtures()->tiny;
     return vec[
       tuple(
@@ -1021,7 +1021,7 @@ final class NodeFunctionsTest extends HackTest {
   }
 
   public function provide_patches_combine_without_conflict_resolution(
-  ): vec<(vec<Pha\Patches>, string)> {
+  )[]: vec<(vec<Pha\Patches>, string)> {
     $math = $this->fixtures()->math;
     $tiny = $this->fixtures()->tiny;
 
@@ -1130,7 +1130,7 @@ final class NodeFunctionsTest extends HackTest {
   <<__Memoize>>
   private static async function parseFixtureAsync(
     string $fixture,
-  ): Awaitable<Pha\Script> {
+  )[defaults]: Awaitable<Pha\Script> {
     $file = File\open_read_only(static::FIXTURE_DIR.$fixture);
     using ($file->closeWhenDisposed(), $file->tryLockx(File\LockType::SHARED)) {
       $source = await $file->readAllAsync();

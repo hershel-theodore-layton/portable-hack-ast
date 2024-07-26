@@ -7,7 +7,7 @@ use function escapeshellarg, md5, shell_exec;
 async function file_put_hackfmt_async(
   string $path,
   string $source,
-): Awaitable<void> {
+)[defaults]: Awaitable<void> {
   // <cheat>
   // Don't write to disk if the current process just wrote the same bytes.
   $apc_key = Str\format('!%s!(k:$path,v:$source)!::%s', __FUNCTION__, $path);

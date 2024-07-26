@@ -4,7 +4,7 @@ namespace HTL\Pha\Tests;
 use namespace HH\Lib\{File, Vec};
 use namespace HTL\Pha;
 
-async function math_001_async(): Awaitable<void> {
+async function math_001_async()[defaults]: Awaitable<void> {
   $file = File\open_read_only(__DIR__.'/../fixtures/001_math.hack');
   using ($file->closeWhenDisposed(), $file->tryLockx(File\LockType::SHARED)) {
     $source = await $file->readAllAsync();

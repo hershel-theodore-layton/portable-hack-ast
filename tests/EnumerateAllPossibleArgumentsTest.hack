@@ -29,7 +29,7 @@ namespace HTL\Pha\Tests;
 use namespace HH\Lib\{File, Vec};
 use namespace HTL\Pha;
 
-async function math_001_async(): Awaitable<void> {
+async function math_001_async()[defaults]: Awaitable<void> {
   $file = File\open_read_only(__DIR__ . '/../fixtures/001_math.hack');
     using ($file->closeWhenDisposed(), $file->tryLockx(File\LockType::SHARED)) {
       $source = await $file->readAllAsync();
@@ -80,7 +80,7 @@ SUFFIX;
   ];
 
   <<__Override>>
-  public static async function afterLastTestAsync(): Awaitable<void> {
+  public static async function afterLastTestAsync()[defaults]: Awaitable<void> {
     $test_code = await static::parseAsync(static::FUNCTIONS_FILE)
       |> static::scanForFunctionDefinitions($$)
       |> Vec\map($$, static::createTestCase<>)
@@ -93,7 +93,7 @@ SUFFIX;
     );
   }
 
-  public async function testAllEnumerations(): Awaitable<void> {
+  public async function testAllEnumerations()[defaults]: Awaitable<void> {
     await math_001_async();
   }
 
@@ -208,7 +208,7 @@ SUFFIX;
 
   private static async function parseAsync(
     string $path,
-  ): Awaitable<Pha\Script> {
+  )[defaults]: Awaitable<Pha\Script> {
     $file = File\open_read_only($path);
     using ($file->closeWhenDisposed(), $file->tryLockx(File\LockType::SHARED)) {
       $source = await $file->readAllAsync();

@@ -5,7 +5,7 @@ use type Facebook\HackTest\HackTest;
 use namespace HTL\Pha;
 
 final class SerializationTest extends HackTest {
-  public function test_serialization(): void {
+  public function test_serialization()[defaults]: void {
     $script =
       static::parse('<<Attribute(1, 2, 3)>> function func1()[]: void { }');
 
@@ -37,7 +37,7 @@ final class SerializationTest extends HackTest {
   // because is does some awful magic to arrays.
   private static function dematerialize(
     Pha\Script $script,
-  ): Pha\ReadyToSerializeScript {
+  )[defaults]: Pha\ReadyToSerializeScript {
     $_ok = null;
     $_err = null;
     return Pha\dematerialize_script($script)
