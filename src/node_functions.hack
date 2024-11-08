@@ -668,7 +668,8 @@ function node_get_code_without_leading_or_trailing_trivia(
     _Private\find_lastx($nodes, $n ==> node_is_token_text_trivium($script, $n))
     |> _Private\node_get_next_trivium($script, $$)
     |> $$ !== NIL
-      ? _Private\trivium_get_source_byte_offset(_Private\cast_away_nil($$))
+      ? _Private\cast_away_nil($$)
+        |> _Private\trivium_get_source_byte_offset($$)
       : null;
 
   return _Private\trivium_from_node($first)
