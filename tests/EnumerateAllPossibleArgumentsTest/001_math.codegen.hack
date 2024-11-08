@@ -140,6 +140,10 @@ async function math_001_async()[defaults]: Awaitable<void> {
     }
 
     foreach ($nillable_nodes as $p0) {
+      Pha\node_get_code_without_leading_or_trailing_trivia($script, $p0);
+    }
+
+    foreach ($nillable_nodes as $p0) {
       Pha\node_get_descendants($script, $p0);
     }
 
@@ -211,6 +215,10 @@ async function math_001_async()[defaults]: Awaitable<void> {
 
     foreach ($nillable_nodes as $p0) {
       Pha\node_get_syntax_ancestors($script, $p0);
+    }
+
+    foreach ($nillable_nodes as $p0) {
+      Pha\node_is_token_text_trivium($script, $p0);
     }
 
     // Could not enumerate: Pha\patch_node: Node, string, shape(?'trivia'=>RetainTrivia)

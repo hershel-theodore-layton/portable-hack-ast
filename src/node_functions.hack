@@ -647,6 +647,36 @@ function node_get_code_compressed(
   }
 }
 
+function node_get_code_without_leading_or_trailing_trivia(
+  Script $script,
+  NillableNode $node,
+)[]: string {
+  if ($node === NIL) {
+    return '';
+  }
+
+  $node = _Private\cast_away_nil($node);
+
+  $nodes = node_get_descendants($script, $node) ?: vec[$node];
+  $first = C\find($nodes, $n ==> node_is_token_text_trivium($script, $n));
+
+  if ($first is null) {
+    return '';
+  }
+
+  $end =
+    _Private\find_lastx($nodes, $n ==> node_is_token_text_trivium($script, $n))
+    |> _Private\node_get_next_trivium($script, $$)
+    |> $$ !== NIL
+      ? _Private\trivium_get_source_byte_offset(_Private\cast_away_nil($$))
+      : null;
+
+  return _Private\trivium_from_node($first)
+    |> _Private\trivium_get_source_byte_offset($$)
+    |> _Private\source_range_hide(tuple($$, $end))
+    |> _Private\translation_unit_reveal($script)->cutSourceRange($$);
+}
+
 /**
  * Descendants are returned in source order.
  */
@@ -990,6 +1020,20 @@ function node_get_syntax_ancestors(
   }
 
   return $out;
+}
+
+function node_is_token_text_trivium(
+  Script $script,
+  NillableNode $node,
+)[]: bool {
+  if (!is_trivium($node)) {
+    return false;
+  }
+
+  return _Private\cast_away_nil($node)
+    |> node_get_parent($script, $$)
+    |> _Private\token_from_node($$)
+    |> token_get_text_trivium($script, $$) === $node;
 }
 
 function patch_node(

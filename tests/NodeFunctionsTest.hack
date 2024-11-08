@@ -1123,6 +1123,59 @@ final class NodeFunctionsTest extends HackTest {
       ->toThrowPhaException('HTL\Pha\as_token expected a Token, got Syntax.');
   }
 
+  public function provide_node_is_token_text_trivium(
+  )[]: vec<(Pha\NillableNode, bool)> {
+    $math = $this->fixtures()->math;
+    return vec[
+      tuple($math->endOfFileTokenText, true),
+      tuple($math->namespaceTokenTextTrivium, true),
+      tuple($math->namespaceSemicolonTextTrivium, true),
+      tuple($math->endOfFileToken, false),
+      tuple($math->newlineAfterLicenseComment, false),
+      tuple($math->licenseComment, false),
+      tuple(Pha\NIL, false),
+    ];
+  }
+
+  <<DataProvider('provide_node_is_token_text_trivium')>>
+  public function test_node_is_token_text_trivium(
+    Pha\Node $node,
+    bool $expected,
+  )[]: void {
+    $script = $this->fixtures()->math->script;
+    expect(Pha\node_is_token_text_trivium($script, $node))->toEqual($expected);
+  }
+
+  public function provide_node_get_code_without_leading_or_trailing_trivia(
+  )[]: vec<(Pha\NillableNode, string)> {
+    $math = $this->fixtures()->math;
+    return vec[
+      tuple(
+        $math->functionDeclarationHeader,
+        'function math(int $a, int $b)[]: int',
+      ),
+      tuple($math->parameterList, 'int $a, int $b'),
+      tuple($math->parameterA, 'int $a'),
+      tuple(
+        $math->functionBody,
+        "{\n  return \$a > \$b ? \$a - \$b : \$b - \$a;\n}",
+      ),
+      tuple($math->newlineAfterLicenseComment, ''),
+      tuple($math->missingTypeParameterList, ''),
+      tuple(Pha\NIL, ''),
+    ];
+  }
+
+  <<DataProvider('provide_node_get_code_without_leading_or_trailing_trivia')>>
+  public function test_node_get_code_without_leading_or_trailing_trivia(
+    Pha\NillableNode $node,
+    string $expected,
+  )[]: void {
+    $script = $this->fixtures()->math->script;
+    expect(Pha\node_get_code_without_leading_or_trailing_trivia($script, $node))
+      ->toEqual($expected);
+  }
+
   private function fixtures()[]: Fixtures\Fixtures {
     return $this->fixtures as nonnull;
   }
