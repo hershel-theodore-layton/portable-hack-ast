@@ -6,6 +6,7 @@ name: Continuous Integration
 on:
   push:
   pull_request:
+  workflow_dispatch:
   schedule:
     # Run every day at 6:54PM
     - cron: "54 18 * * *"
@@ -31,4 +32,3 @@ jobs:
           hhvm_flags: -dhhvm.autoload.enabled=true -dhhvm.autoload.db.path=.var/facts-%{euid}-%{schema}.db
           skip_lint: ${{matrix.hhvm == '4.102'}}
           lint_engine: pha
-
