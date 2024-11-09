@@ -19,8 +19,10 @@ final class EnumerateAllPossibleArgumentsTest extends HackTest {
     'name' => string,
     'parameters' => vec<self::TParameterDefinition>,
     'throws' => bool,
+    /*_*/
   );
-  const type TParameterDefinition = shape('name' => string, 'type' => string);
+  const type TParameterDefinition =
+    shape('name' => string, 'type' => string /*_*/);
 
   const string PREFIX = <<<'PREFIX'
 /** portable-hack-ast is MIT licensed, see /LICENSE. */

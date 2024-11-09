@@ -14,10 +14,12 @@ namespace HTL\Pha\_Private;
 type ReadyToSerializeContext = shape(
   'context' => dict<arraykey, mixed>,
   'context_hash' => string,
+  ...
 );
 
 type ReadyToSerializeScript = shape(
   'script' => dict<arraykey, mixed>,
   'context' => dict<arraykey, mixed>,
   'context_hash' => string,
+  ...
 );

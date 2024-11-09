@@ -518,7 +518,7 @@ final class NodeFunctionsTest extends HackTest {
 
   public function provide_node_is_x()[]: vec<(
     Pha\NillableNode,
-    shape('syntax' => bool, 'token' => bool, 'trivium' => bool),
+    shape('syntax' => bool, 'token' => bool, 'trivium' => bool /*_*/),
   )> {
     $math = $this->fixtures()->math;
     return vec[
@@ -552,7 +552,7 @@ final class NodeFunctionsTest extends HackTest {
   <<DataProvider('provide_node_is_x')>>
   public function test_node_is_x(
     Pha\NillableNode $node,
-    shape('syntax' => bool, 'token' => bool, 'trivium' => bool) $results,
+    shape('syntax' => bool, 'token' => bool, 'trivium' => bool /*_*/) $results,
   )[]: void {
     expect(Pha\is_syntax($node))->toEqual($results['syntax']);
     expect(Pha\is_token($node))->toEqual($results['token']);

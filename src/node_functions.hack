@@ -1040,7 +1040,7 @@ function node_is_token_text_trivium(
 function patch_node(
   Node $node,
   string $replacement,
-  shape(?'trivia' => RetainTrivia) $options = shape(),
+  shape(?'trivia' => RetainTrivia /*_*/) $options = shape(),
 )[]: Patch {
   return new _Private\PatchNode(
     $node,
