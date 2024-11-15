@@ -1,11 +1,18 @@
 /** portable-hack-ast is MIT licensed, see /LICENSE. */
 namespace HTL\Pha\_Private;
 
+use namespace HTL\Pha;
+
 final class Replacement {
   public function __construct(
+    private Pha\LineAndColumnNumbers $lineAndColumnNumbers,
     private SourceRange $range,
     private string $text,
   )[] {}
+
+  public function getPosition()[]: Pha\LineAndColumnNumbers {
+    return $this->lineAndColumnNumbers;
+  }
 
   public function getEndOffset()[]: ?SourceByteOffset {
     return $this->range |> source_range_reveal($$)[1];

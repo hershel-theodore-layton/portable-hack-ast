@@ -31,8 +31,10 @@ final class PatchNode {
 
   public function toReplacement(Script $script)[]: Replacement {
     if ($this->retainTrivia === Pha\RetainTrivia::NEITHER) {
+      $source_range = Pha\node_get_source_range($script, $this->node);
       return new Replacement(
-        Pha\node_get_source_range($script, $this->node),
+        Pha\source_range_to_line_and_column_numbers($script, $source_range),
+        $source_range,
         $this->text,
       );
     }
@@ -64,6 +66,12 @@ final class PatchNode {
     $end = Pha\node_get_source_range($script, $end_node)
       |> source_range_reveal($$)[1];
 
-    return new Replacement(source_range_hide(tuple($start, $end)), $this->text);
+    $source_range = source_range_hide(tuple($start, $end));
+
+    return new Replacement(
+      Pha\source_range_to_line_and_column_numbers($script, $source_range),
+      $source_range,
+      $this->text,
+    );
   }
 }
