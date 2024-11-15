@@ -5,7 +5,8 @@ use namespace HH;
 use namespace HH\Lib\{Regex, Str, Vec};
 use type UnexpectedValueException;
 
-function extract_major_start_and_end_from_argv(): (string, int, int, int) {
+function extract_major_start_and_end_from_argv(
+)[defaults]: (string, int, int, int) {
   $argv = HH\global_get('argv') as vec<_>
     |> Vec\concat($$, Vec\fill(10, "\0"))
     |> Vec\map($$, $el ==> $el as string);

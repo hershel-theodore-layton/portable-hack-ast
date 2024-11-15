@@ -6,7 +6,7 @@ use namespace HH\Lib\IO;
 use namespace HTL\Pha;
 
 <<__EntryPoint>>
-async function main_async(): Awaitable<void> {
+async function main_async()[defaults]: Awaitable<void> {
   $source = await IO\request_input()->readAllAsync();
   $ctx = Pha\create_context();
   list($script, $ctx) = Pha\parse($source, $ctx);

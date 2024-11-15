@@ -4,7 +4,9 @@ namespace HTL\Pha\_Private\Bin;
 use namespace HH\Lib\{Dict, Regex, Str, Vec};
 
 <<__Memoize>>
-function parse_syntax(string $full_fidelity_syntax): dict<string, vec<string>> {
+function parse_syntax(
+  string $full_fidelity_syntax,
+)[]: dict<string, vec<string>> {
   $raw = $full_fidelity_syntax;
   $start_at = <<<'START_AT'
 EndOfFile of { end_of_file_token: t }

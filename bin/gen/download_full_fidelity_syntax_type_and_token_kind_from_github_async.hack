@@ -7,7 +7,7 @@ async function download_full_fidelity_syntax_type_and_token_kind_from_github_asy
   int $major,
   int $start,
   int $end,
-): Awaitable<(keyset<string>, keyset<string>)> {
+)[defaults]: Awaitable<(keyset<string>, keyset<string>)> {
   $versions = Vec\range($start, $end)
     |> Vec\map($$, $minor ==> 'HHVM-'.$major.'.'.$minor);
 

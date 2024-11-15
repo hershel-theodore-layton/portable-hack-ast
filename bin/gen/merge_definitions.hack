@@ -6,7 +6,7 @@ use namespace HH\Lib\{Keyset, Vec};
 function merge_definitions(
   keyset<string> $full_fidelity_syntax,
   keyset<string> $full_fidelity_token_kind,
-): (dict<string, keyset<string>>, dict<string, string>) {
+)[defaults]: (dict<string, keyset<string>>, dict<string, string>) {
   $syntaxes = dict[];
   foreach (Vec\map($full_fidelity_syntax, parse_syntax<>) as $syntax) {
     foreach ($syntax as $kind => $fields) {

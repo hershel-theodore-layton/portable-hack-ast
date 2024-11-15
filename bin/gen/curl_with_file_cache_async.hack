@@ -9,7 +9,9 @@ use const CURLINFO_HTTP_CODE;
 
 const string FOUR_OH_FOUR = 'This file does not exist, returning null!';
 
-async function curl_with_file_cache_async(string $url): Awaitable<?string> {
+async function curl_with_file_cache_async(
+  string $url,
+)[defaults]: Awaitable<?string> {
   $cache_file = CACHE_DIR.md5($url).'.curl-cache';
 
   try {

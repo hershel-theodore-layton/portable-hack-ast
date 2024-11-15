@@ -3,9 +3,10 @@ namespace HTL\Pha\_Private\Bin;
 
 use namespace HH\Lib\{Dict, Regex, Str, Vec};
 
-function parse_tokens(string $full_fidelity_token_kind): shape(
+function parse_tokens(string $full_fidelity_token_kind)[]: shape(
   'fixed' => dict<string, string>,
   'variable' => dict<string, string>,
+  /*_*/
 ) {
   $raw = $full_fidelity_token_kind;
   $start_at = <<<'START_AT'

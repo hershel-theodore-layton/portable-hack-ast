@@ -7,7 +7,7 @@ use namespace HH\Lib\File;
  * $file->truncate() is not available in hhvm 4.128.
  * Reimplement this based on the PHP apis of your.
  */
-function ftruncate(File\Handle $file, int $size): void {
+function ftruncate(File\Handle $file, int $size)[defaults]: void {
   // Even more legacy baggage.
   // $file->getPath() used to return a path object.
   // This gets the string path on any version of hhvm.

@@ -3,7 +3,7 @@ namespace HTL\Pha\_Private\Bin;
 
 use namespace HH\Lib\{C, Regex, Str};
 
-function pascal_case_token_kind_name(string $string): string {
+function pascal_case_token_kind_name(string $string)[]: string {
   $fixup_xhp_casing = (string $name) ==> C\contains_key(
     keyset[
       'xhp_category_declaration',

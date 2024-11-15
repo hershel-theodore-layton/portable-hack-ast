@@ -2,7 +2,6 @@
 /** portable-hack-ast is MIT licensed, see /LICENSE. */
 namespace HTL\Pha\_Private\Bin;
 
-use namespace HH;
 use namespace HH\Lib\{C, Dict, File, IO, Keyset, Str, Vec};
 use type UnexpectedValueException;
 use function escapeshellarg;
@@ -12,7 +11,7 @@ const int GITHUB_FETCH_CONCURRENCY = 4;
 const string GENERATED = "// #region GENERATED CODE DO NOT EDIT BY HAND!\n";
 
 <<__EntryPoint>>
-async function codegen_kind_constants_async(): Awaitable<void> {
+async function codegen_kind_constants_async()[defaults]: Awaitable<void> {
   try {
     \shell_exec('mkdir -p '.escapeshellarg(CACHE_DIR));
     list($self, $major, $start, $end) = extract_major_start_and_end_from_argv();
