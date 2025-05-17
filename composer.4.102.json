@@ -7,16 +7,11 @@
   },
   "require-dev": {
     "hhvm/hhvm-autoload": "^3.2",
-    "hhvm/hacktest": "^2.3",
-    "facebook/fbexpect": "^2.8"
+    "hhvm/hacktest": "^2.3"
   },
   "scripts": {
-    "post-install-cmd": [
-      ".github/workflows/prepare-environment.sh"
-    ],
-    "post-update-cmd": [
-      ".github/workflows/prepare-environment.sh"
-    ]
+    "post-install-cmd": [".github/workflows/prepare-environment.sh"],
+    "post-update-cmd": [".github/workflows/prepare-environment.sh"]
   },
   "config": {
     "allow-plugins": {
