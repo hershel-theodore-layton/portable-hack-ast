@@ -1,9 +1,8 @@
 /** portable-hack-ast is MIT licensed, see /LICENSE. */
 namespace HTL\Pha\Tests;
 
-use type Facebook\HackTest\HackTest;
 use namespace HH\Lib\{C, File, Str, Vec};
-use namespace HTL\Pha;
+use namespace HTL\{Pha, TestChain};
 
 /**
  * This test enforces some basic safety:
@@ -11,7 +10,32 @@ use namespace HTL\Pha;
  *  - If an exception is thrown, it must be a PhaException.
  *  - All functions must be annotated with a pure context.
  */
-final class EnumerateAllPossibleArgumentsTest extends HackTest {
+<<TestChain\Discover>>
+async function enumerate_all_possible_arguments_test_async(
+  TestChain\Chain $chain,
+)[defaults]: Awaitable<TestChain\Chain> {
+  $test_code = await EnumerateAllPossibleArgumentsTest::parseAsync(
+    EnumerateAllPossibleArgumentsTest::FUNCTIONS_FILE,
+  )
+    |> EnumerateAllPossibleArgumentsTest::scanForFunctionDefinitions($$)
+    |> Vec\map($$, EnumerateAllPossibleArgumentsTest::createTestCase<>)
+    |> Str\join($$, "\n\n")
+    |> EnumerateAllPossibleArgumentsTest::PREFIX.
+      $$.
+      EnumerateAllPossibleArgumentsTest::SUFFIX;
+
+  await file_put_hackfmt_async(
+    EnumerateAllPossibleArgumentsTest::MY_DIRECTORY.'001_math.codegen.hack',
+    $test_code,
+  );
+
+  return $chain->group(__FUNCTION__)
+    ->testAsync('testAllEnumerations', async () ==> {
+      await math_001_async();
+    });
+}
+
+final class EnumerateAllPossibleArgumentsTest {
   const string FUNCTIONS_FILE = __DIR__.'/../src/node_functions.hack';
   const string MY_DIRECTORY = __DIR__.'/EnumerateAllPossibleArgumentsTest/';
 
@@ -81,25 +105,7 @@ SUFFIX;
     'SourceRange' => '$source_ranges',
   ];
 
-  <<__Override>>
-  public static async function afterLastTestAsync()[defaults]: Awaitable<void> {
-    $test_code = await static::parseAsync(static::FUNCTIONS_FILE)
-      |> static::scanForFunctionDefinitions($$)
-      |> Vec\map($$, static::createTestCase<>)
-      |> Str\join($$, "\n\n")
-      |> static::PREFIX.$$.static::SUFFIX;
-
-    await file_put_hackfmt_async(
-      static::MY_DIRECTORY.'001_math.codegen.hack',
-      $test_code,
-    );
-  }
-
-  public async function testAllEnumerations()[defaults]: Awaitable<void> {
-    await math_001_async();
-  }
-
-  private static function scanForFunctionDefinitions(
+  public static function scanForFunctionDefinitions(
     Pha\Script $script,
   )[]: vec<self::TFunctionDefinition> {
     $get_function_declaration_header = Pha\create_member_accessor(
@@ -172,7 +178,7 @@ SUFFIX;
     return shape('name' => $name, 'parameters' => $params, 'throws' => $throws);
   }
 
-  private static function createTestCase(
+  public static function createTestCase(
     self::TFunctionDefinition $func,
   )[]: string {
     $non_script_params =
@@ -208,7 +214,7 @@ SUFFIX;
     return $loops.$statement.Str\repeat('}', C\count($types));
   }
 
-  private static async function parseAsync(
+  public static async function parseAsync(
     string $path,
   )[defaults]: Awaitable<Pha\Script> {
     $file = File\open_read_only($path);
