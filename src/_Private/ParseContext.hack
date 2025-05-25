@@ -2,7 +2,7 @@
 namespace HTL\Pha\_Private;
 
 use namespace HH\Lib\Str;
-use namespace HTL\Pha;
+use namespace HTL\{HH4Shim, Pha};
 use function gettype;
 
 final class ParseContext {
