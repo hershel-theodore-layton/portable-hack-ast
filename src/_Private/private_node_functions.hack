@@ -144,7 +144,7 @@ function node_get_next_trivium(
   NillableNode $node,
 )[]: NillableTrivium {
   if ($node === NIL) {
-    return NIL;
+    return NIL_TRIVIUM;
   }
 
   $tu = translation_unit_reveal($script);
@@ -156,7 +156,7 @@ function node_get_next_trivium(
       |> $tu->getNodeById($$);
   } while (!Pha\is_trivium($node) && $node !== NIL);
 
-  return $node === NIL ? NIL : trivium_from_node($node);
+  return $node === NIL ? NIL_TRIVIUM : trivium_from_node($node);
 }
 
 function node_get_parent_id(Node $node)[]: NodeId {

@@ -93,6 +93,7 @@ final class TranslationUnit {
 
   // #region Materialization
   const string VERSION = 'VERSION';
+  const int VERSION_NUMBER = 2;
   const string SOURCE_ORDER = 'SOURCE_ORDER';
   const string SIBLINGS = 'SIBLINGS';
   const string LIST_SIZES = 'LIST_SIZES';
@@ -102,7 +103,7 @@ final class TranslationUnit {
   public function dematerialize()[]: ReadyToSerializeScript {
     return shape(
       'script' => dict[
-        static::VERSION => 1,
+        static::VERSION => static::VERSION_NUMBER,
         static::SOURCE_ORDER => $this->sourceOrder,
         static::SIBLINGS => $this->siblings,
         static::LIST_SIZES => $this->listSizes,
@@ -119,7 +120,7 @@ final class TranslationUnit {
     ParseContext $ctx,
   )[]: TranslationUnit {
     enforce(
-      idx($raw, static::VERSION) === 1,
+      idx($raw, static::VERSION) === static::VERSION_NUMBER,
       'Could not materialize this Script, '.
       'it was dematerialized with a different version of this library.',
     );

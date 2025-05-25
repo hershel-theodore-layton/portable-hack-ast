@@ -22,4 +22,7 @@ type Trivium = _Private\Trivium;
 type TriviumIndex = _Private\KindIndex<Trivium, TriviumKind>;
 
 const _Private\Syntax SCRIPT_NODE = _Private\SCRIPT_NODE;
-const _Private\Nil NIL = _Private\NIL;
+const NillableSyntax NIL = _Private\NIL;
+const NillableSyntax NIL_SYNTAX = _Private\NIL_SYNTAX;
+const NillableToken NIL_TOKEN = _Private\NIL_TOKEN;
+const NillableTrivium NIL_TRIVIUM = _Private\NIL_TRIVIUM;

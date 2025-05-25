@@ -29,18 +29,19 @@ final class Structs {
 
   //#region Materialization
   const string VERSION = 'VERSION';
+  const int VERSION_NUMBER = 2;
   const string MEMBERS = 'MEMBERS';
 
   public function dematerialize()[]: dict<arraykey, mixed> {
     return dict[
-      static::VERSION => 1,
+      static::VERSION => static::VERSION_NUMBER,
       static::MEMBERS => Vec\flatten($this->rawMembers),
     ];
   }
 
   public static function materialize(dict<arraykey, mixed> $raw)[]: this {
     enforce(
-      idx($raw, static::VERSION) === 1,
+      idx($raw, static::VERSION) === static::VERSION_NUMBER,
       'Could not materialize these Structs, '.
       'they were dematerialized with a later version of this library.',
     );

@@ -26,7 +26,7 @@ async function math_001_async()[defaults]: Awaitable<void> {
 
   $tokens = Vec\filter($nodes, Pha\is_token<>) |> Vec\map($$, Pha\as_token<>);
   $nillable_tokens = $tokens;
-  $nillable_tokens[] = Pha\NIL;
+  $nillable_tokens[] = Pha\NIL_TOKEN;
 
   $trivia =
     Vec\filter($nodes, Pha\is_trivium<>) |> Vec\map($$, Pha\as_trivium<>);

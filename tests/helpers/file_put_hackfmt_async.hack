@@ -16,7 +16,7 @@ async function file_put_hackfmt_async(
   $success = false;
   $previous_md5 = \apc_fetch($apc_key, inout $success);
 
-  if ($success && $md5 === $previous_md5) {
+  if ($success === true && $md5 === $previous_md5) {
     return;
   }
   // </cheat>

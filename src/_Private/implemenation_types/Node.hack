@@ -9,17 +9,15 @@ interface Taggable {}
 interface Maybe<+T as Any> extends Taggable {}
 <<__Sealed(SyntaxTag::class, TokenTag::class, TriviumTag::class)>>
 interface Any extends Maybe<Any> {}
-<<__Sealed(NilTag::class)>>
+<<__Sealed()>>
 interface SyntaxTag extends Maybe<SyntaxTag>, Any {}
-<<__Sealed(NilTag::class)>>
+<<__Sealed()>>
 interface TokenTag extends Maybe<TokenTag>, Any {}
-<<__Sealed(NilTag::class)>>
+<<__Sealed()>>
 interface TriviumTag extends Maybe<TriviumTag>, Any {}
-interface NilTag extends SyntaxTag, TokenTag, TriviumTag {}
 
 newtype Tagged<+T as Taggable> = int;
 
-type Nil = Tagged<Maybe<NilTag>>;
 type Node = Tagged<Any>;
 type Syntax = Tagged<SyntaxTag>;
 type Token = Tagged<TokenTag>;
@@ -29,7 +27,10 @@ type NillableSyntax = Tagged<Maybe<SyntaxTag>>;
 type NillableToken = Tagged<Maybe<TokenTag>>;
 type NillableTrivium = Tagged<Maybe<TriviumTag>>;
 
-const Nil NIL = 0;
+const NillableSyntax NIL = 0;
+const NillableSyntax NIL_SYNTAX = 0;
+const NillableToken NIL_TOKEN = 0;
+const NillableTrivium NIL_TRIVIUM = 0;
 const Syntax SCRIPT_NODE = Math\INT64_MIN;
 
 function cast_away_nil<T as Any>(Tagged<Maybe<T>> $t)[]: Tagged<T> {

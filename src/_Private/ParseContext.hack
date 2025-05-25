@@ -1,6 +1,7 @@
 /** portable-hack-ast is MIT licensed, see /LICENSE. */
 namespace HTL\Pha\_Private;
 
+use namespace HH\Lib\Str;
 use namespace HTL\Pha;
 
 final class ParseContext {
@@ -68,6 +69,7 @@ final class ParseContext {
 
   // #region Materialization
   const string VERSION = 'VERSION';
+  const int VERSION_NUMBER = 2;
   const string STRUCTS = 'STRUCTS';
   const string SYNTAX_KINDS = 'SYNTAX_KINDS';
   const string TOKEN_KINDS = 'TOKEN_KINDS';
@@ -77,15 +79,15 @@ final class ParseContext {
   <<__Memoize>>
   public function getMaterializationHash()[]: string {
     return $this->dematerialize()
-      |> \fb_compact_serialize($$)
-      |> \sha1($$, true);
+      |> static::toHashable($$)
+      |> \sha1($$, false);
   }
 
   // Memoize because this value can be shared across many scripts.
   <<__Memoize>>
   public function dematerialize()[]: dict<arraykey, mixed> {
     return dict[
-      static::VERSION => 1,
+      static::VERSION => static::VERSION_NUMBER,
       static::STRUCTS => $this->structs->dematerialize(),
       static::SYNTAX_KINDS => $this->syntaxKinds->asVec(),
       static::TOKEN_KINDS => $this->tokenKinds->asVec(),
@@ -96,7 +98,7 @@ final class ParseContext {
   public static function materialize(dict<arraykey, mixed> $raw)[]: this {
     $version = idx($raw, static::VERSION, -1);
     enforce(
-      $version === 1,
+      $version === static::VERSION_NUMBER,
       'Could not materialize this Context, '.
       'it was dematerialized with a later version of this library.',
     );
@@ -120,6 +122,37 @@ final class ParseContext {
     } catch (\Exception $e) {
       throw
         new PhaException('Could not materialize Context.', $e->getCode(), $e);
+    }
+  }
+
+  /**
+   * The encoding does not need to make sense, as long as it is not ambiguous.
+   * json_encode_pure is not available in 4.102, so do something inline.
+   * The encoding will look a little like json, but instead of quoting strings,
+   * they will be encoded as `s<length><bytes>`. This is not ambiguous with
+   * anything, since no json construct starts with an `s`.
+   */
+  private static function toHashable(mixed $mixed)[]: string {
+    if ($mixed is string) {
+      return 's' . Str\length($mixed) . $mixed;
+    } else if ($mixed is int) {
+      return (string)$mixed;
+    } else if ($mixed is dict<_, _>) {
+      $out = '{';
+      foreach ($mixed as $k => $v) {
+        $out .= static::toHashable($k) . ':' . static::toHashable($v) . ',';
+      }
+      $out .= '}';
+
+      return $out;
+    } else if ($mixed is vec<_>) {
+      $out = '[';
+      foreach ($mixed as $v) {
+        $out .= static::toHashable($v) . ',';
+      }
+      $out .= ']';
+
+      return $out;
     }
   }
   // #endregion

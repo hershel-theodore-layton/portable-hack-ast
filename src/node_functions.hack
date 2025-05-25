@@ -78,7 +78,7 @@ function as_token_or_nil(NillableNode $node)[]: NillableToken {
   return $node !== NIL &&
     node_get_group(_Private\cast_away_nil($node)) === NodeGroup::TOKEN
     ? _Private\token_from_node($node)
-    : NIL;
+    : NIL_TOKEN;
 }
 
 /**
@@ -102,7 +102,7 @@ function as_trivium_or_nil(NillableNode $node)[]: NillableTrivium {
   return $node !== NIL &&
     node_get_group(_Private\cast_away_nil($node)) === NodeGroup::TRIVIUM
     ? _Private\trivium_from_node($node)
-    : NIL;
+    : NIL_TRIVIUM;
 }
 
 /**
@@ -146,12 +146,12 @@ function create_matcher(
 
   // All arms are equivalent to the `default:` arm,
   // but they don't need to iterate the $identities vec.
-  $matcher = () ==> {
+  $matcher = ()[] ==> {
     switch (C\count($identities)) {
       case 0:
-        return $_ ==> false;
+        return ($_)[] ==> false;
       case 1:
-        return $n ==> $n !== NIL &&
+        return ($n)[] ==> $n !== NIL &&
           (
             _Private\node_get_kind_identity(_Private\cast_away_nil($n))
             |> $$ === $id_0
@@ -159,13 +159,13 @@ function create_matcher(
       case 2:
       case 3:
       case 4:
-        return $n ==> $n !== NIL &&
+        return ($n)[] ==> $n !== NIL &&
           (
             _Private\node_get_kind_identity(_Private\cast_away_nil($n))
             |> $$ === $id_0 || $$ === $id_1 || $$ === $id_2 || $$ === $id_3
           );
       default:
-        return $n ==> $n !== NIL &&
+        return ($n)[] ==> $n !== NIL &&
           (
             _Private\node_get_kind_identity(_Private\cast_away_nil($n))
             |> C\contains($identities, $$)

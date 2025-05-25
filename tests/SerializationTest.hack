@@ -38,16 +38,15 @@ function serialization_test(TestChain\Chain $chain)[]: TestChain\Chain {
     });
 }
 
-// Testing roundtrippability through \fb_compact_serialize(),
-// because is does some awful magic to arrays.
+// Testing roundtrippability through \fb_compact_serialize() and json_encode(),
+// because they do some awful magic to arrays.
 function dematerialize(
   Pha\Script $script,
 )[defaults]: Pha\ReadyToSerializeScript {
-  $_ok = null;
   $_err = null;
   return Pha\dematerialize_script($script)
-    |> \fb_compact_serialize($$)
-    |> \fb_compact_unserialize($$, inout $_ok, inout $_err)
+    |> \json_encode_with_error($$, inout $_err)
+    |> \json_decode_with_error($$, inout $_err, true)
     |> shape(
       'context' =>
         Pha\_Private\change_array_kinds_for_hhvm_4_102($$['context']),

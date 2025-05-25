@@ -815,7 +815,7 @@ async function node_functions_test_async(
       ()[]: vec<(Pha\NillableToken, string)> ==> {
         $math = $fixtures->math;
         return vec[
-          tuple(Pha\NIL, ''),
+          tuple(Pha\NIL_TOKEN, ''),
           tuple($math->namespaceSemicolon, ';'),
           tuple($math->namespaceToken, 'namespace'),
         ];
