@@ -154,6 +154,14 @@ final class ParseContext {
       $out .= ']';
 
       return $out;
+    } else if ($mixed is AnyArray<_, _>) {
+      $out = '{?';
+      foreach ($mixed as $k => $v) {
+        $out .= static::toHashable($k) . ':' . static::toHashable($v) . ',';
+      }
+      $out .= '?}';
+
+      return $out;
     }
 
     invariant_violation('Unhandled type: %s', gettype($mixed));
