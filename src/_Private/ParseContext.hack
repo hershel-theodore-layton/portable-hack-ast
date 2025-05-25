@@ -3,6 +3,7 @@ namespace HTL\Pha\_Private;
 
 use namespace HH\Lib\Str;
 use namespace HTL\Pha;
+use function gettype;
 
 final class ParseContext {
   public function __construct(
@@ -154,6 +155,8 @@ final class ParseContext {
 
       return $out;
     }
+
+    invariant_violation('Unhandled type: %s', gettype($mixed));
   }
   // #endregion
 }
