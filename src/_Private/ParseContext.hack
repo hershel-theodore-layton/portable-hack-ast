@@ -138,17 +138,17 @@ final class ParseContext {
       return 's' . Str\length($mixed) . $mixed;
     } else if ($mixed is int) {
       return (string)$mixed;
-    } else if ($mixed is dict<_, _>) {
+    } else if (HH4Shim\is_dictish($mixed)) {
       $out = '{';
-      foreach ($mixed as $k => $v) {
+      foreach (($mixed as AnyArray<_, _>) as $k => $v) {
         $out .= static::toHashable($k) . ':' . static::toHashable($v) . ',';
       }
       $out .= '}';
 
       return $out;
-    } else if ($mixed is vec<_>) {
+    } else if (HH4Shim\is_vecish($mixed)) {
       $out = '[';
-      foreach ($mixed as $v) {
+      foreach (($mixed as AnyArray<_, _>) as $v) {
         $out .= static::toHashable($v) . ',';
       }
       $out .= ']';
