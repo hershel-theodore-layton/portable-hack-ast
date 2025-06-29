@@ -162,7 +162,7 @@ $pragma_map = Pha\create_pragma_map($script, $syntax_index);
 ```
 
 The full API for interacting with all these values can be found in [node_functions.hack](./src/node_functions.hack).
-There are about 50 functions at the time of writing, so with some auto complete,
+There are about 65 functions at the time of writing, so with some auto complete,
 you should get the hang of it quite quickly.
 
 For definitions of kinds and members, see [Kind.hack](./src/Kind.hack) and [Member.hack](./src/Member.hack).
