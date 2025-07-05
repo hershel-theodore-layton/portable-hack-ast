@@ -23,7 +23,7 @@ final class PatchNode {
       throw new PhaException(Str\format(
         'You may not replace a trivium with %s::%s set. '.
         'This instruction does not make sense.',
-        Pha\RetainTrivia::class,
+        \HH\class_to_classname(Pha\RetainTrivia::class),
         Pha\RetainTrivia::getNames()[$retainTrivia],
       ));
     }
