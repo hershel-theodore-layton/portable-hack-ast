@@ -3,6 +3,7 @@ namespace HTL\Pha\Tests;
 
 use namespace HH\Lib\{Str, Vec};
 use namespace HTL\Pha;
+use function var_export_pure;
 
 /**
  * This is not fbexpect!
