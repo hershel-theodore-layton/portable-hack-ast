@@ -3,8 +3,7 @@
   "description": "Query the Hack AST in a light and portable manner.",
   "license": "MIT",
   "require": {
-    "hhvm": ">=4.153",
-    "hershel-theodore-layton/hhvm-four-shim": "<1"
+    "hhvm": ">=4.153"
   },
   "require-dev": {
     "hershel-theodore-layton/test-chain": "<1",
