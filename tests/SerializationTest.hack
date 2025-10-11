@@ -48,10 +48,9 @@ function dematerialize(
     |> \json_encode_with_error($$, inout $_err)
     |> \json_decode_with_error($$, inout $_err, true)
     |> shape(
-      'context' =>
-        Pha\_Private\change_array_kinds_for_hhvm_4_102($$['context']),
+      'context' =>$$['context'],
       'context_hash' => $$['context_hash'],
-      'script' => Pha\_Private\change_array_kinds_for_hhvm_4_102($$['script']),
+      'script' => $$['script'],
     );
 }
 

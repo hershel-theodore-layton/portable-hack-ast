@@ -3,7 +3,7 @@
 namespace HTL\Pha\_Private\Bin;
 
 use namespace HH\Lib\{C, Dict, File, Keyset, Str, Vec};
-use function escapeshellarg;
+use function escapeshellarg, var_export_pure;
 
 const string CACHE_DIR = __DIR__.'/../.var/cache/curl_cache/';
 const string GENERATED = "// #region GENERATED CODE DO NOT EDIT BY HAND!\n";
@@ -59,7 +59,7 @@ async function codegen_kind_constants_async()[defaults]: Awaitable<void> {
     $kind_constants .= Str\format(
       "const SyntaxKind %s = %s;\n",
       $syntax_kind_to_const[$name],
-      string_export_pure($name),
+      var_export_pure($name),
     );
   }
 
@@ -69,7 +69,7 @@ async function codegen_kind_constants_async()[defaults]: Awaitable<void> {
     $kind_constants .= Str\format(
       "const TokenKind %s = %s;\n",
       $token_kind_to_const[$name],
-      string_export_pure($repr),
+      var_export_pure($repr),
     );
   }
 
@@ -83,7 +83,7 @@ async function codegen_kind_constants_async()[defaults]: Awaitable<void> {
     $kind_functions = await $kind_file->readAllAsync()
       |> Str\slice($$, 0, Str\search($$, GENERATED) ?? Str\length($$));
     $kind_file->seek(0);
-    ftruncate($kind_file, 0);
+    $kind_file->truncate();
     await $kind_file->writeAllAsync($kind_functions.$kind_constants);
   }
 
@@ -102,7 +102,7 @@ async function codegen_kind_constants_async()[defaults]: Awaitable<void> {
       "const Member MEMBER_%s = tuple(%s, %s);\n",
       Str\uppercase($member),
       $syntax_kind_to_const[$owner],
-      string_export_pure($member),
+      var_export_pure($member),
     );
   }
 
@@ -116,7 +116,7 @@ async function codegen_kind_constants_async()[defaults]: Awaitable<void> {
     $member_functions = await $member_file->readAllAsync()
       |> Str\slice($$, 0, Str\search($$, GENERATED) ?? Str\length($$));
     $member_file->seek(0);
-    ftruncate($member_file, 0);
+    $member_file->truncate();
     await $member_file->writeAllAsync($member_functions.$member_constants);
   }
 }
