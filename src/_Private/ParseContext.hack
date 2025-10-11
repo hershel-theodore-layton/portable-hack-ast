@@ -2,7 +2,7 @@
 namespace HTL\Pha\_Private;
 
 use namespace HH\Lib\Str;
-use namespace HTL\{HH4Shim, Pha};
+use namespace HTL\Pha;
 use function gettype;
 
 final class ParseContext {
@@ -128,7 +128,10 @@ final class ParseContext {
 
   /**
    * The encoding does not need to make sense, as long as it is not ambiguous.
-   * json_encode_pure is not available in 4.102, so do something inline.
+   * json_encode_pure is wasn't available in 4.102, so something inline was done.
+   * Changing this breaks backwards compatibility with VERSION=2 serialization.
+   * This can be removed when VERSION=3 comes around.
+   *
    * The encoding will look a little like json, but instead of quoting strings,
    * they will be encoded as `s<length><bytes>`. This is not ambiguous with
    * anything, since no json construct starts with an `s`.
@@ -138,17 +141,17 @@ final class ParseContext {
       return 's' . Str\length($mixed) . $mixed;
     } else if ($mixed is int) {
       return (string)$mixed;
-    } else if (HH4Shim\is_dictish($mixed)) {
+    } else if ($mixed is dict<_, _>) {
       $out = '{';
-      foreach (($mixed as AnyArray<_, _>) as $k => $v) {
+      foreach ($mixed as $k => $v) {
         $out .= static::toHashable($k) . ':' . static::toHashable($v) . ',';
       }
       $out .= '}';
 
       return $out;
-    } else if (HH4Shim\is_vecish($mixed)) {
+    } else if ($mixed is vec<_>) {
       $out = '[';
-      foreach (($mixed as AnyArray<_, _>) as $v) {
+      foreach ($mixed as $v) {
         $out .= static::toHashable($v) . ',';
       }
       $out .= ']';
