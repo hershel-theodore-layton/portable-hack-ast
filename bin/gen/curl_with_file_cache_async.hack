@@ -20,9 +20,9 @@ async function curl_with_file_cache_async(
       $contents = await $f->readAllAsync();
     }
   } catch (OS\NotFoundException $_) {
-    $ch = curl_init($url);
+    $ch = curl_init($url) as resource;
     $contents = await Asio\curl_exec($ch);
-    $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $status = curl_getinfo($ch, CURLINFO_HTTP_CODE) as int;
 
     error_log(Str\format('[%d]: %s', $status, $url));
     if ($status === 404) {

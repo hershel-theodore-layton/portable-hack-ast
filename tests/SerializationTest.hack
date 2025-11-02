@@ -46,11 +46,11 @@ function dematerialize(
   $_err = null;
   return Pha\dematerialize_script($script)
     |> \json_encode_with_error($$, inout $_err)
-    |> \json_decode_with_error($$, inout $_err, true)
+    |> \json_decode_with_error($$ as string, inout $_err, true)
     |> shape(
-      'context' =>$$['context'],
-      'context_hash' => $$['context_hash'],
-      'script' => $$['script'],
+      'context' => $$['context'] as dict<_, _>,
+      'context_hash' => $$['context_hash'] as string,
+      'script' => $$['script'] as dict<_, _>,
     );
 }
 

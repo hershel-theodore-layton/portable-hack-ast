@@ -81,7 +81,7 @@ final class ParseContext {
   public function getMaterializationHash()[]: string {
     return $this->dematerialize()
       |> static::toHashable($$)
-      |> \sha1($$, false);
+      |> \sha1($$, false) as string;
   }
 
   // Memoize because this value can be shared across many scripts.
@@ -138,13 +138,13 @@ final class ParseContext {
    */
   private static function toHashable(mixed $mixed)[]: string {
     if ($mixed is string) {
-      return 's' . Str\length($mixed) . $mixed;
+      return 's'.Str\length($mixed).$mixed;
     } else if ($mixed is int) {
       return (string)$mixed;
     } else if ($mixed is dict<_, _>) {
       $out = '{';
       foreach ($mixed as $k => $v) {
-        $out .= static::toHashable($k) . ':' . static::toHashable($v) . ',';
+        $out .= static::toHashable($k).':'.static::toHashable($v).',';
       }
       $out .= '}';
 
@@ -152,7 +152,7 @@ final class ParseContext {
     } else if ($mixed is vec<_>) {
       $out = '[';
       foreach ($mixed as $v) {
-        $out .= static::toHashable($v) . ',';
+        $out .= static::toHashable($v).',';
       }
       $out .= ']';
 
@@ -160,14 +160,14 @@ final class ParseContext {
     } else if ($mixed is AnyArray<_, _>) {
       $out = '{?';
       foreach ($mixed as $k => $v) {
-        $out .= static::toHashable($k) . ':' . static::toHashable($v) . ',';
+        $out .= static::toHashable($k).':'.static::toHashable($v).',';
       }
       $out .= '?}';
 
       return $out;
     }
 
-    invariant_violation('Unhandled type: %s', gettype($mixed));
+    invariant_violation('Unhandled type: %s', gettype($mixed) as string);
   }
   // #endregion
 }

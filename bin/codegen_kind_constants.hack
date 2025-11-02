@@ -59,7 +59,7 @@ async function codegen_kind_constants_async()[defaults]: Awaitable<void> {
     $kind_constants .= Str\format(
       "const SyntaxKind %s = %s;\n",
       $syntax_kind_to_const[$name],
-      var_export_pure($name),
+      var_export_pure($name) as string,
     );
   }
 
@@ -69,7 +69,7 @@ async function codegen_kind_constants_async()[defaults]: Awaitable<void> {
     $kind_constants .= Str\format(
       "const TokenKind %s = %s;\n",
       $token_kind_to_const[$name],
-      var_export_pure($repr),
+      var_export_pure($repr) as string,
     );
   }
 
@@ -102,7 +102,7 @@ async function codegen_kind_constants_async()[defaults]: Awaitable<void> {
       "const Member MEMBER_%s = tuple(%s, %s);\n",
       Str\uppercase($member),
       $syntax_kind_to_const[$owner],
-      var_export_pure($member),
+      var_export_pure($member) as string,
     );
   }
 

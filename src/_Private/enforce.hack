@@ -17,6 +17,6 @@ function enforce(
   mixed ...$args
 )[]: void {
   if (!$assertion) {
-    throw new PhaException(vsprintf($format, $args));
+    throw new PhaException(vsprintf($format, $args) as string);
   }
 }
