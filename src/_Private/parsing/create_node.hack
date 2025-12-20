@@ -45,7 +45,23 @@ function create_node(
       $field_3 = 0;
   }
 
-  $field_2 = $parent_idx;
+  $parent_diff = $source_order_idx - $parent_idx;
+  invariant(
+    $parent_diff >= 0,
+    'Children are further down the source than parents',
+  );
+
+  switch ($node->getGroup()) {
+    case IntermediateGroup::SYNTAX:
+    case IntermediateGroup::TOKEN:
+    case IntermediateGroup::LIST:
+    case IntermediateGroup::MISSING:
+      $field_2 = $parent_diff;
+      break;
+    case IntermediateGroup::TRIVIUM:
+      $field_2 = $parent_diff;
+  }
+
   $field_4 = $source_order_idx;
 
   return node_from_int(

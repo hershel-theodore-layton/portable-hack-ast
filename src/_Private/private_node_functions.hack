@@ -160,7 +160,8 @@ function node_get_next_trivium(
 }
 
 function node_get_parent_id(Node $node)[]: NodeId {
-  return node_get_field_2($node) |> node_id_from_int($$);
+  return
+    node_get_field_4($node) - node_get_field_2($node) |> node_id_from_int($$);
 }
 
 function node_is_between_or_at_boundary(

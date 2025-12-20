@@ -61,11 +61,13 @@ embedded struct Kind {
   }
 }
 
-embedded struct ParentIndex(T) {
+embedded struct ParentDiff(T) {
   field: {
     size: T,
-    name: parent_idx,
-    purpose: The NodeId of the parent of the current Node.
+    name: parent_diff,
+    purpose: The difference between the NodeId of the current node and that of
+             its parent. In special cases, this value is `0`. For example,
+             SCRIPT_NODE is its own parent, so the distance is 0.
   },
 }
 
@@ -127,8 +129,10 @@ final struct Syntax {
   },
   field: {
     size: 18,
-    name: parent_idx,
-    purpose: The NodeId of the parent of the current Node.
+    name: parent_diff,
+    purpose: The difference between the NodeId of the current node and that of
+             its parent. In special cases, this value is `0`. For example,
+             SCRIPT_NODE is its own parent, so the distance is 0.
   },
   field: {
     size: 18,
@@ -157,8 +161,10 @@ final struct Token {
   },
   field: {
     size: 18,
-    name: parent_idx,
-    purpose: The NodeId of the parent of the current Node.
+    name: parent_diff,
+    purpose: The difference between the NodeId of the current node and that of
+             its parent. In special cases, this value is `0`. For example,
+             SCRIPT_NODE is its own parent, so the distance is 0.
   },
   field: {
     size: 18,
@@ -187,8 +193,10 @@ final struct Trivium {
   },
   field: {
     size: 18,
-    name: parent_idx,
-    purpose: The NodeId of the parent of the current Node.
+    name: parent_diff,
+    purpose: The difference between the NodeId of the current node and that of
+             its parent. In special cases, this value is `0`. For example,
+             SCRIPT_NODE is its own parent, so the distance is 0.
   },
   field: {
     size: 18,
@@ -216,8 +224,10 @@ final struct List {
   }
   field: {
     size: 18,
-    name: parent_idx,
-    purpose: The NodeId of the parent of the current Node.
+    name: parent_diff,
+    purpose: The difference between the NodeId of the current node and that of
+             its parent. In special cases, this value is `0`. For example,
+             SCRIPT_NODE is its own parent, so the distance is 0.
   },
   field: {
     size: 18,
@@ -246,8 +256,10 @@ final struct Missing {
   }
   field: {
     size: 18,
-    name: parent_idx,
-    purpose: The NodeId of the parent of the current Node.
+    name: parent_diff,
+    purpose: The difference between the NodeId of the current node and that of
+             its parent. In special cases, this value is `0`. For example,
+             SCRIPT_NODE is its own parent, so the distance is 0.
   },
   field: {
     size: 8,
