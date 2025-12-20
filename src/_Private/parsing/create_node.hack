@@ -51,6 +51,10 @@ function create_node(
     'Children are further down the source than parents',
   );
 
+  if ($parent_diff > FIELD_2_MASK) {
+    $parent_diff = 0;
+  }
+
   switch ($node->getGroup()) {
     case IntermediateGroup::SYNTAX:
     case IntermediateGroup::TOKEN:
