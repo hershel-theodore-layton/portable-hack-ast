@@ -98,11 +98,15 @@ final class ParseContext {
 
   public static function materialize(dict<arraykey, mixed> $raw)[]: this {
     $version = idx($raw, static::VERSION, -1);
-    enforce(
-      $version === static::VERSION_NUMBER,
-      'Could not materialize this Context, '.
-      'it was dematerialized with a later version of this library.',
-    );
+    if ($version !== static::VERSION_NUMBER) {
+      throw new PhaException(
+        'Could not materialize this Context, it was dematerialized with version '.
+        (($version ?as int) ?? 0).
+        ', but this version is version '.
+        static::VERSION_NUMBER.
+        '. You should regenerate this Context and update the cache.',
+      );
+    }
 
     try {
       return new static(
@@ -120,6 +124,8 @@ final class ParseContext {
           |> keyset($$)
           |> new InternedStringStorage($$, Pha\trivium_kind_from_string<>),
       );
+    } catch (PhaException $e) {
+      throw $e;
     } catch (\Exception $e) {
       throw
         new PhaException('Could not materialize Context.', $e->getCode(), $e);

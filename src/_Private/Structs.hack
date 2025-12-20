@@ -49,11 +49,16 @@ final class Structs {
   }
 
   public static function materialize(dict<arraykey, mixed> $raw)[]: this {
-    enforce(
-      idx($raw, static::VERSION) === static::VERSION_NUMBER,
-      'Could not materialize these Structs, '.
-      'they were dematerialized with a later version of this library.',
-    );
+    $version = idx($raw, static::VERSION);
+    if ($version !== static::VERSION_NUMBER) {
+      throw new PhaException(
+        'Could not materialize these Structs, they were dematerialized with version '.
+        (($version ?as int) ?? 0).
+        ', but this version is version '.
+        static::VERSION_NUMBER.
+        '. You should regenerate the Context that contains these Structs and update the cache.',
+      );
+    }
 
     return $raw[static::MEMBERS]
       |> as_vec_of_member($$)

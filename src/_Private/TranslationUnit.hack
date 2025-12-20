@@ -128,11 +128,16 @@ final class TranslationUnit {
     dict<arraykey, mixed> $raw,
     ParseContext $ctx,
   )[]: TranslationUnit {
-    enforce(
-      idx($raw, static::VERSION) === static::VERSION_NUMBER,
-      'Could not materialize this Script, '.
-      'it was dematerialized with a different version of this library.',
-    );
+    $version = idx($raw, static::VERSION);
+    if ($version !== static::VERSION_NUMBER) {
+      throw new PhaException(
+        'Could not materialize this Script, it was dematerialized with version '.
+        (($version ?as int) ?? 0).
+        ', but this version is version '.
+        static::VERSION_NUMBER.
+        '. You should reparse this Script and update the cache.',
+      );
+    }
     enforce(
       $ctx->getMaterializationHash() === $raw[static::CONTEXT_ID],
       'The Context and the Script do not belong together.',
