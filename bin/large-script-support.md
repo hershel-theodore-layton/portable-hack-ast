@@ -157,7 +157,7 @@ These three slow paths have different levels of impact:
       world use case is accessing the surrounding classlike from a method,
       provided the class is very large. The same goes for accessing all the
       ancestors of code in a large file. F.e. the last handful of functions in
-      [this file](src/node_functions.hack) can not tell in `O(1)` that the
+      [this file](/src/node_functions.hack) can not tell in `O(1)` that the
       declaration list is their parent. What happens in these cases, is that
       the ancestors will do linear scans through their children to find the
       next ancestor of the node. If this proves to be a noticeable performance
