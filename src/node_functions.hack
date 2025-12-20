@@ -598,10 +598,11 @@ function node_get_children(Script $script, NillableNode $node)[]: vec<Node> {
 
   switch (node_get_elaborated_group($node)) {
     case NodeElaboratedGroup::SYNTAX:
+    case NodeElaboratedGroup::LIST:
       $node = _Private\syntax_from_node($node);
       return $tu->sliceSiblings(
         _Private\syntax_get_first_child_sibling_id($node),
-        C\count(syntax_get_members($script, $node)),
+        $tu->syntaxGetChildCount($node),
       );
 
     case NodeElaboratedGroup::TOKEN:
@@ -624,13 +625,6 @@ function node_get_children(Script $script, NillableNode $node)[]: vec<Node> {
 
         $children[] = $child;
       }
-
-    case NodeElaboratedGroup::LIST:
-      $node = _Private\syntax_from_node($node);
-      return $tu->sliceSiblings(
-        _Private\syntax_get_first_child_sibling_id($node),
-        $tu->listGetSize($node),
-      );
 
     case NodeElaboratedGroup::TRIVIUM:
     case NodeElaboratedGroup::MISSING:
@@ -867,7 +861,7 @@ function node_get_last_child(
       return node_get_child_at_offset(
         $script,
         $node,
-        C\count(syntax_get_members($script, $node)) - 1,
+        $tu->syntaxGetChildCount($node) - 1,
       );
 
     case NodeElaboratedGroup::TOKEN:
@@ -982,7 +976,7 @@ function node_get_parent(Script $script, Node $node)[]: Node {
   $parent_offset = _Private\node_get_parent_offset($node);
   if ($parent_offset !== 0 || $node === SCRIPT_NODE) {
     return _Private\node_id_sub(node_get_id($node), $parent_offset)
-    |> $tu->getNodeByIdx($$);
+      |> $tu->getNodeByIdx($$);
   }
 
   // slow path: Can not find my parent from bits, must find myself by selecting
