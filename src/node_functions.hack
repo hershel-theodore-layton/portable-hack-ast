@@ -501,9 +501,10 @@ function node_get_child_at_offset(
       }
 
       $child_node = _Private\cast_away_nil($child_node);
-      return _Private\node_get_parent_id($child_node) === node_get_id($node)
-        ? $child_node
-        : NIL;
+      return
+        _Private\node_get_parent_id_UNSAFE($child_node) === node_get_id($node)
+          ? $child_node
+          : NIL;
 
     case NodeElaboratedGroup::TOKEN:
       $child_node = node_get_id($node)
@@ -515,9 +516,10 @@ function node_get_child_at_offset(
       }
 
       $child_node = _Private\cast_away_nil($child_node);
-      return _Private\node_get_parent_id($child_node) === node_get_id($node)
-        ? $child_node
-        : NIL;
+      return
+        _Private\node_get_parent_id_UNSAFE($child_node) === node_get_id($node)
+          ? $child_node
+          : NIL;
 
     case NodeElaboratedGroup::TRIVIUM:
     case NodeElaboratedGroup::MISSING:
@@ -582,7 +584,7 @@ function node_get_children(Script $script, NillableNode $node)[]: vec<Node> {
 
         $child = _Private\cast_away_nil($child);
 
-        if (_Private\node_get_parent_id($child) !== $parent_id) {
+        if (_Private\node_get_parent_id_UNSAFE($child) !== $parent_id) {
           return $children;
         }
 
@@ -848,7 +850,7 @@ function node_get_last_child(
 
         $child = _Private\cast_away_nil($child);
 
-        if (_Private\node_get_parent_id($child) !== $parent_id) {
+        if (_Private\node_get_parent_id_UNSAFE($child) !== $parent_id) {
           return $last_child;
         }
 
@@ -943,7 +945,7 @@ function node_get_line_and_column_numbers(
  */
 function node_get_parent(Script $script, Node $node)[]: Node {
   $tu = _Private\translation_unit_reveal($script);
-  return _Private\node_get_parent_id($node)
+  return _Private\node_get_parent_id_UNSAFE($node)
     |> $tu->getNodeByIdx($$);
 }
 

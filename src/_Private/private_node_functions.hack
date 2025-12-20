@@ -159,7 +159,7 @@ function node_get_next_trivium(
   return $node === NIL ? NIL_TRIVIUM : trivium_from_node($node);
 }
 
-function node_get_parent_id(Node $node)[]: NodeId {
+function node_get_parent_id_UNSAFE(Node $node)[]: NodeId {
   return
     node_get_field_4($node) - node_get_field_2($node) |> node_id_from_int($$);
 }
