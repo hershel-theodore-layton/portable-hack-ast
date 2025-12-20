@@ -102,7 +102,7 @@ final class TranslationUnit {
 
   // #region Materialization
   const string VERSION = 'VERSION';
-  const int VERSION_NUMBER = 2;
+  const int VERSION_NUMBER = 3;
   const string SOURCE_ORDER = 'SOURCE_ORDER';
   const string SIBLINGS = 'SIBLINGS';
   const string LIST_SIZES = 'LIST_SIZES';

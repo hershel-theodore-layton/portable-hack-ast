@@ -70,7 +70,7 @@ final class ParseContext {
 
   // #region Materialization
   const string VERSION = 'VERSION';
-  const int VERSION_NUMBER = 2;
+  const int VERSION_NUMBER = 3;
   const string STRUCTS = 'STRUCTS';
   const string SYNTAX_KINDS = 'SYNTAX_KINDS';
   const string TOKEN_KINDS = 'TOKEN_KINDS';

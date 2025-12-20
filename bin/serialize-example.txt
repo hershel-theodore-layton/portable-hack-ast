@@ -1,7 +1,7 @@
-The bit patterns contain some air, hence 17 hexits to the int.
+Generated with bin/serialize.sh
 {
     "script": {
-        "VERSION": "tri 00   000  000000  00002",
+        "VERSION": "tri 00   000  000000  00003",
         "SOURCE_ORDER": [
             "syn 00  0000   00000  00000",
             "lst 06  0001   00001  00001",
@@ -678,12 +678,12 @@ The bit patterns contain some air, hence 17 hexits to the int.
         ],
         "LIST_SIZES": {},
         "SOURCE_TEXT": "#!\/usr\/bin\/env hhvm\n\/** portable-hack-ast is MIT licensed, see \/LICENSE. *\/\nnamespace HTL\\Pha\\_Private\\Bin;\n\nuse namespace HH\\Lib\\IO;\nuse namespace HTL\\Pha;\n\n<<__EntryPoint>>\nasync function main_async()[defaults]: Awaitable<void> {\n  $source = await IO\\request_input()->readAllAsync();\n  $ctx = Pha\\create_context();\n  list($script, $ctx) = Pha\\parse($source, $ctx);\n  $dema = Pha\\dematerialize_script($script);\n  echo \\json_encode(dump_bits($dema), \\JSON_PRETTY_PRINT);\n}\n",
-        "CONTEXT_ID": "d6a82478686285c29efeca377a5a1796d7a14db0"
+        "CONTEXT_ID": "8b627d87d76071a4f6ffa22c402c7c662665711e"
     },
     "context": {
-        "VERSION": "tri 00   000  000000  00002",
+        "VERSION": "tri 00   000  000000  00003",
         "STRUCTS": {
-            "VERSION": "tri 00   000  000000  00002",
+            "VERSION": "tri 00   000  000000  00003",
             "MEMBERS": [
                 [
                     "script",
@@ -1061,5 +1061,5 @@ The bit patterns contain some air, hence 17 hexits to the int.
             "delimited_comment"
         ]
     },
-    "context_hash": "d6a82478686285c29efeca377a5a1796d7a14db0"
+    "context_hash": "8b627d87d76071a4f6ffa22c402c7c662665711e"
 }

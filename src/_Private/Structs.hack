@@ -38,7 +38,7 @@ final class Structs {
 
   //#region Materialization
   const string VERSION = 'VERSION';
-  const int VERSION_NUMBER = 2;
+  const int VERSION_NUMBER = 3;
   const string MEMBERS = 'MEMBERS';
 
   public function dematerialize()[]: dict<arraykey, mixed> {
