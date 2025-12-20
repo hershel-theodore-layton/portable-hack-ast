@@ -74,16 +74,12 @@ have a unique ID for many operations in the AST.
 
 ### The 2023 layout
 
-<span style="color: red; font-family: monospace;">AA</span>
-<span style="color: darkred; font-family: monospace;">BBBBBBBB</span>
-<span style="color: coral; font-family: monospace;">CCCCCCCCCCCCCCCCCC</span>
-<span style="color: skyblue; font-family: monospace;">DDDDDDDDDDDDDDDDDD</span>
-<span style="color: rebeccapurple; font-family: monospace;">EEEEEEEEEEEEEEEEEE</span>
-<br>
-<span style="font-family: monospace;">&nbsp;&nbsp;10 bits</span>
-<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;18 bits</span>
-<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;18 bits</span>
-<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;18 bits</span>
+|Name|Size   |
+|---:|:------|
+|A&B |10 bits|
+|C   |18 bits|
+|D   |18 bits|
+|E   |18 bits|
 
  - Field C contains the NodeId of the parent Node. Since NodeId's are 18 bits in
 this version, Field C has to be 18 bits.
@@ -95,16 +91,12 @@ this version, Field C has to be 18 bits.
 
 Syntaxes and Tokens in the 2025 layout:
 
-<span style="color: red; font-family: monospace;">AA</span>
-<span style="color: darkred; font-family: monospace;">BBBBBBBB</span>
-<span style="color: coral; font-family: monospace;">CCCCCCCCCCCCCC</span>
-<span style="color: skyblue; font-family: monospace;">DDDDDDDDDDDDDDDDDDDD</span>
-<span style="color: rebeccapurple; font-family: monospace;">EEEEEEEEEEEEEEEEEEEE</span>
-<br>
-<span style="font-family: monospace;">&nbsp;&nbsp;10 bits</span>
-<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;14 bits</span>
-<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;20 bits</span>
-<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;20 bits</span>
+|Name|Size   |
+|---:|:------|
+|A&B |10 bits|
+|C   |14 bits|
+|D   |20 bits|
+|E   |20 bits|
 
 - Field C, the field that contained the parent NodeId, has been shrunk from 18 to
 14 bits. Instead of storing the NodeId, the different between the current NodeId
@@ -117,16 +109,12 @@ amount of space available, 0 is stored instead.
 
 Trivia in the 2025 layout:
 
-<span style="color: red; font-family: monospace;">AA</span>
-<span style="color: darkred; font-family: monospace;">BBBBBBBB</span>
-<span style="color: coral; font-family: monospace;">CCCCCCCCCC</span>
-<span style="color: skyblue; font-family: monospace;">DDDDDDDDDDDDDDDDDDDDDDDD</span>
-<span style="color: rebeccapurple; font-family: monospace;">EEEEEEEEEEEEEEEEEEEE</span>
-<br>
-<span style="font-family: monospace;">&nbsp;&nbsp;10 bits</span>
-<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;10 bits</span>
-<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;24 bits</span>
-<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;20 bits</span>
+|Name|Size   |
+|---:|:------|
+|A&B |10 bits|
+|C   |10 bits|
+|D   |24 bits|
+|E   |20 bits|
 
 - Field C on Trivia is even smaller than it is on Syntaxes and Tokens. These
 stolen bits are given to Field D instead. 10 bits is still enough to encode
