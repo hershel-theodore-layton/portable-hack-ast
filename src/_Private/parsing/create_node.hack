@@ -46,10 +46,6 @@ function create_node(
   }
 
   $parent_diff = $source_order_idx - $parent_idx;
-  invariant(
-    $parent_diff >= 0,
-    'Children are further down the source than parents',
-  );
 
   switch ($node->getGroup()) {
     case IntermediateGroup::SYNTAX:
