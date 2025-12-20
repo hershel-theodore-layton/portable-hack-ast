@@ -5,11 +5,11 @@ use namespace HH\Lib\Str;
 use namespace HTL\Pha\_Private;
 
 function dump_bits(mixed $value)[]: mixed {
-  if (!$value is vec_or_dict<_, _>) {
+  if (!$value is vec_or_dict<_>) {
     return $value;
   }
   foreach ($value as $k => $v) {
-    if ($v is vec_or_dict<_, _>) {
+    if ($v is vec_or_dict<_>) {
       $value[$k] = dump_bits($v);
     } else if ($v is int) {
       $value[$k] = format_node($v);
