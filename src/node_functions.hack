@@ -1304,10 +1304,9 @@ function token_get_text(Script $script, NillableToken $node)[]: string {
     |> node_get_code($script, $$);
 }
 
-function token_get_text_trivium(Script $script, Token $node)[]: Trivium {
+function token_get_text_trivium(Script $script, Token $token)[]: Trivium {
   $tu = _Private\translation_unit_reveal($script);
-  return _Private\node_get_field_3($node)
-    |> _Private\node_id_from_int($$)
+  return _Private\token_get_token_text_trivium_id($token)
     |> $tu->getNodeByIdx($$)
     |> _Private\trivium_from_node($$);
 }

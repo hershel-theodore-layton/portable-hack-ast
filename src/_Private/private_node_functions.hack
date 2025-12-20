@@ -177,6 +177,10 @@ function syntax_get_first_child_sibling_id(Syntax $node)[]: SiblingId {
   return node_get_field_3($node) |> sibling_id_from_int($$);
 }
 
+function token_get_token_text_trivium_id(Token $token)[]: NodeId {
+  return node_get_field_3($token) |> node_id_from_int($$);
+}
+
 function trivium_get_source_byte_offset(Trivium $trivium)[]: SourceByteOffset {
   return node_get_field_3($trivium) |> source_byte_offset_from_int($$);
 }
