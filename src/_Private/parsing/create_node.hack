@@ -50,9 +50,9 @@ function create_node(
 
   return node_from_int(
     ($field_0) |
-      ($field_1 << 54) |
-      ($field_2 << 36) |
-      ($field_3 << 18) |
-      $field_4,
+      ($field_1 << FIELD_1_OFFSET) |
+      ($field_2 << FIELD_2_OFFSET) |
+      ($field_3 << FIELD_3_OFFSET) |
+      ($field_4 << FIELD_4_OFFSET),
   );
 }
