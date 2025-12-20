@@ -34,7 +34,9 @@ function serialization_test(TestChain\Chain $chain)[]: TestChain\Chain {
           $dematerialized['script'],
           Pha\materialize_context($dematerialized['context']),
         ),
-      )->toThrowPhaException('with a different version of this library');
+      )->toThrowPhaException(
+        'it was dematerialized with version 42, but this version is version 3.',
+      );
     });
 }
 
