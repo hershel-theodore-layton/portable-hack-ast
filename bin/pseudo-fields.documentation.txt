@@ -23,7 +23,7 @@ abstract struct Node(T1, T2) {
   field: {
     size: 18,
     name: idx,
-    purpose: The unique NodeId of this Node
+    purpose: The unique NodeId of this Node.
   }
 }
 
@@ -82,8 +82,8 @@ embedded struct Zero(T) {
   field: {
     size: T,
     name: _,
-    purpose: All zeroed out bytes.,
-    value: 0
+    value: 0,
+    purpose: All zeroed out bytes.
   }
 }
 
@@ -105,7 +105,7 @@ final struct Syntax {
   field: {
     size: 18,
     name: parent_idx,
-    purpose: The NodeId of the parent of the current Node
+    purpose: The NodeId of the parent of the current Node.
   },
   field: {
     size: 18,
@@ -115,7 +115,7 @@ final struct Syntax {
   field: {
     size: 18,
     name: idx,
-    purpose: The unique NodeId of this Node
+    purpose: The unique NodeId of this Node.
   }
 }
 
@@ -135,7 +135,7 @@ final struct Token {
   field: {
     size: 18,
     name: parent_idx,
-    purpose: The NodeId of the parent of the current Node
+    purpose: The NodeId of the parent of the current Node.
   },
   field: {
     size: 18,
@@ -145,7 +145,7 @@ final struct Token {
   field: {
     size: 18,
     name: idx,
-    purpose: The unique NodeId of this Node
+    purpose: The unique NodeId of this Node.
   }
 }
 
@@ -165,7 +165,7 @@ final struct Trivium {
   field: {
     size: 18,
     name: parent_idx,
-    purpose: The NodeId of the parent of the current Node
+    purpose: The NodeId of the parent of the current Node.
   },
   field: {
     size: 18,
@@ -175,7 +175,7 @@ final struct Trivium {
   field: {
     size: 18,
     name: idx,
-    purpose: The unique NodeId of this Node
+    purpose: The unique NodeId of this Node.
   }
 }
 
@@ -194,7 +194,7 @@ final struct List {
   field: {
     size: 18,
     name: parent_idx,
-    purpose: The NodeId of the parent of the current Node
+    purpose: The NodeId of the parent of the current Node.
   },
   field: {
     size: 18,
@@ -204,7 +204,7 @@ final struct List {
   field: {
     size: 18,
     name: idx,
-    purpose: The unique NodeId of this Node
+    purpose: The unique NodeId of this Node.
   }
 }
 
@@ -224,7 +224,7 @@ final struct Missing {
   field: {
     size: 18,
     name: parent_idx,
-    purpose: The NodeId of the parent of the current Node
+    purpose: The NodeId of the parent of the current Node.
   },
   field: {
     size: 8,
@@ -235,6 +235,6 @@ final struct Missing {
   field: {
     size: 18,
     name: idx,
-    purpose: The unique NodeId of this Node
+    purpose: The unique NodeId of this Node.
   }
 }
