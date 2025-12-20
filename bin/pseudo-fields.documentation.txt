@@ -11,15 +11,10 @@ abstract struct Node(T1, T2) {
     size: 8,
     name: T1
   },
-  field: {
-    size: 18,
-    name: parent_idx,
-    purpose: The NodeId of the parent of the current Node.
-  },
   union: {
-    size: 18,
+    size: 36,
     name: T2
-  },
+  }
   field: {
     size: 18,
     name: idx,
@@ -27,15 +22,35 @@ abstract struct Node(T1, T2) {
   }
 }
 
-final struct Syntax extends Node(Kind, FirstChildSiblingId) {}
+final struct Syntax extends Node(Kind, SyntaxData) {}
 
-final struct Token extends Node(Kind, TokenTextTriviumOffset) {}
+final struct Token extends Node(Kind, TokenData) {}
 
-final struct Trivium extends Node(Kind, SourceByteOffset) {}
+final struct Trivium extends Node(Kind, TriviumData) {}
 
-final struct List extends Node(ChildCount, FirstChildSiblingId) {}
+final struct List extends Node(ChildCount, ListData) {}
 
-final struct Missing extends Node(Zero(2), Zero(8)) {}
+final struct Missing extends Node(Zero(2), Zero(36)) {}
+
+embedded struct SyntaxData {
+  embed ParentIndex(18),
+  embed FirstChildSiblingId
+}
+
+embedded struct TokenData {
+  embed ParentIndex(18),
+  embed TokenTextTriviumOffset
+}
+
+embedded struct TriviumData {
+  embed ParentIndex(18),
+  embed SourceByteOffset
+}
+
+embedded struct ListData {
+  embed ParentIndex(18),
+  embed ChildCount
+}
 
 embedded struct Kind {
   field: {
@@ -44,6 +59,14 @@ embedded struct Kind {
     purpose: The InternedString<Kind> which uniquely identifies the kind of this
              Node when combined with the field "group".
   }
+}
+
+embedded struct ParentIndex(T) {
+  field: {
+    size: T,
+    name: parent_idx,
+    purpose: The NodeId of the parent of the current Node.
+  },
 }
 
 embedded struct FirstChildSiblingId {
