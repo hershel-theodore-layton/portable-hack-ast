@@ -43,7 +43,7 @@ embedded struct TokenData {
 }
 
 embedded struct TriviumData {
-  embed ParentIndex(14),
+  embed ParentIndex(10),
   embed SourceByteOffset
 }
 
@@ -93,7 +93,7 @@ embedded struct TokenTextTriviumOffset {
 
 embedded struct SourceByteOffset {
   field: {
-    size: 20,
+    size: 24,
     name: source_byte_offset,
     purpose: The index of the first byte in the source text.
   }
@@ -204,7 +204,7 @@ final struct Trivium {
              Node when combined with the field "group".
   },
   field: {
-    size: 14,
+    size: 10,
     name: parent_diff,
     purpose: The difference between the NodeId of the current node and that of
              its parent. In special cases, this value is `0`. For example,
@@ -215,7 +215,7 @@ final struct Trivium {
              their parent.
   },
   field: {
-    size: 20,
+    size: 24,
     name: source_byte_offset,
     purpose: The index of the first byte in the source text.
   }

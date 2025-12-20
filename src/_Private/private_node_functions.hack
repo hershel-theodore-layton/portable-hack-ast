@@ -6,19 +6,26 @@ use namespace HTL\Pha;
 
 const int FIELD_4_SIZE = 20;
 const int FIELD_3_SIZE = 20;
+const int FIELD_3_SIZE_FOR_TRIVIA = 24;
 const int FIELD_2_SIZE = 14;
+const int FIELD_2_SIZE_FOR_TRIVIA = 10;
 const int FIELD_1_SIZE = 8;
 const int FIELD_0_SIZE = 2;
 
 const int FIELD_4_OFFSET = 0;
 const int FIELD_3_OFFSET = FIELD_4_OFFSET + FIELD_4_SIZE;
+const int FIELD_3_OFFSET_FOR_TRIVIA = FIELD_3_OFFSET;
 const int FIELD_2_OFFSET = FIELD_3_OFFSET + FIELD_3_SIZE;
+const int FIELD_2_OFFSET_FOR_TRIVIA =
+  FIELD_3_OFFSET_FOR_TRIVIA + FIELD_3_SIZE_FOR_TRIVIA;
 const int FIELD_1_OFFSET = FIELD_2_OFFSET + FIELD_2_SIZE;
 const int FIELD_0_OFFSET = FIELD_1_OFFSET + FIELD_1_SIZE;
 
 const int FIELD_4_MASK = (1 << FIELD_4_SIZE) - 1;
 const int FIELD_3_MASK = (1 << FIELD_3_SIZE) - 1;
+const int FIELD_3_MASK_FOR_TRIVIA = (1 << FIELD_3_SIZE_FOR_TRIVIA) - 1;
 const int FIELD_2_MASK = (1 << FIELD_2_SIZE) - 1;
+const int FIELD_2_MASK_FOR_TRIVIA = (1 << FIELD_2_SIZE_FOR_TRIVIA) - 1;
 const int FIELD_1_MASK = (1 << FIELD_1_SIZE) - 1;
 const int FIELD_0_MASK = (1 << FIELD_0_SIZE) - 1;
 
@@ -100,12 +107,30 @@ function node_get_field_1(NillableNode $node)[]: int {
   return node_to_int($node) >> FIELD_1_OFFSET |> $$ & FIELD_1_MASK;
 }
 
-function node_get_field_2(NillableNode $node)[]: int {
-  return node_to_int($node) >> FIELD_2_OFFSET |> $$ & FIELD_2_MASK;
+function syntax_get_field_2(NillableSyntax $syntax)[]: int {
+  return node_to_int($syntax) >> FIELD_2_OFFSET |> $$ & FIELD_2_MASK;
 }
 
-function node_get_field_3(NillableNode $node)[]: int {
-  return node_to_int($node) >> FIELD_3_OFFSET |> $$ & FIELD_3_MASK;
+function token_get_field_2(NillableToken $token)[]: int {
+  return node_to_int($token) >> FIELD_2_OFFSET |> $$ & FIELD_2_MASK;
+}
+
+function trivium_get_field_2(NillableTrivium $trivium)[]: int {
+  return node_to_int($trivium) >> FIELD_2_OFFSET_FOR_TRIVIA
+    |> $$ & FIELD_2_MASK_FOR_TRIVIA;
+}
+
+function syntax_get_field_3(NillableSyntax $syntax)[]: int {
+  return node_to_int($syntax) >> FIELD_3_OFFSET |> $$ & FIELD_3_MASK;
+}
+
+function token_get_field_3(NillableToken $token)[]: int {
+  return node_to_int($token) >> FIELD_3_OFFSET |> $$ & FIELD_3_MASK;
+}
+
+function trivium_get_field_3(NillableTrivium $trivium)[]: int {
+  return node_to_int($trivium) >> FIELD_3_OFFSET_FOR_TRIVIA
+    |> $$ & FIELD_3_MASK_FOR_TRIVIA;
 }
 
 function node_get_field_4(NillableNode $node)[]: int {
@@ -166,7 +191,14 @@ function node_get_next_trivium(
 }
 
 function node_get_parent_offset(Node $node)[]: int {
-  return node_get_field_2($node);
+  switch (node_get_field_0($node)) {
+    case TRIVIUM_TAG_AFTER_SHIFT:
+      return trivium_from_node($node) |> trivium_get_field_2($$);
+    case TOKEN_TAG_AFTER_SHIFT:
+      return token_from_node($node) |> token_get_field_2($$);
+    default:
+      return syntax_from_node($node) |> syntax_get_field_2($$);
+  }
 }
 
 function node_is_between_or_at_boundary(
@@ -180,13 +212,25 @@ function node_is_between_or_at_boundary(
 }
 
 function syntax_get_first_child_sibling_id(Syntax $node)[]: SiblingId {
-  return node_get_field_3($node) |> sibling_id_from_int($$);
+  return syntax_get_field_3($node) |> sibling_id_from_int($$);
+}
+
+function syntax_get_parent_offset(Syntax $syntax)[]: int {
+  return syntax_get_field_2($syntax);
+}
+
+function token_get_parent_offset(Token $token)[]: int {
+  return token_get_field_2($token);
+}
+
+function trivium_get_parent_offset(Trivium $trivium)[]: int {
+  return trivium_get_field_2($trivium);
 }
 
 function token_get_token_text_trivium_id(Token $token)[]: NodeId {
-  return node_get_field_3($token) |> node_id_from_int($$);
+  return token_get_field_3($token) |> node_id_from_int($$);
 }
 
 function trivium_get_source_byte_offset(Trivium $trivium)[]: SourceByteOffset {
-  return node_get_field_3($trivium) |> source_byte_offset_from_int($$);
+  return trivium_get_field_3($trivium) |> source_byte_offset_from_int($$);
 }

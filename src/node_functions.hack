@@ -523,8 +523,8 @@ function node_get_child_at_offset(
         return NIL;
       }
 
-      $child_node = _Private\cast_away_nil($child_node);
-      $parent_offset = _Private\node_get_parent_offset($child_node);
+      $child_node = _Private\trivium_from_node($child_node);
+      $parent_offset = _Private\trivium_get_parent_offset($child_node);
       // fast path: Can see if `$node` is parent of `child_node` from bits
       if ($parent_offset === $offset + 1) {
         return $child_node;

@@ -9,10 +9,10 @@ function create_translation_unit(
   ParseContext $ctx,
 )[]: TranslationUnit {
   enforce(
-    Str\length($source_text) < FIELD_3_MASK,
+    Str\length($source_text) < FIELD_3_MASK_FOR_TRIVIA,
     'Implementation limit: Source may not exceed %d (0x%x) bytes, got %d.',
-    FIELD_3_MASK,
-    FIELD_3_MASK,
+    FIELD_3_MASK_FOR_TRIVIA,
+    FIELD_3_MASK_FOR_TRIVIA,
     Str\length($source_text),
   );
 

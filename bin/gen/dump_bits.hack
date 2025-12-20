@@ -20,12 +20,23 @@ function dump_bits(mixed $value)[]: mixed {
 }
 
 function format_node(int $v)[]: string {
-  return Str\format(
-    '%02b_%08b_%018b_%020b_%020b',
-    ($v >> _Private\FIELD_0_OFFSET) & _Private\FIELD_0_MASK,
-    ($v >> _Private\FIELD_1_OFFSET) & _Private\FIELD_1_MASK,
-    ($v >> _Private\FIELD_2_OFFSET) & _Private\FIELD_2_MASK,
-    ($v >> _Private\FIELD_3_OFFSET) & _Private\FIELD_3_MASK,
-    ($v >> _Private\FIELD_4_OFFSET) & _Private\FIELD_4_MASK,
-  );
+  return ($v >> _Private\FIELD_0_OFFSET) === _Private\TRIVIUM_TAG_AFTER_SHIFT
+    ? Str\format(
+        '%02b_%08b_%018b_%020b_%020b',
+        ($v >> _Private\FIELD_0_OFFSET) & _Private\FIELD_0_MASK,
+        ($v >> _Private\FIELD_1_OFFSET) & _Private\FIELD_1_MASK,
+        ($v >> _Private\FIELD_2_OFFSET_FOR_TRIVIA) &
+          _Private\FIELD_2_MASK_FOR_TRIVIA,
+        ($v >> _Private\FIELD_3_OFFSET_FOR_TRIVIA) &
+          _Private\FIELD_3_MASK_FOR_TRIVIA,
+        ($v >> _Private\FIELD_4_OFFSET) & _Private\FIELD_4_MASK,
+      )
+    : Str\format(
+        '%02b_%08b_%018b_%020b_%020b',
+        ($v >> _Private\FIELD_0_OFFSET) & _Private\FIELD_0_MASK,
+        ($v >> _Private\FIELD_1_OFFSET) & _Private\FIELD_1_MASK,
+        ($v >> _Private\FIELD_2_OFFSET) & _Private\FIELD_2_MASK,
+        ($v >> _Private\FIELD_3_OFFSET) & _Private\FIELD_3_MASK,
+        ($v >> _Private\FIELD_4_OFFSET) & _Private\FIELD_4_MASK,
+      );
 }
