@@ -7,6 +7,10 @@ function node_id_add(NodeId $node_id, int $n)[]: NodeId {
   return $node_id + $n;
 }
 
+function node_id_sub(NodeId $node_id, int $n)[]: NodeId {
+  return $node_id - $n;
+}
+
 function node_id_diff(NodeId $a, NodeId $b)[]: NodeId {
   invariant(
     $a >= $b,

@@ -491,8 +491,8 @@ function node_get_child_at_offset(
   switch (node_get_elaborated_group($node)) {
     case NodeElaboratedGroup::SYNTAX:
     case NodeElaboratedGroup::LIST:
-      $child_node = _Private\syntax_from_node($node)
-        |> _Private\syntax_get_first_child_sibling_id($$)
+      $node = _Private\syntax_from_node($node);
+      $child_node = _Private\syntax_get_first_child_sibling_id($node)
         |> _Private\sibling_id_add($$, $offset)
         |> $tu->getNodeBySiblingId($$);
 
@@ -501,10 +501,18 @@ function node_get_child_at_offset(
       }
 
       $child_node = _Private\cast_away_nil($child_node);
-      return
-        _Private\node_get_parent_id_UNSAFE($child_node) === node_get_id($node)
-          ? $child_node
-          : NIL;
+
+      $child_node_id = node_get_id($child_node);
+      $node_id = node_get_id($node);
+      $parent_offset = _Private\node_get_parent_offset($child_node);
+
+      // fast path: Can see if `$node` is the parent of `$child_node` from bits
+      if (_Private\node_id_sub($child_node_id, $parent_offset) === $node_id) {
+        return $child_node;
+      }
+
+      // slow path: Need to check with the list-sizes or syntax member counts
+      return $tu->syntaxGetChildCount($node) > $offset ? $child_node : NIL;
 
     case NodeElaboratedGroup::TOKEN:
       $child_node = node_get_id($node)
@@ -516,10 +524,36 @@ function node_get_child_at_offset(
       }
 
       $child_node = _Private\cast_away_nil($child_node);
-      return
-        _Private\node_get_parent_id_UNSAFE($child_node) === node_get_id($node)
-          ? $child_node
-          : NIL;
+      $parent_offset = _Private\node_get_parent_offset($child_node);
+      // fast path: Can see if `$node` is parent of `child_node` from bits
+      if ($parent_offset === $offset + 1) {
+        return $child_node;
+      }
+
+      if ($parent_offset !== 0) {
+        return NIL;
+      }
+
+      // slow path: Can not jump to child, must verify every intermediate node
+      // is a trivium, to ensure the trivium returned is a child of `$node`.
+      $parent_id = node_get_id($node);
+      $child_id = $parent_id;
+      $child = NIL;
+
+      for ($i = 0; $i <= $offset; ++$i) {
+        $child_id = _Private\node_id_add($child_id, 1);
+        $child = $tu->getNodeById($child_id);
+        if ($child === NIL) {
+          return NIL;
+        }
+
+        $child = _Private\cast_away_nil($child);
+
+        if (node_get_group($child) !== NodeGroup::TRIVIUM) {
+          return NIL;
+        }
+      }
+      return $child;
 
     case NodeElaboratedGroup::TRIVIUM:
     case NodeElaboratedGroup::MISSING:
@@ -584,7 +618,7 @@ function node_get_children(Script $script, NillableNode $node)[]: vec<Node> {
 
         $child = _Private\cast_away_nil($child);
 
-        if (_Private\node_get_parent_id_UNSAFE($child) !== $parent_id) {
+        if (node_get_group($child) !== NodeGroup::TRIVIUM) {
           return $children;
         }
 
@@ -850,7 +884,7 @@ function node_get_last_child(
 
         $child = _Private\cast_away_nil($child);
 
-        if (_Private\node_get_parent_id_UNSAFE($child) !== $parent_id) {
+        if (node_get_group($child) !== NodeGroup::TRIVIUM) {
           return $last_child;
         }
 
@@ -945,8 +979,29 @@ function node_get_line_and_column_numbers(
  */
 function node_get_parent(Script $script, Node $node)[]: Node {
   $tu = _Private\translation_unit_reveal($script);
-  return _Private\node_get_parent_id_UNSAFE($node)
+  $parent_offset = _Private\node_get_parent_offset($node);
+  if ($parent_offset !== 0 || $node === SCRIPT_NODE) {
+    return _Private\node_id_sub(node_get_id($node), $parent_offset)
     |> $tu->getNodeByIdx($$);
+  }
+
+  // slow path: Can not find my parent from bits, must find myself by selecting
+  // an ancestor each time. The last ancestor before me is my parent.
+  $source_order = node_get_source_order($node);
+  $next = SCRIPT_NODE;
+
+  do {
+    $parent = $next;
+    $children = node_get_children($script, $parent);
+
+    $i = C\count($children) - 1;
+    do {
+      $next = $children[$i];
+      --$i;
+    } while (node_get_source_order($next) > $source_order);
+  } while ($next !== $node);
+
+  return $parent;
 }
 
 /**

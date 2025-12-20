@@ -6,10 +6,13 @@ use namespace HTL\Pha;
 
 final class Structs {
   private int $size;
+  private vec<int> $memberCounts;
+
   public function __construct(
     private dict<SyntaxKind, vec<Member>> $rawMembers,
   )[] {
     $this->size = C\count($rawMembers);
+    $this->memberCounts = Vec\map($rawMembers, C\count<>);
   }
 
   public function asInternedStrings()[]: InternedStringStorage<SyntaxKind> {
@@ -17,6 +20,12 @@ final class Structs {
       Keyset\keys($this->rawMembers),
       Pha\syntax_kind_from_string<>,
     );
+  }
+
+  public function getMemberCount(
+    InternedString<SyntaxKind> $syntax_kind,
+  )[]: int {
+    return $this->memberCounts[interned_string_to_int($syntax_kind)];
   }
 
   public function getRaw()[]: dict<SyntaxKind, vec<Member>> {

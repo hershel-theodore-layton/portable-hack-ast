@@ -7,6 +7,7 @@ final class TranslationUnit {
   const SOME_LARGE_JUMP = 64;
 
   private vec<SourceByteOffset> $lineBreaks;
+  private Structs $structs;
   /**
    * @param $sourceOrder is keyed by NodeId (0..n-1).
    * @param $siblings is keyed by SiblingId (0..n-1).
@@ -28,6 +29,7 @@ final class TranslationUnit {
     }
 
     $this->lineBreaks = $line_breaks;
+    $this->structs = $ctx->getStructs();
   }
 
   public function cutSourceOrder(
@@ -89,6 +91,13 @@ final class TranslationUnit {
 
   public function sliceSiblings(SiblingId $start, int $length)[]: vec<Node> {
     return Vec\slice($this->siblings, sibling_id_to_int($start), $length);
+  }
+
+  public function syntaxGetChildCount(Syntax $syntax)[]: int {
+    return node_get_field_0($syntax) === LIST_OR_MISSING_TAG_AFTER_SHIFT
+      ? $this->listGetSize($syntax)
+      : $this->structs
+        ->getMemberCount(node_get_interned_kind<SyntaxKind>($syntax));
   }
 
   // #region Materialization
