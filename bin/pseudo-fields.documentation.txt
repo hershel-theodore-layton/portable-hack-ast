@@ -16,7 +16,7 @@ abstract struct Node(T1, T2) {
     name: T2
   }
   field: {
-    size: 18,
+    size: 20,
     name: idx,
     purpose: The unique NodeId of this Node.
   }
@@ -33,22 +33,22 @@ final struct List extends Node(ChildCount, ListData) {}
 final struct Missing extends Node(Zero(2), Zero(36)) {}
 
 embedded struct SyntaxData {
-  embed ParentIndex(18),
+  embed ParentIndex(14),
   embed FirstChildSiblingId
 }
 
 embedded struct TokenData {
-  embed ParentIndex(18),
+  embed ParentIndex(14),
   embed TokenTextTriviumOffset
 }
 
 embedded struct TriviumData {
-  embed ParentIndex(18),
+  embed ParentIndex(14),
   embed SourceByteOffset
 }
 
 embedded struct ListData {
-  embed ParentIndex(18),
+  embed ParentIndex(14),
   embed ChildCount
 }
 
@@ -67,13 +67,17 @@ embedded struct ParentDiff(T) {
     name: parent_diff,
     purpose: The difference between the NodeId of the current node and that of
              its parent. In special cases, this value is `0`. For example,
-             SCRIPT_NODE is its own parent, so the distance is 0.
+             SCRIPT_NODE is its own parent, so the distance is 0. When the
+             difference with the parent cannot be encoded in the bit width of
+             this field, the value will be set to 0. The signals to the consumers
+             that they must use a slow path to reconstruct the relation with
+             their parent.
   },
 }
 
 embedded struct FirstChildSiblingId {
   field: {
-    size: 18,
+    size: 20,
     name: first_child_sibling_id,
     purpose: The SiblingId of the first child of this Node.
   }
@@ -81,7 +85,7 @@ embedded struct FirstChildSiblingId {
 
 embedded struct TokenTextTriviumOffset {
   field: {
-    size: 18,
+    size: 20,
     name: token_text_trivium_offset,
     purpose: The NodeId of the Trivium that has the text of this Token.
   }
@@ -89,7 +93,7 @@ embedded struct TokenTextTriviumOffset {
 
 embedded struct SourceByteOffset {
   field: {
-    size: 18,
+    size: 20,
     name: source_byte_offset,
     purpose: The index of the first byte in the source text.
   }
@@ -128,19 +132,23 @@ final struct Syntax {
              Node when combined with the field "group".
   },
   field: {
-    size: 18,
+    size: 14,
     name: parent_diff,
     purpose: The difference between the NodeId of the current node and that of
              its parent. In special cases, this value is `0`. For example,
-             SCRIPT_NODE is its own parent, so the distance is 0.
+             SCRIPT_NODE is its own parent, so the distance is 0. When the
+             difference with the parent cannot be encoded in the bit width of
+             this field, the value will be set to 0. The signals to the consumers
+             that they must use a slow path to reconstruct the relation with
+             their parent.
   },
   field: {
-    size: 18,
+    size: 20,
     name: first_child_sibling_id,
     purpose: The SiblingId of the first child of this Node.
   },
   field: {
-    size: 18,
+    size: 20,
     name: idx,
     purpose: The unique NodeId of this Node.
   }
@@ -160,19 +168,23 @@ final struct Token {
              Node when combined with the field "group".
   },
   field: {
-    size: 18,
+    size: 14,
     name: parent_diff,
     purpose: The difference between the NodeId of the current node and that of
              its parent. In special cases, this value is `0`. For example,
-             SCRIPT_NODE is its own parent, so the distance is 0.
+             SCRIPT_NODE is its own parent, so the distance is 0. When the
+             difference with the parent cannot be encoded in the bit width of
+             this field, the value will be set to 0. The signals to the consumers
+             that they must use a slow path to reconstruct the relation with
+             their parent.
   },
   field: {
-    size: 18,
+    size: 20,
     name: token_text_trivium_offset,
     purpose: The NodeId of the Trivium that has the text of this Token.
   }
   field: {
-    size: 18,
+    size: 20,
     name: idx,
     purpose: The unique NodeId of this Node.
   }
@@ -192,19 +204,23 @@ final struct Trivium {
              Node when combined with the field "group".
   },
   field: {
-    size: 18,
+    size: 14,
     name: parent_diff,
     purpose: The difference between the NodeId of the current node and that of
              its parent. In special cases, this value is `0`. For example,
-             SCRIPT_NODE is its own parent, so the distance is 0.
+             SCRIPT_NODE is its own parent, so the distance is 0. When the
+             difference with the parent cannot be encoded in the bit width of
+             this field, the value will be set to 0. The signals to the consumers
+             that they must use a slow path to reconstruct the relation with
+             their parent.
   },
   field: {
-    size: 18,
+    size: 20,
     name: source_byte_offset,
     purpose: The index of the first byte in the source text.
   }
   field: {
-    size: 18,
+    size: 20,
     name: idx,
     purpose: The unique NodeId of this Node.
   }
@@ -223,19 +239,23 @@ final struct List {
     purpose: The size of this list, or 255 to signify lists of length 255+.
   }
   field: {
-    size: 18,
+    size: 14,
     name: parent_diff,
     purpose: The difference between the NodeId of the current node and that of
              its parent. In special cases, this value is `0`. For example,
-             SCRIPT_NODE is its own parent, so the distance is 0.
+             SCRIPT_NODE is its own parent, so the distance is 0. When the
+             difference with the parent cannot be encoded in the bit width of
+             this field, the value will be set to 0. The signals to the consumers
+             that they must use a slow path to reconstruct the relation with
+             their parent.
   },
   field: {
-    size: 18,
+    size: 20,
     name: first_child_sibling_id,
     purpose: The SiblingId of the first child of this Node.
   },
   field: {
-    size: 18,
+    size: 20,
     name: idx,
     purpose: The unique NodeId of this Node.
   }
@@ -255,20 +275,24 @@ final struct Missing {
     purpose: All zeroed out bytes.
   }
   field: {
-    size: 18,
+    size: 14,
     name: parent_diff,
     purpose: The difference between the NodeId of the current node and that of
              its parent. In special cases, this value is `0`. For example,
-             SCRIPT_NODE is its own parent, so the distance is 0.
+             SCRIPT_NODE is its own parent, so the distance is 0. When the
+             difference with the parent cannot be encoded in the bit width of
+             this field, the value will be set to 0. The signals to the consumers
+             that they must use a slow path to reconstruct the relation with
+             their parent.
   },
   field: {
-    size: 8,
+    size: 20,
     name: _,
     value: 0,
     purpose: All zeroed out bytes.
   }
   field: {
-    size: 18,
+    size: 20,
     name: idx,
     purpose: The unique NodeId of this Node.
   }

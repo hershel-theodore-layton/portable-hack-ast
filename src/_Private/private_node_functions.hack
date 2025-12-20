@@ -4,9 +4,9 @@ namespace HTL\Pha\_Private;
 use namespace HH\Lib\Math;
 use namespace HTL\Pha;
 
-const int FIELD_4_SIZE = 18;
-const int FIELD_3_SIZE = 18;
-const int FIELD_2_SIZE = 18;
+const int FIELD_4_SIZE = 20;
+const int FIELD_3_SIZE = 20;
+const int FIELD_2_SIZE = 14;
 const int FIELD_1_SIZE = 8;
 const int FIELD_0_SIZE = 2;
 
