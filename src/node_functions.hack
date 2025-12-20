@@ -705,11 +705,11 @@ function node_get_descendants(Script $script, NillableNode $node)[]: vec<Node> {
 
 function node_get_elaborated_group(Node $node)[]: NodeElaboratedGroup {
   switch (_Private\node_get_field_0($node)) {
-    case 0:
+    case _Private\TRIVIUM_TAG_AFTER_SHIFT:
       return NodeElaboratedGroup::TRIVIUM;
-    case 1:
+    case _Private\TOKEN_TAG_AFTER_SHIFT:
       return NodeElaboratedGroup::TOKEN;
-    case -2:
+    case _Private\SYNTAX_TAG_AFTER_SHIFT:
       return NodeElaboratedGroup::SYNTAX;
     default:
       return _Private\node_get_field_1($node) === 0
@@ -762,9 +762,9 @@ function node_get_first_childx(Script $script, Node $node)[]: Node {
 
 function node_get_group(Node $node)[]: NodeGroup {
   switch (_Private\node_get_field_0($node)) {
-    case 0:
+    case _Private\TRIVIUM_TAG_AFTER_SHIFT:
       return NodeGroup::TRIVIUM;
-    case 1:
+    case _Private\TOKEN_TAG_AFTER_SHIFT:
       return NodeGroup::TOKEN;
     default:
       return NodeGroup::SYNTAX;
