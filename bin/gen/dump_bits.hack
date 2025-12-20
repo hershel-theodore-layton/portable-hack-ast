@@ -21,7 +21,7 @@ function dump_bits(mixed $value)[]: mixed {
 
 function format_node(int $v)[]: string {
   return Str\format(
-    '%02b_%08b_%018b_%018b_%018b',
+    '%02b_%08b_%018b_%020b_%020b',
     ($v >> _Private\FIELD_0_OFFSET) & _Private\FIELD_0_MASK,
     ($v >> _Private\FIELD_1_OFFSET) & _Private\FIELD_1_MASK,
     ($v >> _Private\FIELD_2_OFFSET) & _Private\FIELD_2_MASK,
