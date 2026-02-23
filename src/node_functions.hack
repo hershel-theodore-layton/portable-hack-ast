@@ -519,7 +519,7 @@ function node_get_child_at_offset(
         |> _Private\node_id_add($$, 1 + $offset)
         |> $tu->getNodeById($$);
 
-      if ($child_node === NIL) {
+      if ($child_node === NIL || !is_trivium($child_node)) {
         return NIL;
       }
 
