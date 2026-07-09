@@ -687,7 +687,8 @@ function node_get_code_without_leading_or_trailing_trivia(
 
   $node = _Private\cast_away_nil($node);
 
-  $nodes = node_get_descendants($script, $node) ?: vec[$node];
+  $nodes =
+    node_get_descendants($script, $node) |> C\is_empty($$) ? vec[$node] : $$;
   $first = C\find($nodes, $n ==> node_is_token_text_trivium($script, $n));
 
   if ($first is null) {

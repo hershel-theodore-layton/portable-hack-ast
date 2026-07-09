@@ -1,4 +1,4 @@
-FROM hersheltheodorelayton/hhvm-full:25.11.0
+FROM hersheltheodorelayton/hhvm-full:beta
 
 WORKDIR /mnt/project
 
