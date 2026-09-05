@@ -6,7 +6,7 @@ use namespace HTL\Pha;
 
 final class Index<Tnode as Node, Tkind as Kind> {
   /**
-   * @param $nodes are sorted by kind, then sub sorted by source order.
+   * @param $nodes are sorted by kind, then by source order within each kind.
    * @param $ranges values are (start, length).
    *   The order is interned string numeric order, but this is not relied upon.
    */

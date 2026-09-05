@@ -4,9 +4,9 @@ _Query the Hack AST in a light and portable manner._
 
 ### Quick start
 
-[Just want linters? look here :)](https://github.com/hershel-theodore-layton/portable-hack-ast-linters)
+[Just want linters? Look here :)](https://github.com/hershel-theodore-layton/portable-hack-ast-linters)
 
-Want to build your own tools on top of the AST?:
+Want to build your own tools on top of the AST?
  - `composer require hershel-theodore-layton/portable-hack-ast hershel-theodore-layton/portable-hack-ast-extras`
  - Read this README
  - Familiarize yourself with [Node kinds](./src/Kind.hack) and [Members](./src/Member.hack)
@@ -58,16 +58,16 @@ $rendered = Rendering\to_html($something_untrusted, true);
 
 Oh no, you thought you were enabling the cache, but you turned off safety checks!
 Luckily this was caught in code review, but this could have ended badly.
-Let's `grep` around to see if there are other instances of api confusion.
+Let's `grep` around to see if there are other instances of API confusion.
 
 You will quickly hit a stumbling block, `Rendering\to_html(...)` is called from
 hundreds of thousands of places, many of which only pass a `Renderable`.
 Oh, let's make the regex more complex to find results with multiple arguments.
 And while we are at it, let's also exclude `to_html(..., false, ...)`.
 Good luck with that! If the first argument is complex, you are stuck.
-You will spend most your regex trying to skip it, but that is almost impossible.
+You will spend most of your regex trying to skip it, but that is almost impossible.
 
-Take a step back and use the right too for the job.
+Take a step back and use the right tool for the job.
 There should be a tool for this, but [pfff](https://github.com/facebookarchive/pfff) got archived in 2017.
 Let's build our own, it can't be that much work, can it?
 The example is a little large for a README, but very illustrative.
@@ -110,7 +110,7 @@ function check_for_unsafe_render_calls(
 ```
 
 We start this function with a `Script`, a `SyntaxIndex`, and a `Resolver`:
- - `Script` respresents your source code. We can query it to get insights.
+ - `Script` represents your source code. We can query it to get insights.
  - `SyntaxIndex` is used for getting a list of function calls in the Script.
  - `Resolver` will figure out which function you are calling, because namespaces.
 
@@ -126,10 +126,10 @@ Combine these parts step by step to get `$is_calling_to_html` and `$is_unsafe`.
 
 `Pha\index_get_nodes_by_kind(...)` picks all the function calls from a file.
 We filter out only those ones we are interested in.
-Transform the output for easy viewing, and you have your codebase wide search ready.
+Transform the output for easy viewing, and you have your codebase-wide search ready.
 
 We have just written our very own super specialized linter.
-For some more examples of what you can do with an ast, see [`HTL\PhaLinters`](https://github.com/hershel-theodore-layton/portable-hack-ast-linters)
+For some more examples of what you can do with an AST, see [`HTL\PhaLinters`](https://github.com/hershel-theodore-layton/portable-hack-ast-linters)
 
 ### Getting started
 
@@ -154,7 +154,7 @@ $deserialized = $ready_to_serialize;
 $ctx = Pha\materialize_context($deserialized['context']);
 Pha\materialize_script($deserialized['script'], $ctx);
 
-// resolver, and pragma_map require you install portable-hack-ast-extras
+// resolver and pragma_map require you to install portable-hack-ast-extras
 // This allows you to resolve names to the namespace they belong in.
 $resolver = Pha\create_name_resolver($script, $syntax_index, $token_index);
 // This gives you all the `pragma()` declarations and `<<Pragma()>>` annotations.
@@ -162,11 +162,11 @@ $pragma_map = Pha\create_pragma_map($script, $syntax_index);
 ```
 
 The full API for interacting with all these values can be found in [node_functions.hack](./src/node_functions.hack).
-There are about 65 functions at the time of writing, so with some auto complete,
+There are about 65 functions at the time of writing, so with some autocomplete,
 you should get the hang of it quite quickly.
 
 For definitions of kinds and members, see [Kind.hack](./src/Kind.hack) and [Member.hack](./src/Member.hack).
-If the definitions are incomplete for your hhvm version, you can create them at runtime.
+If the definitions are incomplete for your HHVM version, you can create them at runtime.
  - `Pha\syntax_kind_from_string(...)`
  - `Pha\token_kind_from_string(...)`
  - `Pha\trivium_kind_from_string(...)`
@@ -176,7 +176,7 @@ If the definitions are incomplete for your hhvm version, you can create them at 
 
 This library pulls out all the stops in the name of performance. You can parse
 very large codebases and keep all the Scripts in memory, no sweat[^2].
-HHAST is the target of this benchmark, since it contains a lot of codegenned
+HHAST is the target of this benchmark, since it contains a lot of generated
 definitions, which adequately represent codebases with large classes.
 
 ```
@@ -196,8 +196,8 @@ HHAST, even with HHAST's `.var/cache/hhvm/hhast/parser-cache` mechanism enabled.
 
 "Portable" Hack AST, what does portable mean?
 
-This codebase is portable between Hack AST versions (read hhvm versions).
-Everything in the `HTL\` namespace supports a wide range of hhvm versions.
+This codebase is portable between Hack AST versions (read HHVM versions).
+Everything in the `HTL\` namespace supports a wide range of HHVM versions.
 In order to do that with an AST library, you can't hardcode definitions.
 The structure and layout of the AST is dynamically learned at runtime.
 
@@ -208,7 +208,7 @@ They can be deserialized and materialized without the loss of information.
 This operation is very quick, and may even be used to "swap" large Scripts
 to disk if memory pressure becomes too large.
 
-This code is simple enough to be ported to a different language all together.
+This code is simple enough to be ported to a different language altogether.
 95% of the code performs simple operations, which would translate 1-to-1 to any
 other programming language which would perform better than Hack on HHVM.
 The performance of Pha on HHVM suffices for codebases I work with (for now).
@@ -256,8 +256,8 @@ forward I can take to achieve more performance in a couple of days.
 2. Pha can represent an invalid Hack file.
    - This makes it particularly suitable for as-you-type tooling.
    - HHAST will break type invariants when your code is not syntactically correct.
-3. Pha is portable between different versions/builds of hhvm.
-   - This unshackles the linters you get from the version of hhvm you are running.
+3. Pha is portable between different versions/builds of HHVM.
+   - This unshackles the linters you get from the version of HHVM you are running.
 4. Pha doesn't suppress errors or perform unsafe casts.
    - Sound types for the win!!!
 5. Pha runs in the pure context, read `[]`.
@@ -299,7 +299,7 @@ is often about 10 &times; the source size in bytes[^5].
 The Context will also need to be serialized, but a Context is rarely unique.
 If you deduplicate them by `context_hash`, the storage requirements fade away.
 
-[^1]: Some some cases, you do think about this, when the precedence is weird.
+[^1]: In some cases, you do think about this, when the precedence is weird.
 [^2]: In order to verify these claims, you will have to `git checkout`
       [this commit](https://github.com/hershel-theodore-layton/portable-hack-ast/blob/86e57bd5ea999c57facb790ed61179e4011f5623/bin/mem_usage.hack)
       and run mem_usage.hack in repo auth mode.

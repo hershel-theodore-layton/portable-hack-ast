@@ -64,8 +64,8 @@ final class ExpectObj<T> {
   }
 
   /**
-   * This implements a knock-off json encoding with hex encoded integers.
-   * Reason being, hhvm 4.102 doesn't support json_encode_pure.
+   * This implements a knock-off JSON encoding with hex-encoded integers.
+   * This is because HHVM 4.102 doesn't support json_encode_pure.
    */
   private static function serializeValue(mixed $value)[]: string {
     if ($value is null) {

@@ -7,7 +7,7 @@ use namespace HH\Lib\{Dict, Vec};
  * Get the children of syntax and list nodes.
  * For other nodes, the children are implied:
  *  - Token -> All trivia are sequential
- *  - Trivium / Missing -> Has no children
+ *  - Trivium / Missing -> Have no children
  *
  * @return (dict<parent_id, (start, end)>, vec<siblings>)
  */

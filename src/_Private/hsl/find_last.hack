@@ -18,5 +18,5 @@ function find_lastx<T>(
     }
   }
 
-  invariant_violation('%s: Could\'t find the target value.', __FUNCTION__);
+  invariant_violation('%s: Couldn\'t find the target value.', __FUNCTION__);
 }

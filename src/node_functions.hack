@@ -82,7 +82,7 @@ function as_token_or_nil(NillableNode $node)[]: NillableToken {
 }
 
 /**
- * @throws If $node is not Trivium.
+ * @throws Iff $node is not Trivium.
  */
 function as_trivium(NillableNode $node)[]: Trivium {
   $ret = as_trivium_or_nil($node);
@@ -201,7 +201,7 @@ function create_matcher(
 /**
  * An alternative to `syntax_member($script, $node, $member)`.
  * This version returns a callable that takes `$node`.
- * It can also pick the "right" member to create on the fly polymorphism.
+ * It can also pick the "right" member to enable polymorphism on the fly.
  *
  * ```
  * $get_clauses = create_member_accessor($script, dict[
@@ -438,7 +438,7 @@ function list_get_items_of_children(
 
 /**
  * Ancestors are returned in opposite source order.
- * So the first node is the parent, the second is the grand parent, etc.
+ * So the first node is the parent, the second is the grandparent, etc.
  *
  * Special case: SCRIPT_NODE is its own parent, but this function has to have a
  * termination condition. For this reason, the ancestor chain is terminated at
@@ -534,7 +534,7 @@ function node_get_child_at_offset(
         return NIL;
       }
 
-      // slow path: Can not jump to child, must verify every intermediate node
+      // slow path: Cannot jump to child, must verify every intermediate node
       // is a trivium, to ensure the trivium returned is a child of `$node`.
       $parent_id = node_get_id($node);
       $child_id = $parent_id;
@@ -642,7 +642,7 @@ function node_get_code(Script $script, NillableNode $node)[]: string {
 }
 
 /**
- * Returns the code with all the tokens glued together, (no comments / whitespace).
+ * Returns the code with all the tokens glued together (no comments or whitespace).
  *
  * The text returned is not code that can be reparsed.
  * This canonicalizes code by stripping comments and whitespace, but in doing so
@@ -980,7 +980,7 @@ function node_get_parent(Script $script, Node $node)[]: Node {
       |> $tu->getNodeByIdx($$);
   }
 
-  // slow path: Can not find my parent from bits, must find myself by selecting
+  // slow path: Cannot find my parent from bits, must find myself by selecting
   // an ancestor each time. The last ancestor before me is my parent.
   $source_order = node_get_source_order($node);
   $next = SCRIPT_NODE;
@@ -1020,7 +1020,7 @@ function node_get_source_range(Script $script, Node $node)[]: SourceRange {
     // My reasoning goes:
     //  1. Every Syntax (except for Missing) has at least one member.
     //  2. Each of these members is either a Syntax or a Token.
-    //  3. If the last member is a Syntax, goto 1.
+    //  3. If the last member is a Syntax, go to 1.
     //  4. You'll now either have a Token or a missing.
     //  5. If you have a Token, it will always have a token-text-trivium.
     //  6. If you have a Missing, and there is no end-of-file token after you,
@@ -1041,7 +1041,7 @@ function node_get_source_range(Script $script, Node $node)[]: SourceRange {
 
 /**
  * The ancestors are returned in opposite source order,
- * so parents precede grand parents, grand parents precede great grand parents.
+ * so parents precede grandparents, grandparents precede great-grandparents.
  *
  * The returned ancestors contain only Syntaxes, any ancestors that are not
  * Syntaxes are skipped.
@@ -1321,7 +1321,8 @@ function syntax_get_parent(Script $script, Syntax $node)[]: Syntax {
 /**
  * @see `create_member_accessor`, which is preferred over this function.
  *      `syntax_member` rediscovers offsets with each invocation.
- *      `create_member_accessor` precomputes offsets string comparisons.
+ *      `create_member_accessor` precomputes offsets instead of doing string
+ *      comparisons.
  */
 function syntax_member(Script $script, Syntax $node, Member $member)[]: Node {
   $ii = 0;

@@ -50,8 +50,8 @@ const int LIST_OR_MISSING_TAG_AFTER_SHIFT =
 const int MAX_INTERNED_STRING = FIELD_1_MASK;
 
 /**
- * Careful, if `$kind` is `KIND_NODE_LIST` or `KIND_MISSING`, you'll get a non
- * matching identity.
+ * Careful, if `$kind` is `KIND_NODE_LIST` or `KIND_MISSING`, you'll get a
+ * non-matching identity.
  */
 function create_syntax_identity(
   Script $script,

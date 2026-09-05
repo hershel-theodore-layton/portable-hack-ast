@@ -10,7 +10,7 @@ function create_intermediate_list(
   $list = $next->getItem();
 
   // Could be a dict or a vec, depending on json_decode() options...
-  // This is a square bracket array literal in the json,
+  // This is a square bracket array literal in the JSON,
   // but the default for `\json_decode()` remains to create a dict.
   // If users decode from `HH\ffp_parse_string_native(...)` and json_decode()
   // with `\JSON_DECODE_HACK_ARRAYS`, we'd see vecs here.

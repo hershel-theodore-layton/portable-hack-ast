@@ -46,7 +46,7 @@ async function node_functions_test_async(
       'test_node_get_elaborated_group',
       ()[]: vec<(Pha\Node, Pha\NodeElaboratedGroup)> ==> {
         $math = $fixtures->math;
-        // Future Test: Access a Missing to get `::MISSING`.
+        // Future test: Access a Missing node to get `::MISSING`.
         return vec[
           tuple(Pha\SCRIPT_NODE, Pha\NodeElaboratedGroup::SYNTAX),
           tuple($math->declarationList, Pha\NodeElaboratedGroup::LIST),
@@ -1180,7 +1180,8 @@ async function parse_fixture_async(
 
   // The tests for tiny.hack were written before the license header
   // and the trailing newline was added.
-  // This chop chop take center restores the tests without altering them.
+  // This operation, which chops and takes the center, restores the tests
+  // without altering them.
   if ($fixture === '002_tiny.hack') {
     $source = Str\split($source, "\n")[1];
   }

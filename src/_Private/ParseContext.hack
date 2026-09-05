@@ -134,7 +134,7 @@ final class ParseContext {
 
   /**
    * The encoding does not need to make sense, as long as it is not ambiguous.
-   * json_encode_pure is wasn't available in 4.102, so something inline was done.
+   * json_encode_pure wasn't available in 4.102, so something inline was done.
    * Changing this breaks backwards compatibility with VERSION=2 serialization.
    * This can be removed when VERSION=3 comes around.
    *

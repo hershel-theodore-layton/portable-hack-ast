@@ -21,7 +21,7 @@ function dump_bits(mixed $value)[]: mixed {
   return $value;
 }
 
-// Erase type information for hhvm 25.6+.
+// Erase type information for HHVM 25.6+.
 function mix(mixed $mixed)[]: mixed {
   return $mixed;
 }

@@ -1,11 +1,11 @@
-Some made up syntax for a made up documentation language.
+Some made-up syntax for a made-up documentation language.
 This describes how nodes are encoded in create_node().
 
 abstract struct Node(T1, T2) {
   field: {
     size: 2,
     name: group,
-    purpose: Tags Syntax (10), Token (01), Trivium (00), and List/Missing (11).
+    purpose: Tags: Syntax (10), Token (01), Trivium (00), and List/Missing (11).
   },
   union: {
     size: 8,
@@ -33,30 +33,30 @@ final struct List extends Node(ChildCount, ListData) {}
 final struct Missing extends Node(Zero(2), Zero(36)) {}
 
 embedded struct SyntaxData {
-  embed ParentIndex(14),
+  embed ParentDiff(14),
   embed FirstChildSiblingId
 }
 
 embedded struct TokenData {
-  embed ParentIndex(14),
+  embed ParentDiff(14),
   embed TokenTextTriviumOffset
 }
 
 embedded struct TriviumData {
-  embed ParentIndex(10),
+  embed ParentDiff(10),
   embed SourceByteOffset
 }
 
 embedded struct ListData {
-  embed ParentIndex(14),
+  embed ParentDiff(14),
   embed ChildCount
 }
 
 embedded struct Kind {
   field: {
-    size 8,
+    size: 8,
     name: kind,
-    purpose: The InternedString<Kind> which uniquely identifies the kind of this
+    purpose: The InternedString<Kind> that uniquely identifies the kind of this
              Node when combined with the field "group".
   }
 }
@@ -69,7 +69,7 @@ embedded struct ParentDiff(T) {
              its parent. In special cases, this value is `0`. For example,
              SCRIPT_NODE is its own parent, so the distance is 0. When the
              difference with the parent cannot be encoded in the bit width of
-             this field, the value will be set to 0. The signals to the consumers
+             this field, the value will be set to 0. This signals to consumers
              that they must use a slow path to reconstruct the relation with
              their parent.
   },
@@ -112,7 +112,7 @@ embedded struct Zero(T) {
     size: T,
     name: _,
     value: 0,
-    purpose: All zeroed out bytes.
+    purpose: All-zero bytes.
   }
 }
 
@@ -123,12 +123,12 @@ final struct Syntax {
     size: 2,
     name: group,
     value: 10,
-    purpose: Tags Syntax (10), Token (01), Trivium (00), and List/Missing (11).
+    purpose: Tags: Syntax (10), Token (01), Trivium (00), and List/Missing (11).
   },
   field: {
-    size 8,
+    size: 8,
     name: kind,
-    purpose: The InternedString<Kind> which uniquely identifies the kind of this
+    purpose: The InternedString<Kind> that uniquely identifies the kind of this
              Node when combined with the field "group".
   },
   field: {
@@ -138,7 +138,7 @@ final struct Syntax {
              its parent. In special cases, this value is `0`. For example,
              SCRIPT_NODE is its own parent, so the distance is 0. When the
              difference with the parent cannot be encoded in the bit width of
-             this field, the value will be set to 0. The signals to the consumers
+             this field, the value will be set to 0. This signals to consumers
              that they must use a slow path to reconstruct the relation with
              their parent.
   },
@@ -159,12 +159,12 @@ final struct Token {
     size: 2,
     name: group,
     value: 01,
-    purpose: Tags Syntax (10), Token (01), Trivium (00), and List/Missing (11).
+    purpose: Tags: Syntax (10), Token (01), Trivium (00), and List/Missing (11).
   },
   field: {
-    size 8,
+    size: 8,
     name: kind,
-    purpose: The InternedString<Kind> which uniquely identifies the kind of this
+    purpose: The InternedString<Kind> that uniquely identifies the kind of this
              Node when combined with the field "group".
   },
   field: {
@@ -174,7 +174,7 @@ final struct Token {
              its parent. In special cases, this value is `0`. For example,
              SCRIPT_NODE is its own parent, so the distance is 0. When the
              difference with the parent cannot be encoded in the bit width of
-             this field, the value will be set to 0. The signals to the consumers
+             this field, the value will be set to 0. This signals to consumers
              that they must use a slow path to reconstruct the relation with
              their parent.
   },
@@ -195,12 +195,12 @@ final struct Trivium {
     size: 2,
     name: group,
     value: 00,
-    purpose: Tags Syntax (10), Token (01), Trivium (00), and List/Missing (11).
+    purpose: Tags: Syntax (10), Token (01), Trivium (00), and List/Missing (11).
   },
   field: {
-    size 8,
+    size: 8,
     name: kind,
-    purpose: The InternedString<Kind> which uniquely identifies the kind of this
+    purpose: The InternedString<Kind> that uniquely identifies the kind of this
              Node when combined with the field "group".
   },
   field: {
@@ -210,7 +210,7 @@ final struct Trivium {
              its parent. In special cases, this value is `0`. For example,
              SCRIPT_NODE is its own parent, so the distance is 0. When the
              difference with the parent cannot be encoded in the bit width of
-             this field, the value will be set to 0. The signals to the consumers
+             this field, the value will be set to 0. This signals to consumers
              that they must use a slow path to reconstruct the relation with
              their parent.
   },
@@ -231,7 +231,7 @@ final struct List {
     size: 2,
     name: group,
     value: 11,
-    purpose: Tags Syntax (10), Token (01), Trivium (00), and List/Missing (11).
+    purpose: Tags: Syntax (10), Token (01), Trivium (00), and List/Missing (11).
   },
   field: {
     size: 8,
@@ -245,7 +245,7 @@ final struct List {
              its parent. In special cases, this value is `0`. For example,
              SCRIPT_NODE is its own parent, so the distance is 0. When the
              difference with the parent cannot be encoded in the bit width of
-             this field, the value will be set to 0. The signals to the consumers
+             this field, the value will be set to 0. This signals to consumers
              that they must use a slow path to reconstruct the relation with
              their parent.
   },
@@ -266,13 +266,13 @@ final struct Missing {
     size: 2,
     name: group,
     value: 11,
-    purpose: Tags Syntax (10), Token (01), Trivium (00), and List/Missing (11).
+    purpose: Tags: Syntax (10), Token (01), Trivium (00), and List/Missing (11).
   },
   field: {
     size: 8,
     name: _,
     value: 0,
-    purpose: All zeroed out bytes.
+    purpose: All-zero bytes.
   }
   field: {
     size: 14,
@@ -281,7 +281,7 @@ final struct Missing {
              its parent. In special cases, this value is `0`. For example,
              SCRIPT_NODE is its own parent, so the distance is 0. When the
              difference with the parent cannot be encoded in the bit width of
-             this field, the value will be set to 0. The signals to the consumers
+             this field, the value will be set to 0. This signals to consumers
              that they must use a slow path to reconstruct the relation with
              their parent.
   },
@@ -289,7 +289,7 @@ final struct Missing {
     size: 20,
     name: _,
     value: 0,
-    purpose: All zeroed out bytes.
+    purpose: All-zero bytes.
   }
   field: {
     size: 20,
