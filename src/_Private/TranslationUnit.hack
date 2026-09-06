@@ -159,4 +159,5 @@ final class TranslationUnit {
       );
     }
   }
+  // #endregion
 }

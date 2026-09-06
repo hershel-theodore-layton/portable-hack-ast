@@ -420,6 +420,8 @@ function list_get_items_of_children(
       ));
   }
 
+  $function = __FUNCTION__;
+
   return Vec\map(
     node_get_children($script, $node),
     $list_item ==> {
@@ -427,7 +429,7 @@ function list_get_items_of_children(
       _Private\enforce(
         $kind === KIND_LIST_ITEM,
         '%s expected a list with list_items, but found a %s in the list.',
-        __FUNCTION__,
+        $function,
         $kind,
       );
 
