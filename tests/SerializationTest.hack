@@ -2,6 +2,7 @@
 namespace HTL\Pha\Tests;
 
 use namespace HTL\{Pha, TestChain};
+use function json_decode_with_error, json_encode_with_error, var_export;
 
 <<TestChain\Discover>>
 function serialization_test(TestChain\Chain $chain)[]: TestChain\Chain {
@@ -16,8 +17,8 @@ function serialization_test(TestChain\Chain $chain)[]: TestChain\Chain {
           $dematerialized['script'],
           Pha\materialize_context($dematerialized['context']),
         )
-          |> \var_export($$, true),
-      )->toEqual(\var_export($script, true));
+          |> var_export($$, true),
+      )->toEqual(var_export($script, true));
 
       expect(
         ()[] ==> Pha\materialize_script(
@@ -47,8 +48,8 @@ function dematerialize(
 )[defaults]: Pha\ReadyToSerializeScript {
   $_err = null;
   return Pha\dematerialize_script($script)
-    |> \json_encode_with_error($$, inout $_err)
-    |> \json_decode_with_error($$ as string, inout $_err, true)
+    |> json_encode_with_error($$, inout $_err)
+    |> json_decode_with_error($$ as string, inout $_err, true)
     |> shape(
       'context' => $$['context'] as dict<_, _>,
       'context_hash' => $$['context_hash'] as string,

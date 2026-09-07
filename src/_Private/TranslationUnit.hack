@@ -2,6 +2,7 @@
 namespace HTL\Pha\_Private;
 
 use namespace HH\Lib\{Str, Vec};
+use type Exception;
 
 final class TranslationUnit {
   const SOME_LARGE_JUMP = 64;
@@ -151,7 +152,7 @@ final class TranslationUnit {
         $raw['SOURCE_TEXT'] as string,
         $ctx,
       );
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
       throw new PhaException(
         'Failed to materialize this Script.',
         $e->getCode(),

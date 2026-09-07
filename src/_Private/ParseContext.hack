@@ -3,7 +3,8 @@ namespace HTL\Pha\_Private;
 
 use namespace HH\Lib\Str;
 use namespace HTL\Pha;
-use function gettype;
+use type Exception;
+use function gettype, sha1;
 
 final class ParseContext {
   public function __construct(
@@ -81,7 +82,7 @@ final class ParseContext {
   public function getMaterializationHash()[]: string {
     return $this->dematerialize()
       |> static::toHashable($$)
-      |> \sha1($$, false) as string;
+      |> sha1($$, false) as string;
   }
 
   // Memoize because this value can be shared across many scripts.
@@ -126,7 +127,7 @@ final class ParseContext {
       );
     } catch (PhaException $e) {
       throw $e;
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
       throw
         new PhaException('Could not materialize Context.', $e->getCode(), $e);
     }

@@ -3,6 +3,9 @@ namespace HTL\Pha\Tests;
 
 use namespace HH\Lib\{File, Vec};
 use namespace HTL\Pha;
+use type HTL\Pragma\Pragmas;
+
+<<file: Pragmas(vec['PhaLinters', 'digest:ddb869b22b1072d3d0db'])>>
 
 async function math_001_async()[defaults]: Awaitable<void> {
   $file = File\open_read_only(__DIR__.'/../fixtures/001_math.hack');

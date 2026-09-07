@@ -2,7 +2,7 @@
 namespace HTL\Pha\Tests;
 
 use namespace HH\Lib\{File, Str};
-use function escapeshellarg, md5, shell_exec;
+use function apc_fetch, apc_store, escapeshellarg, exec, md5, shell_exec;
 
 async function file_put_hackfmt_async(
   string $path,
@@ -14,7 +14,7 @@ async function file_put_hackfmt_async(
   $md5 = md5($source);
 
   $success = false;
-  $previous_md5 = \apc_fetch($apc_key, inout $success);
+  $previous_md5 = apc_fetch($apc_key, inout $success);
 
   if ($success === true && $md5 === $previous_md5) {
     return;
@@ -31,5 +31,20 @@ async function file_put_hackfmt_async(
   }
 
   shell_exec('hackfmt -i '.escapeshellarg($path));
-  \apc_store($apc_key, $md5);
+  if (Str\contains($source, "vec['PhaLinters', 'digest:']")) {
+    $output = vec[];
+    $status = 0;
+    exec(
+      escapeshellarg(
+        __DIR__.
+        '/../../vendor/hershel-theodore-layton/portable-hack-ast-linters-server/bin/pha-sign-hack-source.sh',
+      ).
+      ' '.
+      escapeshellarg($path),
+      inout $output,
+      inout $status,
+    );
+    invariant($status === 0, 'Could not sign generated test');
+  }
+  apc_store($apc_key, $md5);
 }
