@@ -980,7 +980,26 @@ async function node_functions_test_async(
       'test_patches_apply',
       ()[]: vec<(vec<Pha\Patch>, string)> ==> {
         $tiny = $fixtures->tiny;
+        $left_paren = Pha\syntax_member(
+          $tiny->script,
+          $tiny->functionDeclarationHeader,
+          Pha\MEMBER_FUNCTION_LEFT_PAREN,
+        );
         return vec[
+          tuple(
+            vec[
+              Pha\patch_node($left_paren, '('),
+              Pha\patch_node($tiny->paramaterList, 'int $a'),
+            ],
+            'function tiny(int $a)[]: void {}',
+          ),
+          tuple(
+            vec[
+              Pha\patch_node($tiny->paramaterList, 'int $a'),
+              Pha\patch_node($left_paren, '('),
+            ],
+            'function tiny(int $a)[]: void {}',
+          ),
           tuple(
             vec[Pha\patch_node($tiny->functionName, 'noop')],
             'function noop()[]: void {}',
@@ -1210,7 +1229,83 @@ async function node_functions_test_async(
         expect(Pha\node_get_code_without_leading_or_trailing_trivia($script, $node))
           ->toEqual($expected);
       },
-    );
+
+    )
+    ->testWith3Params(
+      'test_source_range_overlaps_boundaries',
+      ()[]: vec<((int, ?int), (int, ?int), bool)> ==> vec[
+        tuple(tuple(0, 18), tuple(0, 0), false),
+        tuple(tuple(0, 18), tuple(18, 18), false),
+        tuple(tuple(0, 18), tuple(9, 9), true),
+        tuple(tuple(0, 18), tuple(19, 19), false),
+        tuple(tuple(0, 0), tuple(0, 0), false),
+        tuple(tuple(0, 0), tuple(1, 1), false),
+        tuple(tuple(0, 18), tuple(18, 20), false),
+        tuple(tuple(0, 18), tuple(19, 20), false),
+        tuple(tuple(0, 18), tuple(17, 20), true),
+        tuple(tuple(0, 18), tuple(0, 18), true),
+        tuple(tuple(0, 18), tuple(2, 16), true),
+        tuple(tuple(0, null), tuple(0, 0), false),
+        tuple(tuple(0, null), tuple(9, 9), true),
+        tuple(tuple(0, null), tuple(0, null), true),
+        tuple(tuple(0, 18), tuple(18, null), false),
+      ],
+      ((int, ?int) $a, (int, ?int) $b, bool $expected)[] ==> {
+        list($a_range, $b_range) = Vec\map(
+          vec[$a, $b],
+          $range ==> {
+            list($start, $end) = $range;
+            return tuple(
+              Pha\_Private\source_byte_offset_from_int($start),
+              $end is null ? null : Pha\_Private\source_byte_offset_from_int($end),
+            )
+              |> Pha\_Private\source_range_hide($$);
+          },
+        );
+        expect(Pha\source_range_overlaps($a_range, $b_range))->toEqual($expected);
+        expect(Pha\source_range_overlaps($b_range, $a_range))->toEqual($expected);
+      },
+    )
+    ->test('test_patches_insert_at_replacement_start', ()[] ==> {
+      list($script, $_ctx) = Pha\parse(
+        'function f(): int { return 1; }',
+        Pha\create_context(),
+      );
+      $function = C\onlyx(Pha\index_get_nodes_by_kind(
+        Pha\create_syntax_kind_index($script),
+        Pha\KIND_FUNCTION_DECLARATION,
+      ));
+      $attributes = Pha\syntax_member(
+        $script,
+        $function,
+        Pha\MEMBER_FUNCTION_ATTRIBUTE_SPEC,
+      );
+      $header = Pha\syntax_member(
+        $script,
+        $function,
+        Pha\MEMBER_FUNCTION_DECLARATION_HEADER,
+      );
+      $insert = Pha\patch_node($attributes, "<<__Memoize>>\n");
+      $expected = "<<__Memoize>>\nfunction cached(): int { return 1; }";
+
+      foreach (
+        vec[
+          Pha\patch_node($header, 'function cached(): int '),
+          Pha\patch_node(Pha\SCRIPT_NODE, 'function cached(): int { return 1; }'),
+        ] as $replace
+      ) {
+        foreach (vec[vec[$insert, $replace], vec[$replace, $insert]] as $patches) {
+          expect(Pha\patches_apply(Pha\patches($script, ...$patches)))
+            ->toEqual($expected);
+          expect(
+            Pha\patches_combine_without_conflict_resolution(
+              Vec\map($patches, $patch ==> Pha\patches($script, $patch)),
+            )
+              |> Pha\patches_apply($$),
+          )->toEqual($expected);
+        }
+      }
+    });
 }
 
 async function parse_fixture_async(

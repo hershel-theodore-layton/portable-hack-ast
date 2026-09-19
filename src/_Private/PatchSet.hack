@@ -11,8 +11,13 @@ final class PatchSet {
     private string $beforeText,
     vec<Replacement> $replacements,
   )[] {
-    $this->replacements =
-      Vec\sort_by($replacements, $r ==> $r->getStartOffset());
+    $this->replacements = Vec\sort_by(
+      $replacements,
+      $r ==> tuple(
+        $r->getStartOffset(),
+        $r->getEndOffset() === $r->getStartOffset() ? 0 : 1,
+      ),
+    );
     $shifted = Vec\drop($this->replacements, 1);
     $with_next = Vec\zip($this->replacements, $shifted);
 

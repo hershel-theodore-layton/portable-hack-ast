@@ -1242,16 +1242,13 @@ function source_range_overlaps(SourceRange $a, SourceRange $b)[]: bool {
   $a = _Private\source_range_reveal($a);
   $b = _Private\source_range_reveal($b);
 
-  if (_Private\source_byte_offset_is_less_than($b[0], $a[0])) {
-    $tmp = $a;
-    $a = $b;
-    $b = $tmp;
-  }
-
   $a_end = $a[1];
+  $b_end = $b[1];
 
-  return
-    $a_end is null || _Private\source_byte_offset_is_less_than($b[0], $a_end);
+  return (
+    $a_end is null || _Private\source_byte_offset_is_less_than($b[0], $a_end)
+  ) &&
+    ($b_end is null || _Private\source_byte_offset_is_less_than($a[0], $b_end));
 }
 
 function source_range_to_line_and_column_numbers(
