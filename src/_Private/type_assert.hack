@@ -1,15 +1,19 @@
 /** portable-hack-ast is MIT licensed, see /LICENSE. */
 namespace HTL\Pha\_Private;
 
+use namespace HH\Lib\Str;
 use namespace HTL\Pha;
 
-// These functions assert to AnyArray<_, _> to survive fb_compact_serialize...
+// These functions assert to AnyArray<_, _> to survive fb_compact_serialize,
+// order json_encode_pure. fb_compact_serialize erases the array kind and
+// json_encode_pure turns `dict[3 => X]` into `dict['3' => X]`.
 
 function as_dict_of_node_id_to_int(mixed $raw)[]: dict<NodeId, int> {
   $out = dict[];
 
   foreach (($raw as AnyArray<_, _>) as $k => $v) {
-    $out[node_id_from_int($k as int)] = $v as int;
+    $key = $k is int ? $k : Str\to_int($k) as nonnull;
+    $out[node_id_from_int($key)] = $v as int;
   }
 
   return $out;
