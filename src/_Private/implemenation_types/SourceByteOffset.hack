@@ -22,5 +22,5 @@ function source_byte_offset_is_less_than_or_equal(
   SourceByteOffset $a,
   SourceByteOffset $b,
 )[]: bool {
-  return $a < $b;
+  return $a <= $b;
 }

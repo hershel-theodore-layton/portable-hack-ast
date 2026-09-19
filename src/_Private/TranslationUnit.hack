@@ -21,12 +21,12 @@ final class TranslationUnit {
     private string $sourceText,
     private ParseContext $ctx,
   )[] {
-    $line_breaks = vec[source_byte_offset_from_int(0)];
+    $line_breaks = vec[];
 
     $byte = 0;
     foreach (Str\split($sourceText, "\n") as $line) {
-      $byte += Str\length($line) + 1;
       $line_breaks[] = source_byte_offset_from_int($byte);
+      $byte += Str\length($line) + 1;
     }
 
     $this->lineBreaks = $line_breaks;
@@ -54,6 +54,10 @@ final class TranslationUnit {
 
   public function getLineBreaks()[]: vec<SourceByteOffset> {
     return $this->lineBreaks;
+  }
+
+  public function getSourceEndOffset()[]: SourceByteOffset {
+    return Str\length($this->sourceText) |> source_byte_offset_from_int($$);
   }
 
   public function getNodeById(NodeId $node_id)[]: NillableNode {

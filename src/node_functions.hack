@@ -1258,10 +1258,11 @@ function source_range_to_line_and_column_numbers(
   Script $script,
   SourceRange $range,
 )[]: LineAndColumnNumbers {
-  $breaks = _Private\translation_unit_reveal($script)->getLineBreaks();
+  $tu = _Private\translation_unit_reveal($script);
+  $breaks = $tu->getLineBreaks();
 
   list($start, $end_exclusive) = _Private\source_range_reveal($range);
-  $end_exclusive ??= C\lastx($breaks);
+  $end_exclusive ??= $tu->getSourceEndOffset();
 
   $count = C\count($breaks);
   $i = $count - 1;

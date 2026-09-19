@@ -854,11 +854,11 @@ async function node_functions_test_async(
       ()[]: vec<(Pha\Node, (int, int), (int, int))> ==> {
         $math = $fixtures->math;
         return vec[
-          tuple(Pha\SCRIPT_NODE, tuple(0, 0), tuple(6, 1)),
-          tuple($math->declarationList, tuple(0, 0), tuple(6, 1)),
+          tuple(Pha\SCRIPT_NODE, tuple(0, 0), tuple(6, 0)),
+          tuple($math->declarationList, tuple(0, 0), tuple(6, 0)),
           tuple($math->licenseComment, tuple(0, 0), tuple(0, 55)),
-          tuple($math->newlineAfterLicenseComment, tuple(0, 55), tuple(0, 56)),
-          tuple($math->functionDeclaration, tuple(1, 34), tuple(5, 2)),
+          tuple($math->newlineAfterLicenseComment, tuple(0, 55), tuple(1, 0)),
+          tuple($math->functionDeclaration, tuple(2, 0), tuple(6, 0)),
           tuple($math->missingTypeParameterList, tuple(3, 13), tuple(3, 13)),
           tuple(
             $math->functionDeclarationHeaderLeftParen,
@@ -867,7 +867,7 @@ async function node_functions_test_async(
           ),
           tuple($math->parameterList, tuple(3, 14), tuple(3, 28)),
           tuple($math->parameterA, tuple(3, 14), tuple(3, 20)),
-          tuple($math->returnStatement, tuple(3, 39), tuple(4, 38)),
+          tuple($math->returnStatement, tuple(4, 0), tuple(5, 0)),
         ];
       },
       (
@@ -881,6 +881,49 @@ async function node_functions_test_async(
             |> Pha\source_range_to_line_and_column_numbers($script, $$)
             |> tuple($$->getStart(), $$->getEnd()),
         )->toEqual(tuple($start, $end));
+      },
+    )
+    ->testWith2Params(
+      'test_node_get_line_and_column_numbers_at_line_start',
+      ()[] ==> vec[tuple('', 0), tuple('  ', 2)],
+      (string $indent, int $column)[] ==> {
+        $source = "function f(): void {\n".$indent."return;\n}";
+        list($script, $_ctx) = Pha\parse($source, Pha\create_context());
+        $token = C\onlyx(Pha\index_get_nodes_by_kind(
+          Pha\create_token_kind_index($script),
+          Pha\KIND_RETURN,
+        ));
+        $text = Pha\token_get_text_trivium($script, $token);
+        expect(Pha\node_get_code($script, $text))->toEqual('return');
+        $position = Pha\node_get_line_and_column_numbers($script, $text);
+        expect($position->getStart())->toEqual(tuple(1, $column));
+        expect($position->getEnd())->toEqual(tuple(1, $column + 6));
+      },
+    )
+    ->testWith2Params(
+      'test_node_get_line_and_column_numbers_at_eof',
+      ()[]: vec<(string, (int, int))> ==> vec[
+        tuple('', tuple(0, 0)),
+        tuple("\n", tuple(1, 0)),
+        tuple('function f(): void {}', tuple(0, 21)),
+        tuple("function f(): void {}\n", tuple(1, 0)),
+        tuple("function f(): void {}\n\n", tuple(2, 0)),
+        tuple("function f(): void {}\r\n", tuple(1, 0)),
+      ],
+      (string $source, (int, int) $end)[] ==> {
+        list($script, $_ctx) = Pha\parse($source, Pha\create_context());
+        $token = C\onlyx(Pha\index_get_nodes_by_kind(
+          Pha\create_token_kind_index($script),
+          Pha\KIND_END_OF_FILE_TOKEN,
+        ));
+        $text = Pha\token_get_text_trivium($script, $token);
+        expect(Pha\node_get_code($script, $text))->toEqual('');
+        $position = Pha\node_get_line_and_column_numbers($script, $text);
+        expect($position->getStart())->toEqual($end);
+        expect($position->getEnd())->toEqual($end);
+        $position = Pha\node_get_line_and_column_numbers($script, Pha\SCRIPT_NODE);
+        expect($position->getStart())->toEqual(tuple(0, 0));
+        expect($position->getEnd())->toEqual($end);
       },
     )
     ->testWith2Params(
