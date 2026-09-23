@@ -7,7 +7,7 @@ use namespace HTL\Pha;
 function create_intermediate_trivia(
   int $id,
   int $count,
-  dict<arraykey, mixed> $trivia,
+  vec_or_dict<arraykey, mixed> $trivia,
 )[]: vec<Intermediate> {
   $out = vec[];
 

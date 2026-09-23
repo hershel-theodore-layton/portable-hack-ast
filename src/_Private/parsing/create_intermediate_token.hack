@@ -9,8 +9,8 @@ function create_intermediate_token(
   int $id,
 )[]: (Intermediate, vec<Intermediate>) {
   $token = $next->getItem()['token'] as dict<_, _>;
-  $leading_raw = $token['leading'] as dict<_, _>;
-  $trailing_raw = $token['trailing'] as dict<_, _>;
+  $leading_raw = $token['leading'] as vec_or_dict<_, _>;
+  $trailing_raw = $token['trailing'] as vec_or_dict<_, _>;
 
   $intermediate = $next->createToken(
     $id,
