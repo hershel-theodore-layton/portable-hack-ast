@@ -2,15 +2,15 @@
 namespace HTL\Pha\_Private;
 
 use namespace HH\Lib\{C, Str};
-use namespace HTL\Pha;
+use namespace HTL\{HH4Shim, Pha};
 
 function create_intermediate_token(
   Wrapped $next,
   int $id,
 )[]: (Intermediate, vec<Intermediate>) {
   $token = $next->getItem()['token'] as dict<_, _>;
-  $leading_raw = $token['leading'] as vec_or_dict<_>;
-  $trailing_raw = $token['trailing'] as vec_or_dict<_>;
+  $leading_raw = HH4Shim\to_mixed($token['leading']) as vec_or_dict<_>;
+  $trailing_raw = HH4Shim\to_mixed($token['trailing']) as vec_or_dict<_>;
 
   $intermediate = $next->createToken(
     $id,
