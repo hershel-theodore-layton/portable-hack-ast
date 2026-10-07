@@ -776,6 +776,25 @@ async function node_functions_test_async(
         expect($get_member($node))->toEqual($result);
       },
     )
+    ->test('test_enum_class_label_members', ()[] ==> {
+      list($script, $_) = Pha\parse(
+        'function f(): void { Thing#Label; }',
+        Pha\create_context(),
+      );
+      $label = Pha\create_syntax_kind_index($script)
+        |> Pha\index_get_nodes_by_kind($$, Pha\KIND_ENUM_CLASS_LABEL)
+        |> C\onlyx($$);
+      foreach (
+        vec[
+          tuple(Pha\MEMBER_ENUM_CLASS_LABEL_QUALIFIER, 'Thing'),
+          tuple(Pha\MEMBER_ENUM_CLASS_LABEL_HASH, '#'),
+          tuple(Pha\MEMBER_ENUM_CLASS_LABEL_EXPRESSION, 'Label'),
+        ] as list($member, $expected)
+      ) {
+        $node = Pha\create_member_accessor($script, $member)($label);
+        expect(Pha\node_get_code_compressed($script, $node))->toEqual($expected);
+      }
+    })
     ->test('test_create_member_accessor_unknown_node', ()[] ==> {
       $math = $fixtures->math;
       $script = $math->script;

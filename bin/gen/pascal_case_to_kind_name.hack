@@ -26,6 +26,7 @@ function pascal_case_token_kind_name(string $string)[]: string {
 
   $fixup_implicit_expressions = (string $name) ==> C\contains_key(
     keyset[
+      'enum_class_label_expression',
       'literal_expression',
       'prefixed_string_expression',
       'pipe_variable_expression',
