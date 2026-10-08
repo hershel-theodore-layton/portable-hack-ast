@@ -1305,33 +1305,33 @@ async function node_functions_test_async(
         }
       }
     })
-    ->test('test_patch_token_with_leading_and_trailing_comments', ()[] ==> {
-      list($script, $_ctx) = Pha\parse(
-        "<?hh function\n/* leading */ f /* trailing */(): void {}",
-        Pha\create_context(),
-      );
-      $name = C\findx(
-        Pha\script_get_tokens($script),
-        $node ==> Pha\node_get_code_without_leading_or_trailing_trivia(
-          $script,
-          $node,
-        ) ===
-          'f',
-      );
-      foreach (
-        dict[
-          Pha\RetainTrivia::NEITHER => 'g',
-          Pha\RetainTrivia::LEADING => '/* leading */ g',
-          Pha\RetainTrivia::TRAILING => 'g /* trailing */',
-          Pha\RetainTrivia::BOTH => '/* leading */ g /* trailing */',
-        ] as $mode => $replacement
-      ) {
+    ->testWith2Params(
+      'test_patch_token_with_leading_and_trailing_comments',
+      ()[]: vec<(Pha\RetainTrivia, string)> ==> vec[
+        tuple(Pha\RetainTrivia::NEITHER, 'g'),
+        tuple(Pha\RetainTrivia::LEADING, '/* leading */ g'),
+        tuple(Pha\RetainTrivia::TRAILING, 'g /* trailing */'),
+        tuple(Pha\RetainTrivia::BOTH, '/* leading */ g /* trailing */'),
+      ],
+      (Pha\RetainTrivia $mode, string $replacement)[] ==> {
+        list($script, $_ctx) = Pha\parse(
+          "<?hh function\n/* leading */ f /* trailing */(): void {}",
+          Pha\create_context(),
+        );
+        $name = C\findx(
+          Pha\script_get_tokens($script),
+          $node ==> Pha\node_get_code_without_leading_or_trailing_trivia(
+            $script,
+            $node,
+          ) ===
+            'f',
+        );
         expect(Pha\patches_apply(Pha\patches(
           $script,
           Pha\patch_node($name, 'g', shape('trivia' => $mode)),
         )))->toEqual("<?hh function\n".$replacement.'(): void {}');
-      }
-    })
+      },
+    )
     ->test('test_patches_insert_at_replacement_start', ()[] ==> {
       list($script, $_ctx) = Pha\parse(
         'function f(): int { return 1; }',
