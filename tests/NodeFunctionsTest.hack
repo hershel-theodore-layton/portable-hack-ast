@@ -3,6 +3,8 @@ namespace HTL\Pha\Tests;
 
 use namespace HH\Lib\{C, File, Str, Vec};
 use namespace HTL\{Pha, TestChain};
+use function version_compare;
+use const HHVM_VERSION;
 
 /**
  * The tests in this class are in no particular order.
@@ -955,16 +957,22 @@ async function node_functions_test_async(
     )
     ->testWith2Params(
       'test_node_get_line_and_column_numbers_at_eof',
-      ()[]: vec<(string, (int, int))> ==> vec[
-        tuple('', tuple(0, 0)),
-        tuple("\n", tuple(1, 0)),
-        tuple('function f(): void {}', tuple(0, 21)),
-        tuple("function f(): void {}\n", tuple(1, 0)),
-        tuple("function f(): void {}\n\n", tuple(2, 0)),
-        tuple("function f(): void {}\r\n", tuple(1, 0)),
-        tuple("function f(): void {}\r", tuple(1, 0)),
-        tuple("function f(): void {}\r\n\n\r", tuple(3, 0)),
-      ],
+      ()[]: vec<(string, (int, int))> ==> {
+        $cases = vec[
+          tuple('', tuple(0, 0)),
+          tuple("\n", tuple(1, 0)),
+          tuple('function f(): void {}', tuple(0, 21)),
+          tuple("function f(): void {}\n", tuple(1, 0)),
+          tuple("function f(): void {}\n\n", tuple(2, 0)),
+          tuple("function f(): void {}\r\n", tuple(1, 0)),
+        ];
+        // Older native parsers abort on a trailing standalone carriage return.
+        if (version_compare(HHVM_VERSION, '26.03.28', '>=')) {
+          $cases[] = tuple("function f(): void {}\r", tuple(1, 0));
+          $cases[] = tuple("function f(): void {}\r\n\n\r", tuple(3, 0));
+        }
+        return $cases;
+      },
       (string $source, (int, int) $end)[] ==> {
         list($script, $_ctx) = Pha\parse($source, Pha\create_context());
         $token = C\onlyx(Pha\index_get_nodes_by_kind(
