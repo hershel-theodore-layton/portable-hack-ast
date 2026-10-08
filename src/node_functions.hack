@@ -1,7 +1,7 @@
 /** portable-hack-ast is MIT licensed, see /LICENSE. */
 namespace HTL\Pha;
 
-use namespace HH\Lib\{C, Dict, Math, Str, Vec};
+use namespace HH\Lib\{C, Dict, Str, Vec};
 
 /**
  * @package This file contains all the functions that operate on `Node`.
@@ -1261,36 +1261,11 @@ function source_range_to_line_and_column_numbers(
   list($start, $end_exclusive) = _Private\source_range_reveal($range);
   $end_exclusive ??= $tu->getSourceEndOffset();
 
-  $count = C\count($breaks);
-  $i = $count - 1;
-
-  while (_Private\source_byte_offset_is_less_than($start, $breaks[$i])) {
-    // Quickly find a good place to start looking.
-    $i = Math\maxva(0, $i - _Private\TranslationUnit::SOME_LARGE_JUMP);
-  }
-
-  while (
-    $i < $count &&
-    _Private\source_byte_offset_is_less_than_or_equal($breaks[$i], $start)
-  ) {
-    ++$i;
-  }
-
-  $start_line = Math\maxva(0, $i - 1);
+  $start_line = $tu->getLineIndex($start);
   $start_column = _Private\source_byte_offset_to_int($start) -
     _Private\source_byte_offset_to_int($breaks[$start_line]);
 
-  while (
-    $i < $count &&
-    _Private\source_byte_offset_is_less_than_or_equal(
-      $breaks[$i],
-      $end_exclusive,
-    )
-  ) {
-    ++$i;
-  }
-
-  $end_line = Math\maxva(0, $i - 1);
+  $end_line = $tu->getLineIndex($end_exclusive);
   $end_column = _Private\source_byte_offset_to_int($end_exclusive) -
     _Private\source_byte_offset_to_int($breaks[$end_line]);
 

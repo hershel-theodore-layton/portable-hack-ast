@@ -981,6 +981,26 @@ async function node_functions_test_async(
         expect($position->getEnd())->toEqual($end);
       },
     )
+    ->test('test_line_locations_across_many_lines', ()[] ==> {
+      $source = "<?hh\n".Str\repeat("ab\n", 129).'last';
+      list($script, $_ctx) = Pha\parse($source, Pha\create_context());
+      $offset = 0;
+      foreach (Str\split($source, "\n") as $line => $text) {
+        for ($column = 0; $column <= Str\length($text); ++$column) {
+          $end = Pha\_Private\source_byte_offset_from_int($offset + $column);
+          foreach (vec[true, false] as $empty) {
+            $start = $empty ? $end : Pha\_Private\source_byte_offset_from_int(0);
+            $range = Pha\_Private\source_range_hide(tuple($start, $end));
+            $position = Pha\source_range_to_line_and_column_numbers($script, $range);
+            expect($position->getStart())->toEqual(
+              $empty ? tuple($line, $column) : tuple(0, 0),
+            );
+            expect($position->getEnd())->toEqual(tuple($line, $column));
+          }
+        }
+        $offset += Str\length($text) + 1;
+      }
+    })
     ->testWith2Params(
       'test_source_range_format',
       ()[]: vec<(Pha\SourceRange, string)> ==> {

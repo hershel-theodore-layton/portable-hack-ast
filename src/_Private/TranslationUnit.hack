@@ -1,12 +1,10 @@
 /** portable-hack-ast is MIT licensed, see /LICENSE. */
 namespace HTL\Pha\_Private;
 
-use namespace HH\Lib\{Str, Vec};
+use namespace HH\Lib\{C, Str, Vec};
 use type Exception;
 
 final class TranslationUnit {
-  const SOME_LARGE_JUMP = 64;
-
   private vec<SourceByteOffset> $lineBreaks;
   private Structs $structs;
   /**
@@ -59,6 +57,28 @@ final class TranslationUnit {
 
   public function getLineBreaks()[]: vec<SourceByteOffset> {
     return $this->lineBreaks;
+  }
+
+  public function getLineIndex(SourceByteOffset $offset)[]: int {
+    // Find the first line start strictly after the offset. Equality belongs
+    // to the new line, including the empty final line after a trailing newline.
+    $low = 0;
+    $high = C\count($this->lineBreaks);
+    while ($low < $high) {
+      $mid = $low + (($high - $low) >> 1);
+      if (
+        source_byte_offset_is_less_than_or_equal(
+          $this->lineBreaks[$mid],
+          $offset,
+        )
+      ) {
+        $low = $mid + 1;
+      } else {
+        $high = $mid;
+      }
+    }
+
+    return $low === 0 ? 0 : $low - 1;
   }
 
   public function getSourceEndOffset()[]: SourceByteOffset {
