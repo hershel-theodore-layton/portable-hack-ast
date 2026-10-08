@@ -1285,6 +1285,53 @@ async function node_functions_test_async(
         expect(Pha\source_range_overlaps($b_range, $a_range))->toEqual($expected);
       },
     )
+    ->test('test_patch_tokenless_syntax_with_trivia_retention', ()[] ==> {
+      list($script, $_ctx) = Pha\parse('<?hh namespace', Pha\create_context());
+      $body = C\onlyx(Pha\index_get_nodes_by_kind(
+        Pha\create_syntax_kind_index($script),
+        Pha\KIND_NAMESPACE_BODY,
+      ));
+      $missing = C\findx(
+        Pha\node_get_descendants($script, $body),
+        Pha\is_missing<>,
+      );
+
+      foreach (Pha\RetainTrivia::getValues() as $mode) {
+        foreach (vec[$body, $missing] as $node) {
+          expect(Pha\patches_apply(Pha\patches(
+            $script,
+            Pha\patch_node($node, '{}', shape('trivia' => $mode)),
+          )))->toEqual('<?hh namespace{}');
+        }
+      }
+    })
+    ->test('test_patch_token_with_leading_and_trailing_comments', ()[] ==> {
+      list($script, $_ctx) = Pha\parse(
+        "<?hh function\n/* leading */ f /* trailing */(): void {}",
+        Pha\create_context(),
+      );
+      $name = C\findx(
+        Pha\script_get_tokens($script),
+        $node ==> Pha\node_get_code_without_leading_or_trailing_trivia(
+          $script,
+          $node,
+        ) ===
+          'f',
+      );
+      foreach (
+        dict[
+          Pha\RetainTrivia::NEITHER => 'g',
+          Pha\RetainTrivia::LEADING => '/* leading */ g',
+          Pha\RetainTrivia::TRAILING => 'g /* trailing */',
+          Pha\RetainTrivia::BOTH => '/* leading */ g /* trailing */',
+        ] as $mode => $replacement
+      ) {
+        expect(Pha\patches_apply(Pha\patches(
+          $script,
+          Pha\patch_node($name, 'g', shape('trivia' => $mode)),
+        )))->toEqual("<?hh function\n".$replacement.'(): void {}');
+      }
+    })
     ->test('test_patches_insert_at_replacement_start', ()[] ==> {
       list($script, $_ctx) = Pha\parse(
         'function f(): int { return 1; }',

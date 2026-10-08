@@ -44,15 +44,17 @@ final class PatchNode {
 
     $descendants = Pha\node_get_descendants($script, $this->node);
 
-    $start_node = $keep_leading
-      ? C\findx(
-          $descendants,
-          $d ==> Pha\is_trivium($d) &&
-            Pha\node_get_kind($script, $d) === Pha\KIND_TOKEN_TEXT,
-        )
-      : $this->node;
+    // Parser recovery can produce syntax nodes with only missing descendants.
+    // Without token text, there is no trivia to retain; use the node's range.
+    $first_token_text = C\find(
+      $descendants,
+      $d ==> Pha\is_trivium($d) &&
+        Pha\node_get_kind($script, $d) === Pha\KIND_TOKEN_TEXT,
+    );
+    $start_node =
+      $keep_leading ? ($first_token_text ?? $this->node) : $this->node;
 
-    $end_node = $keep_trailing
+    $end_node = $keep_trailing && $first_token_text is nonnull
       ? find_lastx(
           $descendants,
           $d ==> Pha\is_trivium($d) &&
