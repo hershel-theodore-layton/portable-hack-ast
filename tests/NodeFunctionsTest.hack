@@ -920,6 +920,40 @@ async function node_functions_test_async(
       },
     )
     ->testWith2Params(
+      'test_line_and_column_numbers_with_line_endings',
+      ()[]: vec<(string, int)> ==> vec[
+        tuple("\n", 1),
+        tuple("\r", 1),
+        tuple("\r\n", 1),
+        tuple("\r\n\r\n", 2),
+        tuple("\r\n\r\n\r\n", 3),
+        tuple("\r\n\r\n\n\r", 4),
+        tuple("\n\r\r\n", 3),
+      ],
+      (string $breaks, int $line)[] ==> {
+        $source = '<?hh'.$breaks.'function f(): void {}';
+        list($script, $_ctx) = Pha\parse($source, Pha\create_context());
+        $raw = Pha\dematerialize_script($script);
+        $restored = Pha\materialize_script(
+          $raw['script'],
+          Pha\materialize_context($raw['context']),
+        );
+        foreach (vec[$script, $restored] as $current) {
+          $token = C\onlyx(Pha\index_get_nodes_by_kind(
+            Pha\create_token_kind_index($current),
+            Pha\KIND_FUNCTION,
+          ));
+          $text = Pha\token_get_text_trivium($current, $token);
+          $position = Pha\node_get_line_and_column_numbers($current, $text);
+          expect($position->getStart())->toEqual(tuple($line, 0));
+          expect($position->getEnd())->toEqual(tuple($line, 8));
+          $position = Pha\node_get_line_and_column_numbers($current, Pha\SCRIPT_NODE);
+          expect($position->getStart())->toEqual(tuple(0, 0));
+          expect($position->getEnd())->toEqual(tuple($line, 21));
+        }
+      },
+    )
+    ->testWith2Params(
       'test_node_get_line_and_column_numbers_at_eof',
       ()[]: vec<(string, (int, int))> ==> vec[
         tuple('', tuple(0, 0)),
@@ -928,6 +962,8 @@ async function node_functions_test_async(
         tuple("function f(): void {}\n", tuple(1, 0)),
         tuple("function f(): void {}\n\n", tuple(2, 0)),
         tuple("function f(): void {}\r\n", tuple(1, 0)),
+        tuple("function f(): void {}\r", tuple(1, 0)),
+        tuple("function f(): void {}\r\n\n\r", tuple(3, 0)),
       ],
       (string $source, (int, int) $end)[] ==> {
         list($script, $_ctx) = Pha\parse($source, Pha\create_context());

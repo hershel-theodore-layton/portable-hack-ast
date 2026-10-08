@@ -22,9 +22,14 @@ final class TranslationUnit {
     private ParseContext $ctx,
   )[] {
     $line_breaks = vec[];
-
+    $line_text = $sourceText;
+    if (Str\contains($line_text, "\r")) {
+      // Preserve byte offsets while treating CRLF as one line break.
+      $line_text = Str\replace($line_text, "\r\n", " \n")
+        |> Str\replace($$, "\r", "\n");
+    }
     $byte = 0;
-    foreach (Str\split($sourceText, "\n") as $line) {
+    foreach (Str\split($line_text, "\n") as $line) {
       $line_breaks[] = source_byte_offset_from_int($byte);
       $byte += Str\length($line) + 1;
     }
