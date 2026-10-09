@@ -1,7 +1,7 @@
 /** portable-hack-ast is MIT licensed, see /LICENSE. */
 namespace HTL\Pha\Tests;
 
-use namespace HTL\{Pha, TestChain};
+use namespace HTL\{HH4Shim, Pha, TestChain};
 use function json_decode_with_error, json_encode_with_error, var_export;
 
 <<TestChain\Discover>>
@@ -50,6 +50,7 @@ function dematerialize(
   return Pha\dematerialize_script($script)
     |> json_encode_with_error($$, inout $_err)
     |> json_decode_with_error($$ as string, inout $_err, true)
+    |> HH4Shim\to_mixed($$) as dict<_, _>
     |> shape(
       'context' => $$['context'] as dict<_, _>,
       'context_hash' => $$['context_hash'] as string,
