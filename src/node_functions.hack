@@ -204,10 +204,11 @@ function create_matcher(
  * It can also pick the "right" member to enable polymorphism on the fly.
  *
  * ```
- * $get_clauses = create_member_accessor($script, dict[
- *   Pha\KIND_NAMESPACE_USE_DECLARATION => Pha\MEMBER_NAMESPACE_USE_CLAUSES,
- *   Pha\KIND_NAMESPACE_GROUP_USE_DECLARATION => Pha\MEMBER_NAMESPACE_GROUP_USE_CLAUSES,
- * ]);
+ * $get_clauses = create_member_accessor(
+ *   $script,
+ *   Pha\MEMBER_NAMESPACE_USE_CLAUSES,
+ *   Pha\MEMBER_NAMESPACE_GROUP_USE_CLAUSES,
+ * );
  *
  * $namespace_use_or_group_use_declaration = ...;
  * $clauses = $get_clauses($namespace_use_or_group_use_declaration);
