@@ -778,25 +778,25 @@ async function node_functions_test_async(
         expect($get_member($node))->toEqual($result);
       },
     )
-    ->test('test_enum_class_label_members', ()[] ==> {
-      list($script, $_) = Pha\parse(
-        'function f(): void { Thing#Label; }',
-        Pha\create_context(),
-      );
-      $label = Pha\create_syntax_kind_index($script)
-        |> Pha\index_get_nodes_by_kind($$, Pha\KIND_ENUM_CLASS_LABEL)
-        |> C\onlyx($$);
-      foreach (
-        vec[
-          tuple(Pha\MEMBER_ENUM_CLASS_LABEL_QUALIFIER, 'Thing'),
-          tuple(Pha\MEMBER_ENUM_CLASS_LABEL_HASH, '#'),
-          tuple(Pha\MEMBER_ENUM_CLASS_LABEL_EXPRESSION, 'Label'),
-        ] as list($member, $expected)
-      ) {
+    ->testWith2Params(
+      'test_enum_class_label_members',
+      ()[] ==> dict[
+        'qualifier' => tuple(Pha\MEMBER_ENUM_CLASS_LABEL_QUALIFIER, 'Thing'),
+        'hash' => tuple(Pha\MEMBER_ENUM_CLASS_LABEL_HASH, '#'),
+        'expression' => tuple(Pha\MEMBER_ENUM_CLASS_LABEL_EXPRESSION, 'Label'),
+      ],
+      (Pha\Member $member, string $expected)[] ==> {
+        list($script, $_) = Pha\parse(
+          'function f(): void { Thing#Label; }',
+          Pha\create_context(),
+        );
+        $label = Pha\create_syntax_kind_index($script)
+          |> Pha\index_get_nodes_by_kind($$, Pha\KIND_ENUM_CLASS_LABEL)
+          |> C\onlyx($$);
         $node = Pha\create_member_accessor($script, $member)($label);
         expect(Pha\node_get_code_compressed($script, $node))->toEqual($expected);
-      }
-    })
+      },
+    )
     ->test('test_create_member_accessor_unknown_node', ()[] ==> {
       $math = $fixtures->math;
       $script = $math->script;
@@ -921,18 +921,27 @@ async function node_functions_test_async(
         expect($position->getEnd())->toEqual(tuple(1, $column + 6));
       },
     )
-    ->testWith2Params(
+    ->testWith3Params(
       'test_line_and_column_numbers_with_line_endings',
-      ()[]: vec<(string, int)> ==> vec[
-        tuple("\n", 1),
-        tuple("\r", 1),
-        tuple("\r\n", 1),
-        tuple("\r\n\r\n", 2),
-        tuple("\r\n\r\n\r\n", 3),
-        tuple("\r\n\r\n\n\r", 4),
-        tuple("\n\r\r\n", 3),
-      ],
-      (string $breaks, int $line)[] ==> {
+      ()[] ==> {
+        $inputs = vec[
+          tuple("\n", 1),
+          tuple("\r", 1),
+          tuple("\r\n", 1),
+          tuple("\r\n\r\n", 2),
+          tuple("\r\n\r\n\r\n", 3),
+          tuple("\r\n\r\n\n\r", 4),
+          tuple("\n\r\r\n", 3),
+        ];
+        $cases = dict[];
+        foreach ($inputs as list($breaks, $line)) {
+          $name = Str\replace(Str\replace($breaks, "\r", '\\r'), "\n", '\\n');
+          $cases['parsed '.$name] = tuple($breaks, $line, false);
+          $cases['restored '.$name] = tuple($breaks, $line, true);
+        }
+        return $cases;
+      },
+      (string $breaks, int $line, bool $restore)[] ==> {
         $source = '<?hh'.$breaks.'function f(): void {}';
         list($script, $_ctx) = Pha\parse($source, Pha\create_context());
         $raw = Pha\dematerialize_script($script);
@@ -940,19 +949,18 @@ async function node_functions_test_async(
           $raw['script'],
           Pha\materialize_context($raw['context']),
         );
-        foreach (vec[$script, $restored] as $current) {
-          $token = C\onlyx(Pha\index_get_nodes_by_kind(
-            Pha\create_token_kind_index($current),
-            Pha\KIND_FUNCTION,
-          ));
-          $text = Pha\token_get_text_trivium($current, $token);
-          $position = Pha\node_get_line_and_column_numbers($current, $text);
-          expect($position->getStart())->toEqual(tuple($line, 0));
-          expect($position->getEnd())->toEqual(tuple($line, 8));
-          $position = Pha\node_get_line_and_column_numbers($current, Pha\SCRIPT_NODE);
-          expect($position->getStart())->toEqual(tuple(0, 0));
-          expect($position->getEnd())->toEqual(tuple($line, 21));
-        }
+        $current = $restore ? $restored : $script;
+        $token = C\onlyx(Pha\index_get_nodes_by_kind(
+          Pha\create_token_kind_index($current),
+          Pha\KIND_FUNCTION,
+        ));
+        $text = Pha\token_get_text_trivium($current, $token);
+        $position = Pha\node_get_line_and_column_numbers($current, $text);
+        expect($position->getStart())->toEqual(tuple($line, 0));
+        expect($position->getEnd())->toEqual(tuple($line, 8));
+        $position = Pha\node_get_line_and_column_numbers($current, Pha\SCRIPT_NODE);
+        expect($position->getStart())->toEqual(tuple(0, 0));
+        expect($position->getEnd())->toEqual(tuple($line, 21));
       },
     )
     ->testWith2Params(
@@ -989,26 +997,37 @@ async function node_functions_test_async(
         expect($position->getEnd())->toEqual($end);
       },
     )
-    ->test('test_line_locations_across_many_lines', ()[] ==> {
-      $source = "<?hh\n".Str\repeat("ab\n", 129).'last';
-      list($script, $_ctx) = Pha\parse($source, Pha\create_context());
-      $offset = 0;
-      foreach (Str\split($source, "\n") as $line => $text) {
-        for ($column = 0; $column <= Str\length($text); ++$column) {
-          $end = Pha\_Private\source_byte_offset_from_int($offset + $column);
-          foreach (vec[true, false] as $empty) {
-            $start = $empty ? $end : Pha\_Private\source_byte_offset_from_int(0);
-            $range = Pha\_Private\source_range_hide(tuple($start, $end));
-            $position = Pha\source_range_to_line_and_column_numbers($script, $range);
-            expect($position->getStart())->toEqual(
-              $empty ? tuple($line, $column) : tuple(0, 0),
-            );
-            expect($position->getEnd())->toEqual(tuple($line, $column));
+    ->testWith4Params(
+      'test_line_locations_across_many_lines',
+      ()[] ==> {
+        $source = "<?hh\n".Str\repeat("ab\n", 129).'last';
+        list($script, $_ctx) = Pha\parse($source, Pha\create_context());
+        $cases = dict[];
+        $offset = 0;
+        foreach (Str\split($source, "\n") as $line => $text) {
+          for ($column = 0; $column <= Str\length($text); ++$column) {
+            $end = Pha\_Private\source_byte_offset_from_int($offset + $column);
+            foreach (vec[true, false] as $empty) {
+              $start = $empty ? $end : Pha\_Private\source_byte_offset_from_int(0);
+              $range = Pha\_Private\source_range_hide(tuple($start, $end));
+              $cases[(string)$line.':'.(string)$column.($empty ? ' empty' : ' from start')] = tuple(
+                $script,
+                $range,
+                $empty ? tuple($line, $column) : tuple(0, 0),
+                tuple($line, $column),
+              );
+            }
           }
+          $offset += Str\length($text) + 1;
         }
-        $offset += Str\length($text) + 1;
-      }
-    })
+        return $cases;
+      },
+      (Pha\Script $script, Pha\SourceRange $range, (int, int) $start, (int, int) $end)[] ==> {
+        $position = Pha\source_range_to_line_and_column_numbers($script, $range);
+        expect($position->getStart())->toEqual($start);
+        expect($position->getEnd())->toEqual($end);
+      },
+    )
     ->testWith2Params(
       'test_source_range_format',
       ()[]: vec<(Pha\SourceRange, string)> ==> {
@@ -1349,26 +1368,33 @@ async function node_functions_test_async(
         expect(Pha\source_range_overlaps($b_range, $a_range))->toEqual($expected);
       },
     )
-    ->test('test_patch_tokenless_syntax_with_trivia_retention', ()[] ==> {
-      list($script, $_ctx) = Pha\parse('<?hh namespace', Pha\create_context());
-      $body = C\onlyx(Pha\index_get_nodes_by_kind(
-        Pha\create_syntax_kind_index($script),
-        Pha\KIND_NAMESPACE_BODY,
-      ));
-      $missing = C\findx(
-        Pha\node_get_descendants($script, $body),
-        Pha\is_missing<>,
-      );
+    ->testWith3Params(
+      'test_patch_tokenless_syntax_with_trivia_retention',
+      ()[] ==> {
+        list($script, $_ctx) = Pha\parse('<?hh namespace', Pha\create_context());
+        $body = C\onlyx(Pha\index_get_nodes_by_kind(
+          Pha\create_syntax_kind_index($script),
+          Pha\KIND_NAMESPACE_BODY,
+        ));
+        $missing = C\findx(
+          Pha\node_get_descendants($script, $body),
+          Pha\is_missing<>,
+        );
 
-      foreach (Pha\RetainTrivia::getValues() as $mode) {
-        foreach (vec[$body, $missing] as $node) {
-          expect(Pha\patches_apply(Pha\patches(
-            $script,
-            Pha\patch_node($node, '{}', shape('trivia' => $mode)),
-          )))->toEqual('<?hh namespace{}');
+        $cases = dict[];
+        foreach (Pha\RetainTrivia::getValues() as $mode) {
+          $cases['body '.(string)$mode] = tuple($script, $body, $mode);
+          $cases['missing '.(string)$mode] = tuple($script, $missing, $mode);
         }
-      }
-    })
+        return $cases;
+      },
+      (Pha\Script $script, Pha\Node $node, Pha\RetainTrivia $mode)[] ==> {
+        expect(Pha\patches_apply(Pha\patches(
+          $script,
+          Pha\patch_node($node, '{}', shape('trivia' => $mode)),
+        )))->toEqual('<?hh namespace{}');
+      },
+    )
     ->testWith2Params(
       'test_patch_token_with_leading_and_trailing_comments',
       ()[]: vec<(Pha\RetainTrivia, string)> ==> vec[
@@ -1396,7 +1422,42 @@ async function node_functions_test_async(
         )))->toEqual("<?hh function\n".$replacement.'(): void {}');
       },
     )
-    ->test('test_patches_insert_at_eof', ()[] ==> {
+    ->testWith3Params(
+      'test_patches_insert_at_eof',
+      ()[] ==> {
+        $source = '<?hh function f(): void {}';
+        list($script, $_ctx) = Pha\parse($source, Pha\create_context());
+        $tokens = Pha\script_get_tokens($script);
+        $eof = C\lastx($tokens);
+        $close_brace = $tokens[C\count($tokens) - 2];
+        $first = Pha\patch_node($eof, ' // first');
+        $second = Pha\patch_node($eof, ' // second');
+
+        $cases = dict[];
+        foreach (
+          dict[
+            'script' => tuple(Pha\patch_node(Pha\SCRIPT_NODE, '<?hh // replaced'), '<?hh // replaced'),
+            'close brace' => tuple(Pha\patch_node($close_brace, '/*end*/}'), '<?hh function f(): void {/*end*/}'),
+          ] as $name => list($replace, $expected)
+        ) {
+          $cases[$name.' replace first'] = tuple($script, vec[$replace, $first], $expected.' // first');
+          $cases[$name.' insert first'] = tuple($script, vec[$first, $replace], $expected.' // first');
+        }
+        $cases['first then second'] = tuple($script, vec[$first, $second], $source.' // first // second');
+        $cases['second then first'] = tuple($script, vec[$second, $first], $source.' // second // first');
+        return $cases;
+      },
+      (Pha\Script $script, vec<Pha\Patch> $patches, string $expected)[] ==> {
+        expect(Pha\patches_apply(Pha\patches($script, ...$patches)))->toEqual($expected);
+        expect(
+          Pha\patches_combine_without_conflict_resolution(
+            Vec\map($patches, $patch ==> Pha\patches($script, $patch)),
+          )
+            |> Pha\patches_apply($$),
+        )->toEqual($expected);
+      },
+    )
+    ->test('test_patches_insert_at_eof_with_other_edits', ()[] ==> {
       $source = '<?hh function f(): void {}';
       list($script, $_ctx) = Pha\parse($source, Pha\create_context());
       $tokens = Pha\script_get_tokens($script);
@@ -1405,38 +1466,6 @@ async function node_functions_test_async(
       $first = Pha\patch_node($eof, ' // first');
       $second = Pha\patch_node($eof, ' // second');
 
-      foreach (
-        vec[
-          tuple(Pha\patch_node(Pha\SCRIPT_NODE, '<?hh // replaced'), '<?hh // replaced'),
-          tuple(Pha\patch_node($close_brace, '/*end*/}'), '<?hh function f(): void {/*end*/}'),
-        ] as list($replace, $expected)
-      ) {
-        foreach (vec[vec[$replace, $first], vec[$first, $replace]] as $patches) {
-          expect(Pha\patches_apply(Pha\patches($script, ...$patches)))
-            ->toEqual($expected.' // first');
-          expect(
-            Pha\patches_combine_without_conflict_resolution(
-              Vec\map($patches, $patch ==> Pha\patches($script, $patch)),
-            )
-              |> Pha\patches_apply($$),
-          )->toEqual($expected.' // first');
-        }
-      }
-      foreach (
-        vec[
-          tuple(vec[$first, $second], ' // first // second'),
-          tuple(vec[$second, $first], ' // second // first'),
-        ] as list($patches, $suffix)
-      ) {
-        expect(Pha\patches_apply(Pha\patches($script, ...$patches)))
-          ->toEqual($source.$suffix);
-        expect(
-          Pha\patches_combine_without_conflict_resolution(
-            Vec\map($patches, $patch ==> Pha\patches($script, $patch)),
-          )
-            |> Pha\patches_apply($$),
-        )->toEqual($source.$suffix);
-      }
       expect(Pha\patches_apply(Pha\patches(
         $script,
         $second,
@@ -1456,46 +1485,52 @@ async function node_functions_test_async(
         ),
       )->toThrowPhaException('The following two patches conflict:');
     })
-    ->test('test_patches_insert_at_replacement_start', ()[] ==> {
-      list($script, $_ctx) = Pha\parse(
-        'function f(): int { return 1; }',
-        Pha\create_context(),
-      );
-      $function = C\onlyx(Pha\index_get_nodes_by_kind(
-        Pha\create_syntax_kind_index($script),
-        Pha\KIND_FUNCTION_DECLARATION,
-      ));
-      $attributes = Pha\syntax_member(
-        $script,
-        $function,
-        Pha\MEMBER_FUNCTION_ATTRIBUTE_SPEC,
-      );
-      $header = Pha\syntax_member(
-        $script,
-        $function,
-        Pha\MEMBER_FUNCTION_DECLARATION_HEADER,
-      );
-      $insert = Pha\patch_node($attributes, "<<__Memoize>>\n");
-      $expected = "<<__Memoize>>\nfunction cached(): int { return 1; }";
+    ->testWith3Params(
+      'test_patches_insert_at_replacement_start',
+      ()[] ==> {
+        list($script, $_ctx) = Pha\parse(
+          'function f(): int { return 1; }',
+          Pha\create_context(),
+        );
+        $function = C\onlyx(Pha\index_get_nodes_by_kind(
+          Pha\create_syntax_kind_index($script),
+          Pha\KIND_FUNCTION_DECLARATION,
+        ));
+        $attributes = Pha\syntax_member(
+          $script,
+          $function,
+          Pha\MEMBER_FUNCTION_ATTRIBUTE_SPEC,
+        );
+        $header = Pha\syntax_member(
+          $script,
+          $function,
+          Pha\MEMBER_FUNCTION_DECLARATION_HEADER,
+        );
+        $insert = Pha\patch_node($attributes, "<<__Memoize>>\n");
+        $expected = "<<__Memoize>>\nfunction cached(): int { return 1; }";
 
-      foreach (
-        vec[
-          Pha\patch_node($header, 'function cached(): int '),
-          Pha\patch_node(Pha\SCRIPT_NODE, 'function cached(): int { return 1; }'),
-        ] as $replace
-      ) {
-        foreach (vec[vec[$insert, $replace], vec[$replace, $insert]] as $patches) {
-          expect(Pha\patches_apply(Pha\patches($script, ...$patches)))
-            ->toEqual($expected);
-          expect(
-            Pha\patches_combine_without_conflict_resolution(
-              Vec\map($patches, $patch ==> Pha\patches($script, $patch)),
-            )
-              |> Pha\patches_apply($$),
-          )->toEqual($expected);
+        $cases = dict[];
+        foreach (
+          dict[
+            'header' => Pha\patch_node($header, 'function cached(): int '),
+            'script' => Pha\patch_node(Pha\SCRIPT_NODE, 'function cached(): int { return 1; }'),
+          ] as $name => $replace
+        ) {
+          $cases[$name.' insert first'] = tuple($script, vec[$insert, $replace], $expected);
+          $cases[$name.' replace first'] = tuple($script, vec[$replace, $insert], $expected);
         }
-      }
-    });
+        return $cases;
+      },
+      (Pha\Script $script, vec<Pha\Patch> $patches, string $expected)[] ==> {
+        expect(Pha\patches_apply(Pha\patches($script, ...$patches)))->toEqual($expected);
+        expect(
+          Pha\patches_combine_without_conflict_resolution(
+            Vec\map($patches, $patch ==> Pha\patches($script, $patch)),
+          )
+            |> Pha\patches_apply($$),
+        )->toEqual($expected);
+      },
+    );
 }
 
 async function parse_fixture_async(
