@@ -11,13 +11,29 @@ final class PatchSet {
     private string $beforeText,
     vec<Replacement> $replacements,
   )[] {
-    $this->replacements = Vec\sort_by(
+    $source_end = source_byte_offset_from_int(Str\length($beforeText));
+    $replacements = Vec\map(
       $replacements,
-      $r ==> tuple(
-        $r->getStartOffset(),
-        $r->getEndOffset() === $r->getStartOffset() ? 0 : 1,
+      $r ==> new Replacement(
+        $r->getPosition(),
+        source_range_hide(
+          tuple($r->getStartOffset(), $r->getEndOffset() ?? $source_end),
+        ),
+        $r->getText(),
       ),
     );
+    // Preserve input order for insertions at the same position.
+    $this->replacements =
+      Vec\map_with_key($replacements, ($i, $r) ==> tuple($i, $r))
+      |> Vec\sort_by(
+        $$,
+        $entry ==> tuple(
+          $entry[1]->getStartOffset(),
+          $entry[1]->getEndOffset() === $entry[1]->getStartOffset() ? 0 : 1,
+          $entry[0],
+        ),
+      )
+      |> Vec\map($$, $entry ==> $entry[1]);
     $shifted = Vec\drop($this->replacements, 1);
     $with_next = Vec\zip($this->replacements, $shifted);
 
@@ -45,10 +61,6 @@ final class PatchSet {
     $read_start = 0;
 
     foreach ($this->replacements as $replacement) {
-      invariant(
-        $read_start is nonnull,
-        'Only the last patch may have an open end.',
-      );
       $out .= Str\slice(
         $this->beforeText,
         $read_start,
@@ -56,12 +68,12 @@ final class PatchSet {
       );
 
       $out .= $replacement->getText();
-      $read_start = $replacement->getEndOffset()
-        |> $$ is null ? null : source_byte_offset_to_int($$);
-    }
-
-    if ($read_start is null) {
-      return $out;
+      $end = $replacement->getEndOffset();
+      invariant(
+        $end is nonnull,
+        'Patch ends are normalized to source offsets.',
+      );
+      $read_start = source_byte_offset_to_int($end);
     }
 
     return $out.Str\slice($this->beforeText, $read_start);

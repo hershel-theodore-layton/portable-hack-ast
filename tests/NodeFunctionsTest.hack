@@ -1396,6 +1396,66 @@ async function node_functions_test_async(
         )))->toEqual("<?hh function\n".$replacement.'(): void {}');
       },
     )
+    ->test('test_patches_insert_at_eof', ()[] ==> {
+      $source = '<?hh function f(): void {}';
+      list($script, $_ctx) = Pha\parse($source, Pha\create_context());
+      $tokens = Pha\script_get_tokens($script);
+      $eof = C\lastx($tokens);
+      $close_brace = $tokens[C\count($tokens) - 2];
+      $first = Pha\patch_node($eof, ' // first');
+      $second = Pha\patch_node($eof, ' // second');
+
+      foreach (
+        vec[
+          tuple(Pha\patch_node(Pha\SCRIPT_NODE, '<?hh // replaced'), '<?hh // replaced'),
+          tuple(Pha\patch_node($close_brace, '/*end*/}'), '<?hh function f(): void {/*end*/}'),
+        ] as list($replace, $expected)
+      ) {
+        foreach (vec[vec[$replace, $first], vec[$first, $replace]] as $patches) {
+          expect(Pha\patches_apply(Pha\patches($script, ...$patches)))
+            ->toEqual($expected.' // first');
+          expect(
+            Pha\patches_combine_without_conflict_resolution(
+              Vec\map($patches, $patch ==> Pha\patches($script, $patch)),
+            )
+              |> Pha\patches_apply($$),
+          )->toEqual($expected.' // first');
+        }
+      }
+      foreach (
+        vec[
+          tuple(vec[$first, $second], ' // first // second'),
+          tuple(vec[$second, $first], ' // second // first'),
+        ] as list($patches, $suffix)
+      ) {
+        expect(Pha\patches_apply(Pha\patches($script, ...$patches)))
+          ->toEqual($source.$suffix);
+        expect(
+          Pha\patches_combine_without_conflict_resolution(
+            Vec\map($patches, $patch ==> Pha\patches($script, $patch)),
+          )
+            |> Pha\patches_apply($$),
+        )->toEqual($source.$suffix);
+      }
+      expect(Pha\patches_apply(Pha\patches(
+        $script,
+        $second,
+        Pha\patch_node(Pha\SCRIPT_NODE, '<?hh // replaced'),
+        $first,
+      )))->toEqual('<?hh // replaced // second // first');
+      expect(Pha\patches_apply(Pha\patches(
+        $script,
+        Pha\patch_node($tokens[C\count($tokens) - 3], '['),
+        Pha\patch_node($close_brace, ']'),
+      )))->toEqual('<?hh function f(): void []');
+      expect(
+        () ==> Pha\patches(
+          $script,
+          Pha\patch_node(Pha\SCRIPT_NODE, '<?hh // replaced'),
+          Pha\patch_node($close_brace, '}'),
+        ),
+      )->toThrowPhaException('The following two patches conflict:');
+    })
     ->test('test_patches_insert_at_replacement_start', ()[] ==> {
       list($script, $_ctx) = Pha\parse(
         'function f(): int { return 1; }',
