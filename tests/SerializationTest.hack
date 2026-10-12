@@ -1,9 +1,9 @@
 /** portable-hack-ast is MIT licensed, see /LICENSE. */
 namespace HTL\Pha\Tests;
 
-use namespace HH\Lib\{Str, Vec};
+use namespace HH\Lib\{C, Str, Vec};
 use namespace HTL\{HH4Shim, Pha, TestChain};
-use function count, json_decode_with_error, json_encode_with_error, var_export;
+use function json_decode_with_error, json_encode_with_error, var_export;
 
 <<TestChain\Discover>>
 function serialization_test(TestChain\Chain $chain)[]: TestChain\Chain {
@@ -35,7 +35,8 @@ function serialization_test(TestChain\Chain $chain)[]: TestChain\Chain {
           'TRIVIUM_KINDS' => 'trivia',
         ] as $field => $group
       ) {
-        $filler = Vec\take($names, 255 - count($sample_raw[$field] as vec<_>));
+        $filler =
+          Vec\take($names, 255 - C\count($sample_raw[$field] as vec<_>));
         $fit_raw = Pha\dematerialize_context(Pha\create_context())['context'];
         $fit_raw[$field] = $filler;
         if ($field === 'SYNTAX_KINDS') {
@@ -46,7 +47,7 @@ function serialization_test(TestChain\Chain $chain)[]: TestChain\Chain {
         }
         list($_fit_script, $fit_ctx) =
           Pha\parse($source, Pha\materialize_context($fit_raw));
-        expect(count(
+        expect(C\count(
           Pha\dematerialize_context($fit_ctx)['context'][$field] as vec<_>,
         ))
           ->toEqual(255);
