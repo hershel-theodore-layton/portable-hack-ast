@@ -24,6 +24,10 @@ function serialization_test(TestChain\Chain $chain)[]: TestChain\Chain {
           |> Pha\_Private\interned_string_to_int($$),
       )->toEqual(255);
 
+      $source = '<?hh /* comment */ function f(): void {}';
+      list($_script, $sample_ctx) = Pha\parse($source, Pha\create_context());
+      $sample_raw = Pha\dematerialize_context($sample_ctx)['context'];
+
       foreach (
         dict[
           'SYNTAX_KINDS' => 'syntax',
@@ -31,6 +35,23 @@ function serialization_test(TestChain\Chain $chain)[]: TestChain\Chain {
           'TRIVIUM_KINDS' => 'trivia',
         ] as $field => $group
       ) {
+        $filler = Vec\take($names, 255 - \count($sample_raw[$field] as vec<_>));
+        $fit_raw = Pha\dematerialize_context(Pha\create_context())['context'];
+        $fit_raw[$field] = $filler;
+        if ($field === 'SYNTAX_KINDS') {
+          $fit_raw['STRUCTS'] = dict[
+            'VERSION' => 3,
+            'MEMBERS' => Vec\map($filler, $name ==> tuple($name, 'child')),
+          ];
+        }
+        list($_fit_script, $fit_ctx) =
+          Pha\parse($source, Pha\materialize_context($fit_raw));
+        expect(\count(
+          Pha\dematerialize_context($fit_ctx)['context'][$field] as vec<_>,
+        ))
+          ->toEqual(255);
+        expect(()[] ==> Pha\parse($source, $fit_ctx))->toReturn();
+
         $raw = Pha\dematerialize_context(Pha\create_context())['context'];
         $raw[$field] = $names;
         if ($field === 'SYNTAX_KINDS') {
@@ -42,9 +63,7 @@ function serialization_test(TestChain\Chain $chain)[]: TestChain\Chain {
         $ctx = Pha\materialize_context($raw);
         expect(Pha\dematerialize_context($ctx)['context'][$field])
           ->toEqual($names);
-        expect(
-          ()[] ==> Pha\parse('<?hh /* comment */ function f(): void {}', $ctx),
-        )
+        expect(()[] ==> Pha\parse($source, $ctx))
           ->toThrowPhaException('distinct '.$group.' kinds');
 
         foreach (vec[256, 257] as $count) {
