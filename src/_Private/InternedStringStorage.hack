@@ -1,7 +1,7 @@
 /** portable-hack-ast is MIT licensed, see /LICENSE. */
 namespace HTL\Pha\_Private;
 
-use namespace HH\Lib\{C, Dict};
+use namespace HH\Lib\{C, Dict, Str};
 
 final class InternedStringStorage<T as Kind> {
   private vec<T> $items;
@@ -10,7 +10,18 @@ final class InternedStringStorage<T as Kind> {
   public function __construct(
     private keyset<T> $asKeyset,
     private (function(string)[]: T) $castFunc,
+    string $group,
   )[] {
+    $count = C\count($this->asKeyset);
+    if ($count > MAX_INTERNED_STRING) {
+      throw new PhaException(Str\format(
+        'Cannot store %d distinct %s kinds: the packed representation supports at most %d. Use a fresh context if kinds accumulated across parser versions.',
+        $count,
+        $group,
+        MAX_INTERNED_STRING,
+      ));
+    }
+
     $this->items = vec($this->asKeyset);
     $this->flipped = Dict\flip($this->items);
     $this->size = C\count($this->items);

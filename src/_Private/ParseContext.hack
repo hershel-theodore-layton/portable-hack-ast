@@ -53,6 +53,7 @@ final class ParseContext {
       $token_kinds = new InternedStringStorage<TokenKind>(
         $new_token_kinds,
         Pha\token_kind_from_string<>,
+        'token',
       );
     }
 
@@ -61,6 +62,7 @@ final class ParseContext {
       $trivium_kinds = new InternedStringStorage<TriviumKind>(
         $new_trivium_kinds,
         Pha\trivium_kind_from_string<>,
+        'trivia',
       );
     }
 
@@ -115,15 +117,27 @@ final class ParseContext {
         $raw[static::SYNTAX_KINDS]
           |> as_vec_of_syntax_kind($$)
           |> keyset($$)
-          |> new InternedStringStorage($$, Pha\syntax_kind_from_string<>),
+          |> new InternedStringStorage(
+            $$,
+            Pha\syntax_kind_from_string<>,
+            'syntax',
+          ),
         $raw[static::TOKEN_KINDS]
           |> as_vec_of_token_kind($$)
           |> keyset($$)
-          |> new InternedStringStorage($$, Pha\token_kind_from_string<>),
+          |> new InternedStringStorage(
+            $$,
+            Pha\token_kind_from_string<>,
+            'token',
+          ),
         $raw[static::TRIVIUM_KINDS]
           |> as_vec_of_trivium_kind($$)
           |> keyset($$)
-          |> new InternedStringStorage($$, Pha\trivium_kind_from_string<>),
+          |> new InternedStringStorage(
+            $$,
+            Pha\trivium_kind_from_string<>,
+            'trivia',
+          ),
       );
     } catch (PhaException $e) {
       throw $e;

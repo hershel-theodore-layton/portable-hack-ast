@@ -4,9 +4,21 @@ namespace HTL\Pha;
 function create_context()[]: Context {
   return new _Private\ParseContext(
     new _Private\Structs(dict[]),
-    new _Private\InternedStringStorage(keyset[], syntax_kind_from_string<>),
-    new _Private\InternedStringStorage(keyset[], token_kind_from_string<>),
-    new _Private\InternedStringStorage(keyset[], trivium_kind_from_string<>),
+    new _Private\InternedStringStorage(
+      keyset[],
+      syntax_kind_from_string<>,
+      'syntax',
+    ),
+    new _Private\InternedStringStorage(
+      keyset[],
+      token_kind_from_string<>,
+      'token',
+    ),
+    new _Private\InternedStringStorage(
+      keyset[],
+      trivium_kind_from_string<>,
+      'trivia',
+    ),
   )
     |> _Private\context_hide($$);
 }

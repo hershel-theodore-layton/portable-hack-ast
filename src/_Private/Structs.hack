@@ -19,6 +19,7 @@ final class Structs {
     return new InternedStringStorage<SyntaxKind>(
       Keyset\keys($this->rawMembers),
       Pha\syntax_kind_from_string<>,
+      'syntax',
     );
   }
 
