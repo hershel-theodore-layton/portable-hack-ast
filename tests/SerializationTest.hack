@@ -71,11 +71,7 @@ function serialization_test(TestChain\Chain $chain)[]: TestChain\Chain {
             Vec\map(Vec\range(0, $count - 1), $i ==> Str\format('kind_%d', $i));
           expect(()[] ==> Pha\materialize_context($raw))
             ->toThrowPhaException(
-              Str\format(
-                'Cannot store %d distinct %s kinds: the packed representation supports at most 255.',
-                $count,
-                $group,
-              ),
+              Str\format('Cannot store %d distinct %s kinds.', $count, $group),
             );
         }
       }

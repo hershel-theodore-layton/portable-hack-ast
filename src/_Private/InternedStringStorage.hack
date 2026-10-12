@@ -14,12 +14,9 @@ final class InternedStringStorage<T as Kind> {
   )[] {
     $count = C\count($this->asKeyset);
     if ($count > MAX_INTERNED_STRING) {
-      throw new PhaException(Str\format(
-        'Cannot store %d distinct %s kinds: the packed representation supports at most %d. Use a fresh context if kinds accumulated across parser versions.',
-        $count,
-        $group,
-        MAX_INTERNED_STRING,
-      ));
+      throw new PhaException(
+        Str\format('Cannot store %d distinct %s kinds.', $count, $group),
+      );
     }
 
     $this->items = vec($this->asKeyset);
