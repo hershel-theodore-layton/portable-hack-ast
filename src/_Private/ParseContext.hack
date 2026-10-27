@@ -1,10 +1,9 @@
 /** portable-hack-ast is MIT licensed, see /LICENSE. */
 namespace HTL\Pha\_Private;
 
-use namespace HH\Lib\Str;
 use namespace HTL\Pha;
 use type Exception;
-use function gettype, sha1;
+use function serialize_pure, sha1;
 
 final class ParseContext {
   public function __construct(
@@ -73,7 +72,7 @@ final class ParseContext {
 
   // #region Materialization
   const string VERSION = 'VERSION';
-  const int VERSION_NUMBER = 3;
+  const int VERSION_NUMBER = 4;
   const string STRUCTS = 'STRUCTS';
   const string SYNTAX_KINDS = 'SYNTAX_KINDS';
   const string TOKEN_KINDS = 'TOKEN_KINDS';
@@ -83,7 +82,7 @@ final class ParseContext {
   <<__Memoize>>
   public function getMaterializationHash()[]: string {
     return $this->dematerialize()
-      |> static::toHashable($$)
+      |> serialize_pure($$)
       |> sha1($$, false) as string;
   }
 
@@ -147,48 +146,5 @@ final class ParseContext {
     }
   }
 
-  /**
-   * The encoding does not need to make sense, as long as it is not ambiguous.
-   * json_encode_pure wasn't available in 4.102, so something inline was done.
-   * Changing this breaks backwards compatibility with VERSION=2 serialization.
-   * This can be removed when VERSION=3 comes around.
-   *
-   * The encoding will look a little like json, but instead of quoting strings,
-   * they will be encoded as `s<length><bytes>`. This is not ambiguous with
-   * anything, since no json construct starts with an `s`.
-   */
-  private static function toHashable(mixed $mixed)[]: string {
-    if ($mixed is string) {
-      return 's'.Str\length($mixed).$mixed;
-    } else if ($mixed is int) {
-      return (string)$mixed;
-    } else if ($mixed is dict<_, _>) {
-      $out = '{';
-      foreach ($mixed as $k => $v) {
-        $out .= static::toHashable($k).':'.static::toHashable($v).',';
-      }
-      $out .= '}';
-
-      return $out;
-    } else if ($mixed is vec<_>) {
-      $out = '[';
-      foreach ($mixed as $v) {
-        $out .= static::toHashable($v).',';
-      }
-      $out .= ']';
-
-      return $out;
-    } else if ($mixed is AnyArray<_, _>) {
-      $out = '{?';
-      foreach ($mixed as $k => $v) {
-        $out .= static::toHashable($k).':'.static::toHashable($v).',';
-      }
-      $out .= '?}';
-
-      return $out;
-    }
-
-    invariant_violation('Unhandled type: %s', gettype($mixed) as string);
-  }
   // #endregion
 }

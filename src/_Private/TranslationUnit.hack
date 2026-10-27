@@ -10,12 +10,14 @@ final class TranslationUnit {
   /**
    * @param $sourceOrder is keyed by NodeId (0..n-1).
    * @param $siblings is keyed by SiblingId (0..n-1).
+   * @param $distantParentOffsets only contains offsets that do not fit in Nodes.
    * @param $listSizes only contains the sizes of lists 255 and above.
    */
   public function __construct(
     private vec<Node> $sourceOrder,
     private vec<Node> $siblings,
     private dict<NodeId, int> $listSizes,
+    private dict<NodeId, int> $distantParentOffsets,
     private string $sourceText,
     private ParseContext $ctx,
   )[] {
@@ -101,6 +103,10 @@ final class TranslationUnit {
     return $this->siblings[sibling_id_to_int($sibling_id)];
   }
 
+  public function getDistantParentOffset(NodeId $node_id)[]: int {
+    return $this->distantParentOffsets[$node_id];
+  }
+
   public function getParseContext()[]: ParseContext {
     return $this->ctx;
   }
@@ -132,10 +138,11 @@ final class TranslationUnit {
 
   // #region Materialization
   const string VERSION = 'VERSION';
-  const int VERSION_NUMBER = 3;
+  const int VERSION_NUMBER = 4;
   const string SOURCE_ORDER = 'SOURCE_ORDER';
   const string SIBLINGS = 'SIBLINGS';
   const string LIST_SIZES = 'LIST_SIZES';
+  const string DISTANT_PARENT_OFFSETS = 'DISTANT_PARENT_OFFSETS';
   const string SOURCE_TEXT = 'SOURCE_TEXT';
   const string CONTEXT_ID = 'CONTEXT_ID';
 
@@ -146,6 +153,7 @@ final class TranslationUnit {
         static::SOURCE_ORDER => $this->sourceOrder,
         static::SIBLINGS => $this->siblings,
         static::LIST_SIZES => $this->listSizes,
+        static::DISTANT_PARENT_OFFSETS => $this->distantParentOffsets,
         static::SOURCE_TEXT => $this->sourceText,
         static::CONTEXT_ID => $this->ctx->getMaterializationHash(),
       ],
@@ -170,7 +178,7 @@ final class TranslationUnit {
     }
     enforce(
       $ctx->getMaterializationHash() === $raw[static::CONTEXT_ID],
-      'The Context and the Script do not belong together.',
+      () ==> 'The Context and the Script do not belong together.',
     );
 
     try {
@@ -178,6 +186,7 @@ final class TranslationUnit {
         $raw['SOURCE_ORDER'] |> as_vec_of_node($$),
         $raw['SIBLINGS'] |> as_vec_of_node($$),
         $raw['LIST_SIZES'] |> as_dict_of_node_id_to_int($$),
+        $raw['DISTANT_PARENT_OFFSETS'] |> as_dict_of_node_id_to_int($$),
         $raw['SOURCE_TEXT'] as string,
         $ctx,
       );

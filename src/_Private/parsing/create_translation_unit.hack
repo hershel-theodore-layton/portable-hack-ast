@@ -10,18 +10,22 @@ function create_translation_unit(
 )[]: TranslationUnit {
   enforce(
     Str\length($source_text) < FIELD_3_MASK_FOR_TRIVIA,
-    'Implementation limit: Source may not exceed %d (0x%x) bytes, got %d.',
-    FIELD_3_MASK_FOR_TRIVIA,
-    FIELD_3_MASK_FOR_TRIVIA,
-    Str\length($source_text),
+    () ==> Str\format(
+      'Implementation limit: Source may not exceed %d (0x%x) bytes, got %d.',
+      FIELD_3_MASK_FOR_TRIVIA,
+      FIELD_3_MASK_FOR_TRIVIA,
+      Str\length($source_text),
+    ),
   );
 
   enforce(
     C\count($intermediates) < FIELD_4_MASK,
-    'Implementation limit: Source may not exceed %d (0x%x) nodes, got %d.',
-    FIELD_4_MASK,
-    FIELD_4_MASK,
-    C\count($intermediates),
+    () ==> Str\format(
+      'Implementation limit: Source may not exceed %d (0x%x) nodes, got %d.',
+      FIELD_4_MASK,
+      FIELD_4_MASK,
+      C\count($intermediates),
+    ),
   );
 
   list($parent_ranges, $siblings_intermediates) =
@@ -36,9 +40,10 @@ function create_translation_unit(
   $byte_offset = 0;
   $nodes = vec[];
   $list_sizes = dict[];
+  $distant_parent_offsets = dict[];
   foreach ($source_order as $source_order_idx => $intermediate) {
     $range = idx($parent_ranges, $intermediate->getId(), tuple(0, 0));
-    $nodes[] = create_node(
+    $node = create_node(
       $intermediate,
       $source_order_idx,
       $id_to_source_idx[$intermediate->getParentId()],
@@ -46,6 +51,12 @@ function create_translation_unit(
       $ctx,
       inout $byte_offset,
     );
+
+    $nodes[] = $node;
+    if ($source_order_idx !== 0 && node_get_parent_offset($node) === 0) {
+      $distant_parent_offsets[node_get_id($node)] =
+        $source_order_idx - $id_to_source_idx[$intermediate->getParentId()];
+    }
 
     if ($intermediate->getGroup() === IntermediateGroup::LIST) {
       // + 1, because a range from x to x is of length 1, not 0.
@@ -61,6 +72,12 @@ function create_translation_unit(
     $x ==> $nodes[$id_to_source_idx[$x->getId()]],
   );
 
-  return
-    new TranslationUnit($nodes, $siblings, $list_sizes, $source_text, $ctx);
+  return new TranslationUnit(
+    $nodes,
+    $siblings,
+    $list_sizes,
+    $distant_parent_offsets,
+    $source_text,
+    $ctx,
+  );
 }

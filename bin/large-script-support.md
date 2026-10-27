@@ -128,46 +128,26 @@ here allow scripts up to 16 MiB!
 
 ## The Trade-offs
 
-Shrinking Field C has performance implications. Where the 2023 encoding could
-always guarantee an `O(1)` access to a parent Node, the 2025 encoding must have
-a fallback strategy to recompute this value when it is missing. These places have
-been marked with `// slow path:`. This happens in two functions:
- - node_get_child_at_offset
- - node_get_parent
+Shrinking Field C requires a fallback when a parent offset does not fit.
+`node_get_parent()` uses a Script lookup table for these exceptional offsets;
+ordinary Nodes retain their packed offsets. Parent lookup is constant time even
+for comment-heavy Tokens and large declaration Lists.
 
-These functions are very frequently used. The first is used to implement member
-access on Syntaxes, see `create_member_accessor()`. The second is used directly in all sorts of tooling, f.e. finding the enclosing class of a method.
+`node_get_child_at_offset()` also uses this table to verify a candidate child's
+parent when the packed offset overflows. This replaces the syntax/list count
+fallback and the linear scan through a Token's intermediate Trivia. Indexed
+child lookup remains constant time without additional storage. This function
+also implements Syntax member access through `create_member_accessor()`.
 
-These three slow paths have different levels of impact:
- - `// slow path: Need to check with the list-sizes or syntax member counts`
-   - The real world use case that hits this slow path is member access on
-     Syntax. It is a constant-time `O(1)` check to verify if your Syntax actually
-     has 7 members if you try to access member at index `6`. This also happens
-     on List nodes if you iterate them with `node_get_child_at_offset()`.
-     `node_get_children()` is unaffected and the recommended way to iterate over
-     Lists.
-  - `// slow path: Cannot jump to child, must verify every intermediate node`
-    `// is a trivium, to ensure the trivium returned is a child of ``$node``.`
-    - This happens when you access a specific Trivium using
-    `node_get_child_at_offset()` on a Token with more than 1022 leading Trivia.
-    `node_get_children()` is unaffected.
-  - `// slow path: Cannot find my parent from bits, must find myself by selecting`
-    `// an ancestor each time. The last ancestor before me is my parent.`
-    - This is the most painful change and rather easy to run into. The real
-      world use case is accessing the surrounding classlike from a method,
-      provided the class is very large. The same goes for accessing all the
-      ancestors of code in a large file. F.e. the last handful of functions in
-      [this file](/src/node_functions.hack) cannot tell in `O(1)` that the
-      declaration list is their parent. What happens in these cases, is that
-      the ancestors will do linear scans through their children to find the
-      next ancestor of the node. If this proves to be a noticeable performance
-      regression in real-world usage, a 2026 encoding could introduce a special
-      lookup table in the Script for these cases. The 374,684-byte test
-      [file](vendor/hershel-theodore-layton/portable-hack-ast-linters-server/bin/portable-hack-ast-linters-ser
-ver-bundled.resource)
-      that includes all code of portable-hack-ast, portable-hack-ast-extras,
-      portable-hack-ast-linters, and portable-hack-ast-linters-server has
-      579 of these cases. That is rare enough to make a lookup table feasible.
+Enumerating a Token's children or finding its last child still scans its Trivia.
+A child-to-parent index does not store the child count or last-child position.
+Use `node_get_children()` to enumerate children rather than repeatedly probing
+indices.
+
+The table is included in serialized Scripts (version 4); older cached Scripts
+must be reparsed. Contexts also advance to version 4, replacing the custom
+context-hash encoding with `serialize_pure()`. Cached version 3 Contexts must be
+regenerated; the nested Structs format remains version 3.
 
 [^1]: Scripts must contain fewer than 1,048,576 nodes, so not every 15.99MiB
 Script can be parsed.

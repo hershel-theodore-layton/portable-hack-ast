@@ -429,9 +429,11 @@ function list_get_items_of_children(
       $kind = node_get_kind($script, $list_item);
       _Private\enforce(
         $kind === KIND_LIST_ITEM,
-        '%s expected a list with list_items, but found a %s in the list.',
-        $function,
-        $kind,
+        () ==> Str\format(
+          '%s expected a list with list_items, but found a %s in the list.',
+          $function,
+          $kind,
+        ),
       );
 
       return node_get_first_childx($script, $list_item);
@@ -476,11 +478,14 @@ function node_get_child_at_offset(
     return node_get_first_child($script, $node);
   }
 
+  $function_name = __FUNCTION__;
   _Private\enforce(
     $offset > 0,
-    '%s expected a valid offset (0 or greater), got %d.',
-    __FUNCTION__,
-    $offset,
+    () ==> Str\format(
+      '%s expected a valid offset (0 or greater), got %d.',
+      $function_name,
+      $offset,
+    ),
   );
 
   if ($node === NIL) {
@@ -514,8 +519,9 @@ function node_get_child_at_offset(
         return $child_node;
       }
 
-      // slow path: Need to check with the list-sizes or syntax member counts
-      return $tu->syntaxGetChildCount($node) > $offset ? $child_node : NIL;
+      // Overflow offsets use the same parent index as node_get_parent().
+      return
+        node_get_parent($script, $child_node) === $node ? $child_node : NIL;
 
     case NodeElaboratedGroup::TOKEN:
       $child_node = node_get_id($node)
@@ -537,26 +543,9 @@ function node_get_child_at_offset(
         return NIL;
       }
 
-      // slow path: Cannot jump to child, must verify every intermediate node
-      // is a trivium, to ensure the trivium returned is a child of `$node`.
-      $parent_id = node_get_id($node);
-      $child_id = $parent_id;
-      $child = NIL;
-
-      for ($i = 0; $i <= $offset; ++$i) {
-        $child_id = _Private\node_id_add($child_id, 1);
-        $child = $tu->getNodeById($child_id);
-        if ($child === NIL) {
-          return NIL;
-        }
-
-        $child = _Private\cast_away_nil($child);
-
-        if (node_get_group($child) !== NodeGroup::TRIVIUM) {
-          return NIL;
-        }
-      }
-      return $child;
+      // The distant-parent index also distinguishes another token's trivia.
+      return
+        node_get_parent($script, $child_node) === $node ? $child_node : NIL;
 
     case NodeElaboratedGroup::TRIVIUM:
     case NodeElaboratedGroup::MISSING:
@@ -983,23 +972,11 @@ function node_get_parent(Script $script, Node $node)[]: Node {
       |> $tu->getNodeByIdx($$);
   }
 
-  // slow path: Cannot find my parent from bits, must find myself by selecting
-  // an ancestor each time. The last ancestor before me is my parent.
-  $source_order = node_get_source_order($node);
-  $next = SCRIPT_NODE;
-
-  do {
-    $parent = $next;
-    $children = node_get_children($script, $parent);
-
-    $i = C\count($children) - 1;
-    do {
-      $next = $children[$i];
-      --$i;
-    } while (node_get_source_order($next) > $source_order);
-  } while ($next !== $node);
-
-  return $parent;
+  return _Private\node_id_sub(
+    node_get_id($node),
+    $tu->getDistantParentOffset(node_get_id($node)),
+  )
+    |> $tu->getNodeByIdx($$);
 }
 
 /**
@@ -1134,24 +1111,27 @@ function patches_apply(Patches $patches)[]: string {
 function patches_combine_without_conflict_resolution(
   vec<Patches> $patches,
 )[]: Patches {
+  $function_name = __FUNCTION__;
   _Private\enforce(
     !C\is_empty($patches),
-    '%s expected Patches, but none were provided.',
-    __FUNCTION__,
+    () ==> Str\format(
+      '%s expected Patches, but none were provided.',
+      $function_name,
+    ),
   );
 
   $first = C\firstx($patches) |> _Private\patch_set_reveal($$);
-
-  $function_name = __FUNCTION__;
 
   return Vec\map($patches, $p ==> {
     $p = _Private\patch_set_reveal($p);
 
     _Private\enforce(
       $first->cayBeCombinedWith($p),
-      '%s expected that all Patches could be combined, '.
-      'but one of the Patches was created for a different Script.',
-      $function_name,
+      () ==> Str\format(
+        '%s expected that all Patches could be combined, '.
+        'but one of the Patches was created for a different Script.',
+        $function_name,
+      ),
     );
 
     return $p->getReplacements();
